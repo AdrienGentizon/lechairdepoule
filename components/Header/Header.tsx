@@ -1,0 +1,23 @@
+import Link from "next/link";
+
+export default function Header() {
+  return (
+    <header className="w-full border-l border-r border-neutral-100 sm:max-w-2xl">
+      <Link href={`/`}>
+        <h1 className="w-full py-2 text-center text-4xl font-thin uppercase">
+          Le Chair de Poule
+        </h1>
+      </Link>
+      <nav>
+        <ul className="flex items-center justify-center gap-4 text-sm font-light uppercase">
+          <li>
+            <Link href={`/animations`}>Animations</Link>
+          </li>
+          <li>
+            <Link href={`/merch`}>Magasin</Link>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
