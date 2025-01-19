@@ -2,9 +2,15 @@ type Env = {
   CONTENTFUL_SPACE_ID: string;
   CONTENTFUL_DELIVERY_API_KEY: string;
   CONTENTFUL_ENVIRONMENT: string;
+  CLERK_CREATE_USER_WEBHOOK_SECRET: string;
+  POSTGRES_HOST: string;
+  POSTGRES_PORT: string;
+  POSTGRES_DATABASE: string;
+  POSTGRES_USER: string;
+  POSTGRES_PASSWORD: string;
 };
 
-let env: undefined | Env = undefined;
+let envVars: undefined | Env = undefined;
 
 function getEnvVar(key: string, defaultValue = "", required = true) {
   if (required && !process.env[key])
@@ -12,14 +18,22 @@ function getEnvVar(key: string, defaultValue = "", required = true) {
   return process.env[key] ?? defaultValue;
 }
 
-export default function getEnv() {
-  if (!env) {
-    env = {
+export default function env() {
+  if (!envVars) {
+    envVars = {
       CONTENTFUL_SPACE_ID: getEnvVar("CONTENTFUL_SPACE_ID"),
       CONTENTFUL_DELIVERY_API_KEY: getEnvVar("CONTENTFUL_DELIVERY_API_KEY"),
       CONTENTFUL_ENVIRONMENT: getEnvVar("CONTENTFUL_ENVIRONMENT"),
+      CLERK_CREATE_USER_WEBHOOK_SECRET: getEnvVar(
+        "CLERK_CREATE_USER_WEBHOOK_SECRET",
+      ),
+      POSTGRES_HOST: getEnvVar("POSTGRES_HOST"),
+      POSTGRES_PORT: getEnvVar("POSTGRES_PORT"),
+      POSTGRES_DATABASE: getEnvVar("POSTGRES_DATABASE"),
+      POSTGRES_USER: getEnvVar("POSTGRES_USER"),
+      POSTGRES_PASSWORD: getEnvVar("POSTGRES_PASSWORD"),
     };
   }
 
-  return env;
+  return envVars;
 }
