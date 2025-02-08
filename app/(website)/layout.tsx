@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <>
       <Header />
-      <main className="w-full overflow-y-scroll border-l border-r border-neutral-700 sm:max-w-2xl">
+      <main className="w-full overflow-y-scroll border-l border-r border-neutral-800 sm:max-w-2xl">
         {children}
       </main>
       <Footer />
