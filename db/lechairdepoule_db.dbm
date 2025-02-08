@@ -17,24 +17,27 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layers="0" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
 </schema>
 
-<table name="invited_emails" layers="0" collapse-mode="2" max-obj-count="1" z-value="0">
+<usertype name="user_roles" configuration="enumeration">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<enumeration label="admin"/>
+	<enumeration label="contributor"/>
+</usertype>
+
+<table name="invited_emails" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
 	<position x="540" y="460"/>
 	<column name="email" not-null="true">
 		<type name="varchar" length="255"/>
 	</column>
+	<column name="role">
+		<type name="public.user_roles" length="0"/>
+	</column>
 	<constraint name="invited_emails_pk" type="pk-constr" table="public.invited_emails">
 		<columns names="email" ref-type="src-columns"/>
 	</constraint>
 </table>
-
-<usertype name="user_roles" configuration="enumeration">
-	<schema name="public"/>
-	<role name="postgres"/>
-	<enumeration label="'admin'"/>
-	<enumeration label="'contributor'"/>
-</usertype>
 
 <table name="users" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>

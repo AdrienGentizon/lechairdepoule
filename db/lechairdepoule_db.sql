@@ -13,22 +13,23 @@ CREATE DATABASE lechairdepoule_db;
 -- ddl-end --
 
 
--- object: public.invited_emails | type: TABLE --
--- DROP TABLE IF EXISTS public.invited_emails CASCADE;
-CREATE TABLE public.invited_emails (
-	email varchar(255) NOT NULL,
-	CONSTRAINT invited_emails_pk PRIMARY KEY (email)
-);
--- ddl-end --
-ALTER TABLE public.invited_emails OWNER TO postgres;
--- ddl-end --
-
 -- object: public.user_roles | type: TYPE --
 -- DROP TYPE IF EXISTS public.user_roles CASCADE;
 CREATE TYPE public.user_roles AS
 ENUM ('admin','contributor');
 -- ddl-end --
 ALTER TYPE public.user_roles OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.invited_emails | type: TABLE --
+-- DROP TABLE IF EXISTS public.invited_emails CASCADE;
+CREATE TABLE public.invited_emails (
+	email varchar(255) NOT NULL,
+	role public.user_roles,
+	CONSTRAINT invited_emails_pk PRIMARY KEY (email)
+);
+-- ddl-end --
+ALTER TABLE public.invited_emails OWNER TO postgres;
 -- ddl-end --
 
 -- object: public.users | type: TABLE --
