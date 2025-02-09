@@ -16,6 +16,9 @@ type Props = {
 
 export default function EventItem({ event, onSelect }: Props) {
   const date = new Date(event.fields.date);
+  const month = date.toLocaleString("fr", {
+    month: "short",
+  });
 
   return (
     <AccordionItem
@@ -33,11 +36,11 @@ export default function EventItem({ event, onSelect }: Props) {
           <div className="flex flex-col items-center justify-center">
             <span className="text-5xl">{date.getDate()}</span>
             <span className="flex origin-center pl-1 text-xl font-thin">
-              <span className="text-transparent">{`\u2024`}</span>
-              {date.toLocaleString("fr", {
-                month: "short",
-              })}
-              <span>{`\u2024`}</span>
+              {!month.endsWith(".") && (
+                <span className="text-transparent">{`\u2024`}</span>
+              )}
+              {month}
+              {!month.endsWith(".") && <span>{`\u2024`}</span>}
             </span>
           </div>
           <div className="flex w-full flex-col items-start">
