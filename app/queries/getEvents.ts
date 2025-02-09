@@ -13,10 +13,19 @@ type EventEntry = {
   };
 };
 
+type ExpectedDate =
+  `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
 export default async function getEvents() {
+  const date = new Date();
+  const monthFirstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
   return (
     await contentful().getEntries<EventEntry>({
       content_type: "event",
+      "fields.date[gte]": monthFirstDate.toISOString() as ExpectedDate,
+      "fields.date[lte]": monthLastDate.toISOString() as ExpectedDate,
     })
   ).items.sort((a, b) => {
     return (
