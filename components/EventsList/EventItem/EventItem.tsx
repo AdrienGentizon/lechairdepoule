@@ -33,8 +33,8 @@ export default function EventItem({ event, onSelect }: Props) {
           }}
         >
           <div className="flex flex-col items-center justify-center">
-            <span className="text-5xl">{date.getDate()}</span>
-            <span className="flex origin-center pl-1 text-xl font-thin">
+            <span className="text-4xl">{date.getDate()}</span>
+            <span className="flex origin-center pl-1 text-lg font-thin">
               {!month.endsWith(".") && (
                 <span className="text-transparent">{`\u2024`}</span>
               )}
@@ -43,9 +43,13 @@ export default function EventItem({ event, onSelect }: Props) {
             </span>
           </div>
           <div className="flex w-full flex-col items-start">
-            <h2 className="text-2xl font-semibold uppercase">{event.title}</h2>
-            {event.shortDescription && (
+            <h2 className="text-left text-xl font-light uppercase">
+              {event.title}
+            </h2>
+            {event.shortDescription ? (
               <h3 className="text-sm font-light">{event.shortDescription}</h3>
+            ) : (
+              <span>&nbsp;</span>
             )}
           </div>
         </header>
@@ -53,7 +57,7 @@ export default function EventItem({ event, onSelect }: Props) {
       <AccordionContent>
         {event.picture && (
           <Image
-            className="h-min rounded"
+            className="mx-auto h-min rounded"
             alt=""
             src={event.picture.url}
             width={event.picture.width}
