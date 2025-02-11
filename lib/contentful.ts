@@ -15,7 +15,7 @@ export default function contentful() {
   return client;
 }
 
-type Tag = "eventCollection";
+export type Tag = "eventCollection";
 
 type Data<K extends Tag, T = unknown> = {
   data?: Record<
