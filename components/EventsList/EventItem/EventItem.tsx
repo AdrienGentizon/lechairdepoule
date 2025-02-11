@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Asset, AssetFile } from "contentful";
 import Image from "next/image";
 
 type Props = {
@@ -15,7 +14,7 @@ type Props = {
 };
 
 export default function EventItem({ event, onSelect }: Props) {
-  const date = new Date(event.fields.date);
+  const date = new Date(event.date);
   const month = date.toLocaleString("fr", {
     month: "short",
   });
@@ -44,35 +43,25 @@ export default function EventItem({ event, onSelect }: Props) {
             </span>
           </div>
           <div className="flex w-full flex-col items-start">
-            <h2 className="text-2xl font-semibold uppercase">
-              {event.fields.title}
-            </h2>
-            {event.fields.shortDescription && (
-              <h3 className="text-sm font-light">
-                {event.fields.shortDescription}
-              </h3>
+            <h2 className="text-2xl font-semibold uppercase">{event.title}</h2>
+            {event.shortDescription && (
+              <h3 className="text-sm font-light">{event.shortDescription}</h3>
             )}
           </div>
         </header>
       </AccordionTrigger>
       <AccordionContent>
-        <Image
-          className="h-min rounded"
-          alt=""
-          src={`https:${
-            (event.fields.picture as Asset)?.fields.file?.url?.toString() ?? ""
-          }`}
-          width={
-            ((event.fields.picture as Asset)?.fields.file as AssetFile)?.details
-              ?.image?.width
-          }
-          height={
-            ((event.fields.picture as Asset)?.fields.file as AssetFile)?.details
-              ?.image?.height
-          }
-        />
+        {event.picture && (
+          <Image
+            className="h-min rounded"
+            alt=""
+            src={event.picture.url}
+            width={event.picture.width}
+            height={event.picture.height}
+          />
+        )}
         <div className="flex flex-col gap-2 pb-4 text-justify font-mono font-light leading-5">
-          {event.fields.message.split("\n").map((p, n) => {
+          {event.message.split("\n").map((p, n) => {
             return <p key={`item-${event.sys.id}-p-${n}`}>{p}</p>;
           })}
         </div>

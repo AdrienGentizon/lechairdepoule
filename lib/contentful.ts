@@ -14,3 +14,39 @@ export default function contentful() {
   }
   return client;
 }
+
+type Tag = "eventCollection";
+
+type Data<K extends Tag, T = unknown> = {
+  data?: Record<
+    K,
+    {
+      items: T[];
+    }
+  >;
+};
+
+export async function fetchGraphQL<T>(tag: Tag, query: string) {
+  try {
+    const response = await fetch(
+      `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${env().CONTENTFUL_DELIVERY_API_KEY}`,
+        },
+        body: JSON.stringify({ query }),
+        next: { tags: [tag] },
+      },
+    );
+    return response.json() as Promise<Data<typeof tag, T>>;
+  } catch (error) {
+    console.error(
+      "[ERROR:CONTENTFUL]",
+      (error as Error)?.message ?? "unknown error",
+    );
+    return undefined;
+  }
+}

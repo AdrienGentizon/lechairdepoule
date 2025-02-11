@@ -1,37 +1,60 @@
-import contentful from "@/lib/contentful";
-import { EntrySys, EntryFieldTypes } from "contentful";
+import { fetchGraphQL } from "@/lib/contentful";
 
-type EventEntry = {
-  contentTypeId: "event";
-  sys: EntrySys;
-  fields: {
-    title: EntryFieldTypes.Text;
-    shortDescription?: EntryFieldTypes.Text;
-    message: EntryFieldTypes.Text;
-    picture: EntryFieldTypes.AssetLink;
-    date: EntryFieldTypes.Date;
-  };
+// type ExpectedDate =
+//   `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
+export type Event = {
+  sys: { id: string };
+
+  title: string;
+  shortDescription?: string;
+  message: string;
+  date: string;
+  picture: {
+    sys: {
+      id: string;
+    };
+    url: string;
+    width: number;
+    height: number;
+  } | null;
 };
-
-type ExpectedDate =
-  `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 
 export default async function getEvents() {
   const date = new Date();
   const monthFirstDate = new Date(date.getFullYear(), date.getMonth(), 1);
   const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const seeOneMoreMonth = true;
+  if (seeOneMoreMonth) {
+    monthLastDate.setMonth(monthLastDate.getMonth() + 1);
+  }
 
   return (
-    await contentful().getEntries<EventEntry>({
-      content_type: "event",
-      "fields.date[gte]": monthFirstDate.toISOString() as ExpectedDate,
-      "fields.date[lte]": monthLastDate.toISOString() as ExpectedDate,
-    })
-  ).items.sort((a, b) => {
-    return (
-      new Date(b.fields.date).getTime() - new Date(a.fields.date).getTime()
-    );
-  });
+    (
+      await fetchGraphQL<Event>(
+        "eventCollection",
+        `query {
+    eventCollection(where: {date_gte: "${monthFirstDate.toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
+      items {
+        sys {
+            id
+          }
+        title
+        shortDescription
+        message
+        date
+        picture {
+        sys {
+          id
+          }
+        url
+        width
+        height
+        }
+      }
+    }
+  }`,
+      )
+    )?.data?.eventCollection.items ?? []
+  );
 }
-
-export type Event = Awaited<ReturnType<typeof getEvents>>[number];
