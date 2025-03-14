@@ -23,7 +23,7 @@ export type Event = {
 export default async function getEvents() {
   const date = new Date();
   const monthFirstDate = new Date(date.getFullYear(), date.getMonth(), 1);
-  const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
   const seeOneMoreMonth = true;
   if (seeOneMoreMonth) {
     monthLastDate.setMonth(monthLastDate.getMonth() + 1);
