@@ -6,8 +6,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Image from "next/image";
-import { Badge } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Badge from "@/components/Badge/Badge";
 
 type Props = {
   event: Event;
@@ -20,16 +20,16 @@ export default function EventItem({ event, onSelect }: Props) {
     month: "short",
   });
 
-  const variants = [
-    "rotate-6",
-    "rotate-12",
-    "rotate-[18deg]",
-    "rotate-[24deg]",
-    "-rotate-6",
-    "-rotate-12",
-    "-rotate-[18deg]",
-    "-rotate-[24deg]",
-  ];
+  // const variants = [
+  //   "rotate-6",
+  //   "rotate-12",
+  //   "rotate-[18deg]",
+  //   "rotate-[24deg]",
+  //   "-rotate-6",
+  //   "-rotate-12",
+  //   "-rotate-[18deg]",
+  //   "-rotate-[24deg]",
+  // ];
 
   return (
     <AccordionItem
@@ -68,13 +68,13 @@ export default function EventItem({ event, onSelect }: Props) {
         {event.atPeinePerdue && (
           <div
             className={cn(
-              "rotate- absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 scale-75 text-blue-500",
-              variants.at((parseInt(event.sys.id) ?? 0) % variants.length),
+              "rotate- absolute right-0 top-0 z-50 origin-center -translate-y-5 translate-x-6 -rotate-12 scale-50 text-blue-500",
+              // variants.at((parseInt(event.sys.id) ?? 0) % variants.length),
             )}
           >
-            <Badge className="size-20 stroke-1" />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs">
-              Peine Perdue
+            <Badge className="size-20 fill-black stroke-1" />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-extrabold">
+              PP
             </span>
           </div>
         )}
