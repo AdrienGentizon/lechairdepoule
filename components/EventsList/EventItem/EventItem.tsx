@@ -1,4 +1,5 @@
 "use client";
+
 import { Event } from "@/queries/getEvents";
 import {
   AccordionContent,
@@ -7,42 +8,29 @@ import {
 } from "@/components/ui/accordion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import Badge from "@/components/Badge/Badge";
+import PeinePerdue from "@/components/PeinPerdue/PeinePerdue";
+import ChairDePoule from "@/components/ChairDePoule/ChairDePoule";
 
 type Props = {
   event: Event;
-  showDetails: boolean;
-  onSelect: (event: Event) => void;
 };
 
-export default function EventItem({ event, onSelect }: Props) {
+export default function EventItem({ event }: Props) {
   const month = event.date.toLocaleString("fr", {
     month: "short",
   });
-
-  // const variants = [
-  //   "rotate-6",
-  //   "rotate-12",
-  //   "rotate-[18deg]",
-  //   "rotate-[24deg]",
-  //   "-rotate-6",
-  //   "-rotate-12",
-  //   "-rotate-[18deg]",
-  //   "-rotate-[24deg]",
-  // ];
-
   return (
     <AccordionItem
       value={event.sys.id}
       className="flex flex-col gap-2 border-b border-white p-2 first:border-t"
     >
-      <AccordionTrigger className="relative p-0 hover:no-underline" hideChevron>
+      <AccordionTrigger
+        className="relative p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
+        hideChevron
+      >
         <header
           role="button"
           className="grid w-full cursor-pointer grid-cols-[1fr_9fr] place-items-center justify-items-start gap-x-4 transition-all"
-          onClick={() => {
-            onSelect(event);
-          }}
         >
           <div className="flex flex-col items-center justify-center">
             <span className="text-4xl">{event.date.getDate()}</span>
@@ -68,27 +56,33 @@ export default function EventItem({ event, onSelect }: Props) {
         {event.atPeinePerdue && (
           <div
             className={cn(
-              "rotate- absolute right-0 top-0 z-50 origin-center -translate-y-5 translate-x-6 -rotate-12 scale-50 text-blue-500",
-              // variants.at((parseInt(event.sys.id) ?? 0) % variants.length),
+              "absolute right-0 top-0 z-50 origin-center -translate-y-5 translate-x-6 rotate-12 scale-50 opacity-100 transition-opacity",
             )}
           >
-            <Badge className="size-20 fill-black stroke-1" />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-extrabold">
-              PP
-            </span>
+            <PeinePerdue className="size-20" />
           </div>
         )}
       </AccordionTrigger>
       <AccordionContent>
-        {event.picture && (
-          <Image
-            className="mx-auto h-min rounded"
-            alt=""
-            src={event.picture.url}
-            width={event.picture.width}
-            height={event.picture.height}
-          />
-        )}
+        <div className="relative">
+          <h4 className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">
+            {event.atPeinePerdue ? (
+              <PeinePerdue className="size-28" />
+            ) : (
+              <ChairDePoule className="size-28" />
+            )}
+          </h4>
+
+          {event.picture && (
+            <Image
+              className="mx-auto h-min rounded"
+              alt=""
+              src={event.picture.url}
+              width={event.picture.width}
+              height={event.picture.height}
+            />
+          )}
+        </div>
         <div className="flex flex-col gap-2 pb-4 text-justify font-mono font-light leading-5">
           {event.message.split("\n").map((p, n) => {
             return <p key={`item-${event.sys.id}-p-${n}`}>{p}</p>;
