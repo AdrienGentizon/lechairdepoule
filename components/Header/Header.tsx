@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "../Logo/logo";
 
 function Title() {
   return (
@@ -13,7 +14,7 @@ function Title() {
 export default function Header() {
   return (
     <header className="w-full border-l border-r border-neutral-800 pb-4 sm:max-w-2xl">
-      <Title />
+      <Logo className="mx-auto w-1/2 pb-2 pt-4" />
       <nav>
         <ul className="flex items-center justify-center gap-4 text-sm font-light uppercase">
           <li>
