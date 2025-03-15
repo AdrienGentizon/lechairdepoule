@@ -1,11 +1,13 @@
 "use client";
-import { Event } from "@/app/queries/getEvents";
+import { Event } from "@/queries/getEvents";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Image from "next/image";
+import { Badge } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   event: Event;
@@ -14,17 +16,27 @@ type Props = {
 };
 
 export default function EventItem({ event, onSelect }: Props) {
-  const date = new Date(event.date);
-  const month = date.toLocaleString("fr", {
+  const month = event.date.toLocaleString("fr", {
     month: "short",
   });
+
+  const variants = [
+    "rotate-6",
+    "rotate-12",
+    "rotate-[18deg]",
+    "rotate-[24deg]",
+    "-rotate-6",
+    "-rotate-12",
+    "-rotate-[18deg]",
+    "-rotate-[24deg]",
+  ];
 
   return (
     <AccordionItem
       value={event.sys.id}
       className="flex flex-col gap-2 border-b border-white p-2 first:border-t"
     >
-      <AccordionTrigger className="p-0 hover:no-underline" hideChevron>
+      <AccordionTrigger className="relative p-0 hover:no-underline" hideChevron>
         <header
           role="button"
           className="grid w-full cursor-pointer grid-cols-[1fr_9fr] place-items-center justify-items-start gap-x-4 transition-all"
@@ -33,7 +45,7 @@ export default function EventItem({ event, onSelect }: Props) {
           }}
         >
           <div className="flex flex-col items-center justify-center">
-            <span className="text-4xl">{date.getDate()}</span>
+            <span className="text-4xl">{event.date.getDate()}</span>
             <span className="flex origin-center pl-1 text-lg font-thin">
               {!month.endsWith(".") && (
                 <span className="text-transparent">{`\u2024`}</span>
@@ -53,6 +65,19 @@ export default function EventItem({ event, onSelect }: Props) {
             )}
           </div>
         </header>
+        {event.atPeinePerdue && (
+          <div
+            className={cn(
+              "rotate- absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 scale-75 text-blue-500",
+              variants.at((parseInt(event.sys.id) ?? 0) % variants.length),
+            )}
+          >
+            <Badge className="size-20 stroke-1" />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs">
+              Peine Perdue
+            </span>
+          </div>
+        )}
       </AccordionTrigger>
       <AccordionContent>
         {event.picture && (

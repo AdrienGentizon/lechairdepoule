@@ -5,11 +5,13 @@ import { fetchGraphQL } from "@/lib/contentful";
 
 export type Event = {
   sys: { id: string };
-
   title: string;
   shortDescription?: string;
   message: string;
-  date: string;
+  date: Date;
+  invitationOnly?: boolean;
+  soldOut?: boolean;
+  atPeinePerdue?: boolean;
   picture: {
     sys: {
       id: string;
@@ -43,6 +45,9 @@ export default async function getEvents() {
         shortDescription
         message
         date
+        invitationOnly
+        soldOut
+        atPeinePerdue
         picture {
         sys {
           id
@@ -56,5 +61,14 @@ export default async function getEvents() {
   }`,
       )
     )?.data?.eventCollection.items ?? []
-  );
+  )
+    .map((event) => {
+      return {
+        ...event,
+        date: new Date(event.date),
+      };
+    })
+    .sort((a, b) => {
+      return a.date.getTime() - b.date.getTime();
+    });
 }

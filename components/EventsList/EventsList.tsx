@@ -1,6 +1,6 @@
 "use client";
 
-import { Event } from "@/app/queries/getEvents";
+import { Event } from "@/queries/getEvents";
 import { useState } from "react";
 import EventItem from "./EventItem/EventItem";
 import { Accordion } from "../ui/accordion";
