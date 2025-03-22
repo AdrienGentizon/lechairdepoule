@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     revalidateTag("eventCollection" as Tag);
+    revalidateTag("itemCollection" as Tag);
 
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {
