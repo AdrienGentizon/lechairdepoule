@@ -65,7 +65,7 @@ export default async function getEvents() {
     .map((event) => {
       return {
         ...event,
-        date: new Date(event.date),
+        date: new Date(new Date(event.date).toUTCString()),
       };
     })
     .sort((a, b) => {
