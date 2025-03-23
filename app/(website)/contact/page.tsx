@@ -10,6 +10,13 @@ export default async function ConctactPage() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
+      <div className="flex flex-col items-center justify-center pb-4 pt-8">
+        <h2 className="sr-only">Adresse</h2>
+        <div className="font-mono">
+          <Markdown>{contactPage.contactNumbers}</Markdown>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-x-16">
         <div className="flex flex-col items-center justify-center p-2">
           <h2>
