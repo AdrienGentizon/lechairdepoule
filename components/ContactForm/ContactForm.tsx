@@ -2,7 +2,7 @@
 
 import sendEmail from "@/actions/sendEmail";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -31,8 +31,8 @@ export default function ContactForm() {
     <>
       <button
         className={cn(
-          "font-extralight underline",
-          open && "ml-auto pr-4 no-underline sm:pr-0",
+          "flex items-center gap-2 font-extralight",
+          open && "ml-auto pr-4 sm:pr-0",
         )}
         onClick={() => setOpen((prev) => !prev)}
       >
@@ -42,7 +42,10 @@ export default function ContactForm() {
             <X className="size-5 sm:size-4" />
           </>
         ) : (
-          <>Envoyer un message ?</>
+          <>
+            <Mail className="size-4" />
+            <span className="hover:underline">Envoyer un message ?</span>
+          </>
         )}
       </button>
       {open && (
