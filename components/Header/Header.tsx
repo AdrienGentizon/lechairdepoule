@@ -20,7 +20,7 @@ export default function Header() {
         <nav>
           <ul className="flex items-center justify-center gap-4 text-sm font-light uppercase">
             <li>
-              <Link href={`/`}>Animations</Link>
+              <Link href={`/`}>Agenda</Link>
             </li>
             <li>
               <Link href={`/drugstore`}>Drugstore</Link>
