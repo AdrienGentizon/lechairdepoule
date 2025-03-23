@@ -1,4 +1,4 @@
-import { fetchGraphQL } from "@/lib/contentful";
+import { fetchCollectionGraphQL } from "@/lib/contentful";
 
 export type Item = {
   sys: { id: string };
@@ -21,7 +21,7 @@ export type Item = {
 export default async function getItems() {
   return (
     (
-      await fetchGraphQL<Item>(
+      await fetchCollectionGraphQL<Item>(
         "itemCollection",
         `query {
       itemCollection {

@@ -1,91 +1,37 @@
-"use client";
+import ChairDePoule from "@/components/ChairDePoule/ChairDePoule";
+import ContactForm from "@/components/ContactForm/ContactForm";
+import PeinePerdue from "@/components/PeinPerdue/PeinePerdue";
+import getContactPage from "@/queries/getContactPage";
+import Markdown from "react-markdown";
 
-import sendEmail from "@/actions/sendEmail";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
-
-function SubmitMessageButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      aria-disabled={pending}
-      className="rounded border border-white py-2 font-extralight"
-      type="submit"
-    >
-      Envoyer
-    </button>
-  );
-}
-
-export default function ConctactPage() {
-  const router = useRouter();
-  const [actionResult, setActionResult] = useState<
-    { status: number; message: string } | undefined
-  >(undefined);
+export default async function ConctactPage() {
+  const contactPage = await getContactPage();
+  if (!contactPage) return <></>;
 
   return (
-    <>
-      <form
-        action={async (formData) => {
-          const actionResult = await sendEmail(undefined, formData);
-          setActionResult(actionResult);
-          if (actionResult.status === 200)
-            setTimeout(() => {
-              router.push(`/`);
-            }, 500);
-        }}
-        className="flex flex-col gap-4"
-      >
-        <fieldset className="flex flex-col gap-2">
-          <label htmlFor="email" className="font-sm font-semibold">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="nanani@nanana.com"
-            className="rounded p-2 font-mono text-black"
-            required
-          />
-        </fieldset>
-        <fieldset className="flex flex-col gap-2">
-          <label htmlFor="subject" className="font-sm font-semibold">
-            Objet
-          </label>
-          <input
-            id="subject"
-            name="subject"
-            type="text"
-            defaultValue={`Demande d'informations`}
-            className="rounded p-2 font-mono text-black"
-          />
-        </fieldset>
-        <fieldset className="flex flex-col gap-2">
-          <label htmlFor="message" className="font-sm font-semibold">
-            Message
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            className="min-h-56 resize-none rounded p-2 font-mono text-black"
-            required
-          />
-        </fieldset>
-        <SubmitMessageButton />
-        {actionResult && (
-          <p
-            className={cn(
-              "text-center font-light text-green-400",
-              actionResult.status > 200 && "text-red-400",
-            )}
-          >
-            {actionResult.message}
-          </p>
-        )}
-      </form>
-    </>
+    <div className="flex flex-col items-center justify-center gap-4">
+      <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-x-16">
+        <div className="flex flex-col items-center justify-center p-2">
+          <h2>
+            <span className="sr-only">Le Chair de Poule</span>
+            <ChairDePoule className="w-24" />
+          </h2>
+          <div className="font-mono">
+            <Markdown>{contactPage.chairdepouleOpeningHours}</Markdown>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-2">
+          <h2>
+            <span className="sr-only">Le Peine Perdue</span>
+            <PeinePerdue className="w-24" />
+          </h2>
+          <div className="font-mono">
+            <Markdown>{contactPage.peineperdueOpeningHours}</Markdown>
+          </div>
+        </div>
+      </div>
+      <ContactForm />
+    </div>
   );
 }

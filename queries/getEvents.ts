@@ -1,4 +1,4 @@
-import { fetchGraphQL } from "@/lib/contentful";
+import { fetchCollectionGraphQL } from "@/lib/contentful";
 
 // type ExpectedDate =
 //   `${number}-${number}-${number}T${number}:${number}:${number}Z`;
@@ -33,7 +33,7 @@ export default async function getEvents() {
 
   return (
     (
-      await fetchGraphQL<Event>(
+      await fetchCollectionGraphQL<Event>(
         "eventCollection",
         `query {
     eventCollection(where: {date_gte: "${monthFirstDate.toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {

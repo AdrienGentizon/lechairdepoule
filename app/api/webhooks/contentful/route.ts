@@ -1,4 +1,4 @@
-import { Tag } from "@/lib/contentful";
+import { CollectionTag } from "@/lib/contentful";
 import env from "@/lib/env";
 import { logApiError, logApiOperation } from "@/lib/logger";
 import { revalidateTag } from "next/cache";
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
     }
 
-    revalidateTag("eventCollection" as Tag);
-    revalidateTag("itemCollection" as Tag);
+    revalidateTag("eventCollection" as CollectionTag);
+    revalidateTag("itemCollection" as CollectionTag);
 
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {

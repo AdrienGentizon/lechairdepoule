@@ -23,12 +23,11 @@ export default async function sendEmail(_prev: unknown, formData: FormData) {
       };
     }
 
-    console.log(parsedInputs.data);
     const { error } = await resend.emails.send({
-      from: parsedInputs.data.email,
-      to: env().RESEND_TO_EMAIL,
+      from: "Le Chair de Poule <noreply@lechairdepoule.fr>",
+      to: env().RESEND_TO_EMAIL.split(","),
       subject: parsedInputs.data.subject ?? "",
-      text: parsedInputs.data.message,
+      text: `from:\n${parsedInputs.data.email}\n\nmessage:\n${parsedInputs.data.message}`,
     });
     if (error) throw new Error(`${error.name} ${error.message}`);
 

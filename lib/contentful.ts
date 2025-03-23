@@ -15,9 +15,10 @@ export default function contentful() {
   return client;
 }
 
-export type Tag = "eventCollection" | "itemCollection";
+export type EntryTag = "contact";
+export type CollectionTag = "eventCollection" | "itemCollection";
 
-type Data<K extends Tag, T = unknown> = {
+type CollectionData<K extends CollectionTag, T = unknown> = {
   data?: Record<
     K,
     {
@@ -26,7 +27,14 @@ type Data<K extends Tag, T = unknown> = {
   >;
 };
 
-export async function fetchGraphQL<T>(tag: Tag, query: string) {
+type EntryData<K extends EntryTag, T = unknown> = {
+  data?: Record<K, T>;
+};
+
+export async function fetchCollectionGraphQL<T>(
+  tag: CollectionTag,
+  query: string,
+) {
   try {
     const response = await fetch(
       `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
@@ -41,7 +49,32 @@ export async function fetchGraphQL<T>(tag: Tag, query: string) {
         next: { tags: [tag] },
       },
     );
-    return response.json() as Promise<Data<typeof tag, T>>;
+    return response.json() as Promise<CollectionData<typeof tag, T>>;
+  } catch (error) {
+    console.error(
+      "[ERROR:CONTENTFUL]",
+      (error as Error)?.message ?? "unknown error",
+    );
+    return undefined;
+  }
+}
+
+export async function fetchEntryGraphQL<T>(tag: EntryTag, query: string) {
+  try {
+    const response = await fetch(
+      `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${env().CONTENTFUL_DELIVERY_API_KEY}`,
+        },
+        body: JSON.stringify({ query }),
+        next: { tags: [tag] },
+      },
+    );
+    return response.json() as Promise<EntryData<typeof tag, T>>;
   } catch (error) {
     console.error(
       "[ERROR:CONTENTFUL]",
