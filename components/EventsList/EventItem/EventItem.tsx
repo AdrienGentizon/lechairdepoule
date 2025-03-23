@@ -10,6 +10,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import PeinePerdue from "@/components/PeinPerdue/PeinePerdue";
 import ChairDePoule from "@/components/ChairDePoule/ChairDePoule";
+import Markdown from "react-markdown";
 
 type Props = {
   event: Event;
@@ -83,10 +84,8 @@ export default function EventItem({ event }: Props) {
             />
           )}
         </div>
-        <div className="flex flex-col gap-2 pb-4 text-justify font-mono font-light leading-5">
-          {event.message.split("\n").map((p, n) => {
-            return <p key={`item-${event.sys.id}-p-${n}`}>{p}</p>;
-          })}
+        <div className="flex flex-col gap-2 py-4 text-justify font-mono font-light leading-5">
+          <Markdown>{event.message}</Markdown>
         </div>
       </AccordionContent>
     </AccordionItem>
