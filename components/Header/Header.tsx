@@ -14,7 +14,7 @@ function Title() {
 
 export default function Header() {
   return (
-    <header className="w-full border-l border-r border-neutral-800 pb-4 sm:max-w-2xl">
+    <header className="w-full pb-4 sm:max-w-2xl">
       <Logo className="mx-auto w-1/2 pb-2 pt-4" />
       {isDevPlatform() && (
         <nav>
@@ -24,6 +24,9 @@ export default function Header() {
             </li>
             <li>
               <Link href={`/drugstore`}>Drugstore</Link>
+            </li>
+            <li>
+              <Link href={`/contact`}>Contact</Link>
             </li>
           </ul>
         </nav>

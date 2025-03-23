@@ -9,6 +9,8 @@ type Env = {
   POSTGRES_DATABASE: string;
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
+  RESEND_API_KEY: string;
+  RESEND_TO_EMAIL: string;
 };
 
 let envVars: undefined | Env = undefined;
@@ -34,6 +36,8 @@ export default function env() {
       POSTGRES_DATABASE: getEnvVar("POSTGRES_DATABASE"),
       POSTGRES_USER: getEnvVar("POSTGRES_USER"),
       POSTGRES_PASSWORD: getEnvVar("POSTGRES_PASSWORD"),
+      RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
+      RESEND_TO_EMAIL: getEnvVar("RESEND_TO_EMAIL"),
     };
   }
 
