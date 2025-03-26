@@ -59,7 +59,7 @@ export default function RandomBackground() {
           );
         }
       }}
-      className="absolute inset-[-50px] -z-10 grid"
+      className="hidden absolute inset-[-50px] -z-10 sm:grid"
       style={{
         gridRow: COLS,
       }}
