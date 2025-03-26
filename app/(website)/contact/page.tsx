@@ -9,7 +9,7 @@ export default async function ConctactPage() {
   if (!contactPage) return <></>;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="flex flex-col items-center justify-center gap-4 bg-black">
       <div className="flex flex-col items-center justify-center pt-4 sm:pb-4 sm:pt-8">
         <h2 className="sr-only">Adresse</h2>
         <div className="font-mono">
