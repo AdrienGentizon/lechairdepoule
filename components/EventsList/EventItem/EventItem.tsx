@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/accordion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import PeinePerdue from "@/components/PeinPerdue/PeinePerdue";
-import ChairDePoule from "@/components/ChairDePoule/ChairDePoule";
+import PeinePerdue from "@/components/png/PeinePerdue";
+import ChairDePoule from "@/components/png/ChairDePoule";
 import Markdown from "react-markdown";
 
 type Props = {

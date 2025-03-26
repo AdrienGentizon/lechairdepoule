@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import RandomBackground from "@/components/RandomBackground/RandomBackground";
 
 export const metadata: Metadata = {
   title: "Le Chair de poule",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <div className="mx-auto sm:max-w-2xl">{children}</div>
       </main>
       <Footer />
+      <RandomBackground />
     </>
   );
 }

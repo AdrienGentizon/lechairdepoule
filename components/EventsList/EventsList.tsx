@@ -8,7 +8,7 @@ type Props = {
 
 export default function EventsList({ events }: Props) {
   return (
-    <Accordion type="single" collapsible className="overflow-y-scroll">
+    <Accordion type="single" collapsible className="overflow-y-scroll bg-black">
       {events.map((event) => {
         return <EventItem key={`item-${event.sys.id}`} event={event} />;
       })}
