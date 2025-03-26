@@ -22,9 +22,20 @@ export type Event = {
   } | null;
 };
 
+function getStartingDate() {
+  const date = new Date();
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  const days = [1, 2, 3, 4, 5, 6, 0];
+  const oneDayInMs = 24 * 60 * 60 * 1000;
+  return new Date(date.getTime() - days.indexOf(date.getDay()) * oneDayInMs);
+}
+
 export default async function getEvents() {
   const date = new Date();
-  const monthFirstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const monthFirstDate = getStartingDate();
   const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
   const seeOneMoreMonth = true;
   if (seeOneMoreMonth) {
