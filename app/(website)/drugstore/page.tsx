@@ -6,7 +6,7 @@ export default async function DrugstorePage() {
   const items = await getItems();
 
   return (
-    <ul className="flex flex-col items-center justify-center gap-4">
+    <ul className="flex flex-col items-center justify-center gap-4 bg-black">
       {items.map((item) => {
         return (
           <li key={item.sys.id} className="w-fit">
