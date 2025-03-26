@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Logo from "../Logo/logo";
+import LogoSite from "../png/LogoSite";
 import isDevPlatform from "@/lib/isDevPlatform";
-import AgendaPNG from "./agenda.png";
-import DrugstorePNG from "./drugstore.png";
-import ContactPNG from "./contact.png";
+import AgendaPNG from "@/public/agenda.png";
+import DrugstorePNG from "@/public/drugstore.png";
+import ContactPNG from "@/public/contact.png";
 import Image from "next/image";
 
 function Title() {
@@ -18,9 +18,9 @@ function Title() {
 
 export default function Header() {
   return (
-    <header className="w-full pb-4 sm:max-w-2xl">
+    <header className="w-full bg-black pb-4 sm:max-w-2xl">
       <Link href={`/`}>
-        <Logo className="mx-auto w-1/2 pb-2 pt-4" />
+        <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
       </Link>
       {isDevPlatform() && (
         <nav>

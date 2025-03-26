@@ -1,6 +1,6 @@
-import ChairDePoule from "@/components/ChairDePoule/ChairDePoule";
+import ChairDePoule from "@/components/png/ChairDePoule";
 import ContactForm from "@/components/ContactForm/ContactForm";
-import PeinePerdue from "@/components/PeinPerdue/PeinePerdue";
+import PeinePerdue from "@/components/png/PeinePerdue";
 import getContactPage from "@/queries/getContactPage";
 import Markdown from "react-markdown";
 
