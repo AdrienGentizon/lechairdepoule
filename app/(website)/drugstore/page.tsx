@@ -9,7 +9,7 @@ export default async function DrugstorePage() {
     <ul className="flex flex-col items-center justify-center gap-4 bg-black">
       {items.map((item) => {
         return (
-          <li key={item.sys.id} className="w-fit">
+          <li key={item.sys.id} className="relative z-10 w-fit">
             <h2 className="w-full py-2 text-center text-2xl font-thin">
               {item.name}
             </h2>

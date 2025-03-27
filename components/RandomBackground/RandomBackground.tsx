@@ -59,14 +59,14 @@ export default function RandomBackground() {
           );
         }
       }}
-      className="absolute inset-[-50px] -z-10 grid"
+      className="absolute inset-0 -z-10 grid overflow-hidden sm:inset-[-50px]"
       style={{
         gridRow: COLS,
       }}
     >
       {cells.map((rows, n) => {
         return (
-          <ul key={`row-${n}`} className="grid grid-cols-9">
+          <ul key={`row-${n}`} className="hidden grid-cols-9 sm:grid">
             {rows.map((cell) => {
               return (
                 <li
