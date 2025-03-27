@@ -4,7 +4,7 @@ import sendEmail from "@/actions/sendEmail";
 import { cn } from "@/lib/utils";
 import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 function SubmitMessageButton() {
@@ -27,30 +27,38 @@ export default function ContactForm() {
     { status: number; message: string } | undefined
   >(undefined);
 
+  useEffect(() => {
+    return () => {
+      window.scrollTo({ top: 0 });
+
+      const main = document.getElementsByTagName("main").item(0);
+      if (!main) return;
+      main.scrollTo({
+        top: 0,
+      });
+    };
+  }, []);
+
   return (
     <>
       <button
-        className={cn(
-          "flex items-center gap-2 font-extralight",
-          open && "ml-auto pr-4 sm:pr-0",
-        )}
+        className="flex items-center gap-2 font-extralight"
         onClick={() => setOpen((prev) => !prev)}
       >
-        {open ? (
-          <>
-            <span className="sr-only">Fermer le formulaire</span>
-            <X className="size-5 sm:size-4" />
-          </>
-        ) : (
-          <>
-            <Mail className="size-4" />
-            <span className="hover:underline">Envoyer un message ?</span>
-          </>
-        )}
+        <Mail className="size-4" />
+        <span className="hover:underline">Envoyer un message ?</span>
       </button>
       {open && (
         <form
-          className="flex w-full flex-col gap-4 px-4 sm:px-0"
+          ref={() => {
+            const main = document.getElementsByTagName("main").item(0);
+            if (!main) return;
+            main.scrollTo({
+              top: main.getBoundingClientRect().y + 162, // header height is 162px
+              behavior: "smooth",
+            });
+          }}
+          className="relative flex w-full max-w-md flex-col gap-4 bg-black px-4 pt-4 sm:px-0"
           action={async (formData) => {
             const actionResult = await sendEmail(undefined, formData);
             setActionResult(actionResult);
@@ -60,6 +68,14 @@ export default function ContactForm() {
               }, 2000);
           }}
         >
+          <button
+            className="absolute right-4 top-0 rounded-full bg-white p-1 sm:right-0"
+            onClick={() => setOpen(false)}
+          >
+            <span className="sr-only">Fermer le formulaire</span>
+            <X className="size-5 stroke-black sm:size-4" />
+          </button>
+
           <fieldset className="flex flex-col gap-2">
             <label htmlFor="email" className="font-sm font-semibold">
               Email
