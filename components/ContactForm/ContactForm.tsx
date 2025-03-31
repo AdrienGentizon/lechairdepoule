@@ -4,7 +4,7 @@ import sendEmail from "@/actions/sendEmail";
 import { cn } from "@/lib/utils";
 import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 function SubmitMessageButton() {
@@ -27,18 +27,6 @@ export default function ContactForm() {
     { status: number; message: string } | undefined
   >(undefined);
 
-  useEffect(() => {
-    return () => {
-      window.scrollTo({ top: 0 });
-
-      const main = document.getElementsByTagName("main").item(0);
-      if (!main) return;
-      main.scrollTo({
-        top: 0,
-      });
-    };
-  }, []);
-
   return (
     <>
       <button
@@ -51,10 +39,8 @@ export default function ContactForm() {
       {open && (
         <form
           ref={() => {
-            const main = document.getElementsByTagName("main").item(0);
-            if (!main) return;
-            main.scrollTo({
-              top: main.getBoundingClientRect().y + 162, // header height is 162px
+            window.scrollTo({
+              top: document.body.scrollHeight,
               behavior: "smooth",
             });
           }}
