@@ -54,11 +54,16 @@ function makeCells(length: number) {
 export default function RandomBackground() {
   const [cells, setCells] = useState(makeCells(0));
   const pathname = usePathname();
-  console.log(pathname);
 
   useEffect(() => {
     const abortController = new AbortController();
     setCells(makeCells(document.body.scrollHeight));
+    window.addEventListener("event:select", () => {
+      const cells = makeCells(document.body.scrollHeight);
+      setCells((prev) => {
+        return [...prev, ...cells.slice(prev.length)];
+      });
+    });
 
     return () => {
       abortController.abort();

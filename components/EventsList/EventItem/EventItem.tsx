@@ -28,6 +28,13 @@ export default function EventItem({ event }: Props) {
       <AccordionTrigger
         className="relative p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
         hideChevron
+        onClick={() => {
+          window.dispatchEvent(
+            new CustomEvent("event:select", {
+              detail: { id: event.sys.id },
+            }),
+          );
+        }}
       >
         <header
           role="button"

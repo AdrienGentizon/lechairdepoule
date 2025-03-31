@@ -1,3 +1,5 @@
+"use client";
+
 import { Event } from "@/queries/getEvents";
 import EventItem from "./EventItem/EventItem";
 import { Accordion } from "../ui/accordion";
@@ -8,7 +10,7 @@ type Props = {
 
 export default function EventsList({ events }: Props) {
   return (
-    <Accordion type="single" collapsible className="bg-black">
+    <Accordion type="multiple" className="bg-black">
       {events.map((event) => {
         return <EventItem key={`item-${event.sys.id}`} event={event} />;
       })}
