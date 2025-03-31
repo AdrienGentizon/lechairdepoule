@@ -6,7 +6,7 @@ export default async function Home() {
   const events = await getEvents();
   return (
     <Suspense>
-      <EventsList events={events} />;
+      <EventsList events={events} />
     </Suspense>
   );
 }
