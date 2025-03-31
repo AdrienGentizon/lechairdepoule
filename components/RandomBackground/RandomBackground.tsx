@@ -9,7 +9,8 @@ import Poubelle from "../png/Poubelle";
 import Ampoule from "../png/Ampoule";
 import { usePathname } from "next/navigation";
 
-const RATIO = 220;
+const CELL_HEIGHT = 224; // h-56
+const WINDOW_PADDING = -50;
 const COLS = 9;
 
 function getRandomPNG() {
@@ -25,7 +26,9 @@ function getRandomPNG() {
 
 function makeCells(length: number) {
   const cols = Array.from({ length: COLS });
-  const rows = Array.from({ length: Math.floor(length / RATIO) });
+  const rows = Array.from({
+    length: Math.floor((length - 2 * WINDOW_PADDING) / CELL_HEIGHT),
+  });
 
   return rows.map((row, r) => {
     return cols.map((col, c) => {
@@ -74,7 +77,7 @@ export default function RandomBackground() {
     >
       {cells.map((rows, n) => {
         return (
-          <ul key={`row-${n}`} className="hidden grid-cols-9 sm:grid">
+          <ul key={`row-${n}`} className="hidden h-56 grid-cols-9 sm:grid">
             {rows.map((cell) => {
               return (
                 <li
