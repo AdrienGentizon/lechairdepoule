@@ -34,7 +34,7 @@ export default function Header() {
               <span className="sr-only">Agenda</span>
             </Link>
           </li>
-          {process.env["NEXT_PUBLIC_SHOW_STORE"] && (
+          {process.env["NEXT_PUBLIC_SHOW_STORE"] === "true" && (
             <li>
               <Link href={`/drugstore`}>
                 <Image

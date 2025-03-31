@@ -3,7 +3,7 @@ import env from "./lib/env";
 
 const flaggedRedirections = [
   {
-    enabled: process.env["NEXT_PUBLIC_SHOW_STORE"] !== "true",
+    enabled: !(process.env["NEXT_PUBLIC_SHOW_STORE"] === "true"),
     redirection: {
       source: "/drugstore",
       destination: "/",
