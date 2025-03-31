@@ -7,33 +7,35 @@ import { cn } from "@/lib/utils";
 import PeinePerdue from "@/components/png/PeinePerdue";
 import ChairDePoule from "@/components/png/ChairDePoule";
 import Markdown from "react-markdown";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   event: Event;
-  selected: boolean;
-  onSelect: (eventId: string) => void;
 };
 
-export default function EventItem({ event, selected, onSelect }: Props) {
+export default function EventItem({ event }: Props) {
+  const [open, setOpen] = useState(false);
   const top = useRef(0);
   const month = event.date.toLocaleString("fr", {
     month: "short",
   });
 
   useEffect(() => {
-    if (selected) {
-      window.scrollTo({
-        top: top.current,
-        behavior: "smooth",
-      });
-    }
-  }, [selected]);
+    const abortController = new AbortController();
+    window.addEventListener(
+      "event:select",
+      (e: CustomEventInit<{ eventId: string }>) => {
+        if (e.detail?.eventId !== event.sys.id) setOpen(false);
+      },
+      abortController,
+    );
+    return () => abortController.abort();
+  }, [event, setOpen]);
+
   return (
     <li
       ref={(el) => {
         if (!el || top.current > 0) return;
-        console.log(window.innerWidth < 640);
         top.current = Math.floor(
           el.getBoundingClientRect().top -
             (window.innerWidth < 640 ? 128 : 176),
@@ -47,11 +49,14 @@ export default function EventItem({ event, selected, onSelect }: Props) {
         onClick={() => {
           window.dispatchEvent(
             new CustomEvent("event:select", {
-              detail: { id: event.sys.id },
+              detail: { eventId: event.sys.id },
             }),
           );
-
-          onSelect(event.sys.id);
+          window.scrollTo({
+            top: top.current,
+            behavior: "smooth",
+          });
+          setOpen((prev) => !prev);
         }}
       >
         <header
@@ -89,7 +94,7 @@ export default function EventItem({ event, selected, onSelect }: Props) {
           </div>
         )}
       </button>
-      {selected && (
+      {open && (
         <div>
           <div className="relative">
             <h4 className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">

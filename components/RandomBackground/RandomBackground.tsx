@@ -55,25 +55,7 @@ export default function RandomBackground() {
   const [cells, setCells] = useState(makeCells(0));
   const pathname = usePathname();
   useEffect(() => {
-    const abortController = new AbortController();
     setCells(makeCells(document.body.scrollHeight));
-    window.addEventListener(
-      "event:select",
-      () => {
-        const cells = makeCells(document.body.scrollHeight);
-        setCells((prev) => {
-          console.log(cells.length, prev.length);
-          if (cells.length > prev.length)
-            return [...prev, ...cells.slice(prev.length)];
-          return prev.slice(0, cells.length);
-        });
-      },
-      abortController,
-    );
-
-    return () => {
-      abortController.abort();
-    };
   }, [pathname]);
 
   if (process.env["NEXT_PUBLIC_SHOW_RANDOM_BACKGROUND"] !== "true")
