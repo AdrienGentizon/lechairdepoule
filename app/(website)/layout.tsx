@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <>
       <Header />
-      <main className="no-scrollbar min-h-full w-full [&>*:first-child]:pt-44">
+      <main className="no-scrollbar min-h-full w-full [&>*:first-child]:pt-32 sm:[&>*:first-child]:pt-44">
         <div className="mx-auto min-h-full bg-black sm:max-w-2xl">
           {children}
         </div>
