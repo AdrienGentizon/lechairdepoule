@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 import env from "./lib/env";
-import isDevPlatform from "./lib/isDevPlatform";
+
+const flaggedRedirections = [
+  {
+    enabled: process.env["NEXT_PUBLIC_SHOW_STORE"] !== "true",
+    redirection: {
+      source: "/drugstore",
+      destination: "/",
+      permanent: true,
+    },
+  },
+];
 
 const nextConfig: NextConfig = {
   images: {
@@ -13,20 +23,20 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return isDevPlatform()
-      ? []
-      : [
-          {
-            source: "/drugstore",
-            destination: "/",
-            permanent: true,
-          },
-          {
-            source: "/contact",
-            destination: "/",
-            permanent: true,
-          },
-        ];
+    return flaggedRedirections.reduce(
+      (
+        acc: {
+          source: string;
+          destination: string;
+          permanent: boolean;
+        }[],
+        curr,
+      ) => {
+        if (!curr.enabled) return acc;
+        return [...acc, curr.redirection];
+      },
+      [],
+    );
   },
 };
 
