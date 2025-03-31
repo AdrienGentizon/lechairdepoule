@@ -6,7 +6,7 @@ export default async function DrugstorePage() {
   const items = await getItems();
 
   return (
-    <ul className="flex flex-col items-center justify-center gap-4 bg-black">
+    <ul className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-black">
       {items.map((item) => {
         return (
           <li key={item.sys.id} className="relative z-10 w-fit">
