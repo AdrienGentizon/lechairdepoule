@@ -28,7 +28,7 @@ export default function RootLayout({
       <body
         className={cn(
           `${geistSans.variable} ${geistMono.variable} antialiased`,
-          "dark relative z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[min-content_1fr_min-content] justify-items-center overflow-hidden",
+          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[min-content_1fr_min-content] justify-items-center overflow-x-hidden",
         )}
       >
         {children}

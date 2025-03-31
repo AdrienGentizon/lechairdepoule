@@ -1,23 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Velo from "../png/Velo";
-import FeuTricolore from "../png/FeuTricolore";
 import Pinball from "../png/Pinball";
+import Bouteille from "../png/Bouteille";
+import Goblet from "../png/Goblet";
+import Poubelle from "../png/Poubelle";
+import Ampoule from "../png/Ampoule";
+import { usePathname } from "next/navigation";
 
+const RATIO = 220;
 const COLS = 9;
 
 function getRandomPNG() {
   const random = Math.random();
-  if (random < 0.01) return <FeuTricolore />;
-  if (random < 0.02) return <Pinball />;
-  if (random < 0.3) return <Velo />;
+  if (random < 0.025) return <Pinball />;
+  if (random < 0.075) return <Poubelle />;
+  if (random < 0.3) return <Bouteille />;
+  if (random < 0.4) return <Goblet />;
+  if (random < 0.5) return <Velo />;
+  if (random < 0.75) return <Ampoule />;
   return <></>;
 }
 
 function makeCells(length: number) {
   const cols = Array.from({ length: COLS });
-  const rows = Array.from({ length });
+  const rows = Array.from({ length: Math.floor(length / RATIO) });
 
   return rows.map((row, r) => {
     return cols.map((col, c) => {
@@ -42,24 +50,24 @@ function makeCells(length: number) {
 
 export default function RandomBackground() {
   const [cells, setCells] = useState(makeCells(0));
+  const pathname = usePathname();
+  console.log(pathname);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    setCells(makeCells(document.body.scrollHeight));
+
+    return () => {
+      abortController.abort();
+    };
+  }, [pathname]);
 
   if (process.env["NEXT_PUBLIC_SHOW_RANDOM_BACKGROUND"] !== "true")
     return <></>;
 
   return (
     <div
-      ref={(el) => {
-        if (!el) return;
-
-        if (cells.length === 0) {
-          setCells(
-            makeCells(
-              Math.floor((el?.getBoundingClientRect().height ?? 0) / 100),
-            ),
-          );
-        }
-      }}
-      className="absolute inset-0 -z-10 grid overflow-hidden sm:inset-[-50px]"
+      className="absolute left-[-50px] right-[-50px] top-[-50px] -z-10 grid overflow-hidden"
       style={{
         gridRow: COLS,
       }}
