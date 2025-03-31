@@ -1,6 +1,5 @@
 import Link from "next/link";
 import LogoSite from "../png/LogoSite";
-import isDevPlatform from "@/lib/isDevPlatform";
 import AgendaPNG from "@/public/agenda.png";
 import DrugstorePNG from "@/public/drugstore.png";
 import ContactPNG from "@/public/contact.png";
@@ -18,24 +17,24 @@ function Title() {
 
 export default function Header() {
   return (
-    <header className="w-full bg-black pb-4 sm:max-w-2xl">
+    <header className="fixed z-20 w-full bg-black pb-4 sm:max-w-2xl">
       <Link href={`/`}>
         <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
       </Link>
-      {isDevPlatform() && (
-        <nav>
-          <ul className="flex cursor-pointer items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
-            <li>
-              <Link href={`/`}>
-                <Image
-                  src={AgendaPNG}
-                  alt="Agenda"
-                  className="w-24 sm:w-40"
-                  role="button"
-                />
-                <span className="sr-only">Agenda</span>
-              </Link>
-            </li>
+      <nav>
+        <ul className="flex cursor-pointer items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
+          <li>
+            <Link href={`/`}>
+              <Image
+                src={AgendaPNG}
+                alt="Agenda"
+                className="w-24 sm:w-40"
+                role="button"
+              />
+              <span className="sr-only">Agenda</span>
+            </Link>
+          </li>
+          {process.env["NEXT_PUBLIC_SHOW_STORE"] && (
             <li>
               <Link href={`/drugstore`}>
                 <Image
@@ -47,20 +46,20 @@ export default function Header() {
                 <span className="sr-only">Drugstore</span>
               </Link>
             </li>
-            <li>
-              <Link href={`/contact`}>
-                <Image
-                  src={ContactPNG}
-                  alt="Contact"
-                  className="w-24 sm:w-40"
-                  role="button"
-                />
-                <span className="sr-only">Contact</span>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      )}
+          )}
+          <li>
+            <Link href={`/contact`}>
+              <Image
+                src={ContactPNG}
+                alt="Contact"
+                className="w-24 sm:w-40"
+                role="button"
+              />
+              <span className="sr-only">Contact</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </header>
   );
 }
