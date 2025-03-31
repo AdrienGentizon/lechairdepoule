@@ -1,7 +1,12 @@
 import EventsList from "@/components/EventsList/EventsList";
 import getEvents from "../../queries/getEvents";
+import { Suspense } from "react";
 
 export default async function Home() {
   const events = await getEvents();
-  return <EventsList events={events} />;
+  return (
+    <Suspense>
+      <EventsList events={events} />;
+    </Suspense>
+  );
 }
