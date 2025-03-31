@@ -33,13 +33,17 @@ export default function EventItem({ event, selected, onSelect }: Props) {
     <li
       ref={(el) => {
         if (!el || top.current > 0) return;
-        top.current = Math.floor(el.getBoundingClientRect().top - 176);
+        console.log(window.innerWidth < 640);
+        top.current = Math.floor(
+          el.getBoundingClientRect().top -
+            (window.innerWidth < 640 ? 128 : 176),
+        );
       }}
       value={event.sys.id}
       className="relative flex w-full flex-col gap-2 overflow-hidden border-b border-white p-2 first:border-t"
     >
       <button
-        className="relative p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
+        className="relative z-10 p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
         onClick={() => {
           window.dispatchEvent(
             new CustomEvent("event:select", {
