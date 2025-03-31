@@ -54,16 +54,22 @@ function makeCells(length: number) {
 export default function RandomBackground() {
   const [cells, setCells] = useState(makeCells(0));
   const pathname = usePathname();
-
   useEffect(() => {
     const abortController = new AbortController();
     setCells(makeCells(document.body.scrollHeight));
-    window.addEventListener("event:select", () => {
-      const cells = makeCells(document.body.scrollHeight);
-      setCells((prev) => {
-        return [...prev, ...cells.slice(prev.length)];
-      });
-    });
+    window.addEventListener(
+      "event:select",
+      () => {
+        const cells = makeCells(document.body.scrollHeight);
+        setCells((prev) => {
+          console.log(cells.length, prev.length);
+          if (cells.length > prev.length)
+            return [...prev, ...cells.slice(prev.length)];
+          return prev.slice(0, cells.length);
+        });
+      },
+      abortController,
+    );
 
     return () => {
       abortController.abort();
@@ -74,15 +80,16 @@ export default function RandomBackground() {
     return <></>;
 
   return (
-    <div
-      className="absolute left-[-50px] right-[-50px] top-[-50px] -z-10 grid overflow-hidden"
-      style={{
-        gridRow: COLS,
-      }}
-    >
+    <div className="absolute left-[-112px] right-[-112px] top-[-112px] -z-10 hidden overflow-hidden sm:block">
       {cells.map((rows, n) => {
         return (
-          <ul key={`row-${n}`} className="hidden h-56 grid-cols-9 sm:grid">
+          <ul
+            key={`row-${n}`}
+            className="hidden h-56 min-h-56 grid-cols-9 sm:grid"
+            style={{
+              gridRow: COLS,
+            }}
+          >
             {rows.map((cell) => {
               return (
                 <li

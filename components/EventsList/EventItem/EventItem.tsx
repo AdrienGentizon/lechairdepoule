@@ -1,39 +1,53 @@
 "use client";
 
 import { Event } from "@/queries/getEvents";
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import PeinePerdue from "@/components/png/PeinePerdue";
 import ChairDePoule from "@/components/png/ChairDePoule";
 import Markdown from "react-markdown";
+import { useEffect, useRef } from "react";
 
 type Props = {
   event: Event;
+  selected: boolean;
+  onSelect: (eventId: string) => void;
 };
 
-export default function EventItem({ event }: Props) {
+export default function EventItem({ event, selected, onSelect }: Props) {
+  const top = useRef(0);
   const month = event.date.toLocaleString("fr", {
     month: "short",
   });
+
+  useEffect(() => {
+    if (selected) {
+      window.scrollTo({
+        top: top.current,
+        behavior: "smooth",
+      });
+    }
+  }, [selected]);
   return (
-    <AccordionItem
+    <li
+      ref={(el) => {
+        if (!el || top.current > 0) return;
+        top.current = Math.floor(el.getBoundingClientRect().top - 176);
+      }}
       value={event.sys.id}
-      className="flex flex-col gap-2 border-b border-white p-2 first:border-t"
+      className="relative flex w-full flex-col gap-2 overflow-hidden border-b border-white p-2 first:border-t"
     >
-      <AccordionTrigger
+      <button
         className="relative p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
-        hideChevron
         onClick={() => {
           window.dispatchEvent(
             new CustomEvent("event:select", {
               detail: { id: event.sys.id },
             }),
           );
+
+          onSelect(event.sys.id);
         }}
       >
         <header
@@ -70,31 +84,33 @@ export default function EventItem({ event }: Props) {
             <PeinePerdue className="size-20" />
           </div>
         )}
-      </AccordionTrigger>
-      <AccordionContent>
-        <div className="relative">
-          <h4 className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">
-            {event.atPeinePerdue ? (
-              <PeinePerdue className="size-28" />
-            ) : (
-              <ChairDePoule className="size-28" />
-            )}
-          </h4>
+      </button>
+      {selected && (
+        <div>
+          <div className="relative">
+            <h4 className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">
+              {event.atPeinePerdue ? (
+                <PeinePerdue className="size-28" />
+              ) : (
+                <ChairDePoule className="size-28" />
+              )}
+            </h4>
 
-          {event.picture && (
-            <Image
-              className="mx-auto h-min rounded"
-              alt=""
-              src={event.picture.url}
-              width={event.picture.width}
-              height={event.picture.height}
-            />
-          )}
+            {event.picture && (
+              <Image
+                className="mx-auto h-min rounded"
+                alt=""
+                src={event.picture.url}
+                width={event.picture.width}
+                height={event.picture.height}
+              />
+            )}
+          </div>
+          <div className="flex flex-col gap-2 py-4 text-justify font-mono font-light leading-5">
+            <Markdown>{event.message}</Markdown>
+          </div>
         </div>
-        <div className="flex flex-col gap-2 py-4 text-justify font-mono font-light leading-5">
-          <Markdown>{event.message}</Markdown>
-        </div>
-      </AccordionContent>
-    </AccordionItem>
+      )}
+    </li>
   );
 }
