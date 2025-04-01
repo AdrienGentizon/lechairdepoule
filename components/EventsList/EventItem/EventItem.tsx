@@ -63,9 +63,16 @@ export default function EventItem({ event }: Props) {
           role="button"
           className="grid w-full cursor-pointer grid-cols-[1fr_9fr] place-items-center justify-items-start gap-x-4 transition-all"
         >
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-4xl">{event.date.getDate()}</span>
-            <span className="flex origin-center pl-1 text-lg font-thin">
+          <div className="flex w-full flex-col items-center justify-center">
+            <span className="text-sm font-light">
+              {event.date
+                .toLocaleDateString("fr-FR", { weekday: "short" })
+                .replace(".", "")}
+            </span>
+            <span className="text-3xl font-semibold">
+              {event.date.getDate().toString().padStart(2, "0")}
+            </span>
+            <span className="flex origin-center pl-1 text-sm font-light uppercase">
               {!month.endsWith(".") && (
                 <span className="text-transparent">{`\u2024`}</span>
               )}
