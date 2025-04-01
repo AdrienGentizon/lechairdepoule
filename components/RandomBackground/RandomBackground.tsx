@@ -7,6 +7,8 @@ import Bouteille from "../png/Bouteille";
 import Goblet from "../png/Goblet";
 import Poubelle from "../png/Poubelle";
 import Ampoule from "../png/Ampoule";
+import Blason from "../png/Blason";
+import Platines from "../png/Platines";
 import { usePathname } from "next/navigation";
 
 const CELL_HEIGHT = 224; // h-56
@@ -15,11 +17,13 @@ const COLS = 9;
 
 function getRandomPNG() {
   const random = Math.random();
-  if (random < 0.025) return <Pinball />;
-  if (random < 0.075) return <Poubelle />;
-  if (random < 0.3) return <Bouteille />;
-  if (random < 0.4) return <Goblet />;
-  if (random < 0.5) return <Velo />;
+  if (random < 0.0125) return <Poubelle />;
+  if (random < 0.025) return <Goblet />;
+  if (random < 0.05) return <Bouteille />;
+  if (random < 0.075) return <Blason />;
+  if (random < 0.1) return <Velo />;
+  if (random < 0.3) return <Platines />;
+  if (random < 0.4) return <Pinball />;
   if (random < 0.75) return <Ampoule />;
   return <></>;
 }
