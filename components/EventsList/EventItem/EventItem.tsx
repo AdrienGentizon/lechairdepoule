@@ -23,13 +23,15 @@ export default function EventItem({ event }: Props) {
   useEffect(() => {
     const abortController = new AbortController();
 
-    window.addEventListener(
-      "event:select",
-      (e: CustomEventInit<{ eventId: string }>) => {
-        if (e.detail?.eventId !== event.sys.id) setOpen(false);
-      },
-      abortController,
-    );
+    if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
+      window.addEventListener(
+        "event:select",
+        (e: CustomEventInit<{ eventId: string }>) => {
+          if (e.detail?.eventId !== event.sys.id) setOpen(false);
+        },
+        abortController,
+      );
+    }
 
     return () => {
       abortController.abort();
@@ -51,15 +53,17 @@ export default function EventItem({ event }: Props) {
       <button
         className="relative z-10 p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
         onClick={() => {
-          window.dispatchEvent(
-            new CustomEvent("event:select", {
-              detail: { eventId: event.sys.id },
-            }),
-          );
-          window.scrollTo({
-            top: top.current,
-            behavior: "smooth",
-          });
+          if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
+            window.dispatchEvent(
+              new CustomEvent("event:select", {
+                detail: { eventId: event.sys.id },
+              }),
+            );
+            window.scrollTo({
+              top: top.current,
+              behavior: "smooth",
+            });
+          }
           setOpen((prev) => !prev);
         }}
       >
