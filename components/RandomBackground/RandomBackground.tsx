@@ -7,7 +7,8 @@ import Image from "next/image";
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
 const COLS = 9;
-const ROWS_SAFE_FACTOR = 1.25;
+const ROWS_SAFE_FACTOR =
+  process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true" ? 2 : 5;
 
 type Asset = {
   sys: {
