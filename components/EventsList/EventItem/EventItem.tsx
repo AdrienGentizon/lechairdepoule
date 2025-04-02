@@ -22,6 +22,7 @@ export default function EventItem({ event }: Props) {
 
   useEffect(() => {
     const abortController = new AbortController();
+
     window.addEventListener(
       "event:select",
       (e: CustomEventInit<{ eventId: string }>) => {
@@ -29,7 +30,10 @@ export default function EventItem({ event }: Props) {
       },
       abortController,
     );
-    return () => abortController.abort();
+
+    return () => {
+      abortController.abort();
+    };
   }, [event, setOpen]);
 
   return (

@@ -1,41 +1,68 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Velo from "../png/Velo";
-import Pinball from "../png/Pinball";
-import Bouteille from "../png/Bouteille";
-import Goblet from "../png/Goblet";
-import Poubelle from "../png/Poubelle";
-import Ampoule from "../png/Ampoule";
-import Blason from "../png/Blason";
-import Platines from "../png/Platines";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
 const COLS = 9;
 
-function getRandomPNG() {
+type Asset = {
+  sys: {
+    id: string;
+  };
+  url: string;
+  width: number;
+  height: number;
+};
+
+const Ampoule = {
+  id: "4fcHEsDLc09IDrP8gHde8i",
+};
+const Platines = {
+  id: "4WlTM4g1pJCMTE1aYFp1eY",
+};
+const Bouteille = {
+  id: "UBD7ZDOvihNi0RRyOVDWL",
+};
+const Gobelet = {
+  id: "01xNZTTrvJzSrfAPAlar0R",
+};
+const Pinball = {
+  id: "6D6vJ31IuV0sJ2Mu7GamX4",
+};
+const Blason = {
+  id: "4FEs8T25KAWvnBJa5kL8f5",
+};
+const Velo = {
+  id: "2vyMsKStYB93wZmoVxV2YR",
+};
+const Poubelle = {
+  id: "27Iyxov9VRIRicNHaOVTT5",
+};
+
+function getRandomPNG(assets: Asset[]) {
   const random = Math.random();
-  if (random < 0.0125) return <Poubelle />;
-  if (random < 0.025) return <Goblet />;
-  if (random < 0.05) return <Bouteille />;
-  if (random < 0.075) return <Blason />;
-  if (random < 0.1) return <Velo />;
-  if (random < 0.3) return <Platines />;
-  if (random < 0.4) return <Pinball />;
-  if (random < 0.75) return <Ampoule />;
-  return <></>;
+  if (random < 0.0125) return assets.find(({ sys }) => sys.id === Poubelle.id);
+  if (random < 0.025) return assets.find(({ sys }) => sys.id === Gobelet.id);
+  if (random < 0.05) return assets.find(({ sys }) => sys.id === Bouteille.id);
+  if (random < 0.075) return assets.find(({ sys }) => sys.id === Blason.id);
+  if (random < 0.1) return assets.find(({ sys }) => sys.id === Velo.id);
+  if (random < 0.3) return assets.find(({ sys }) => sys.id === Platines.id);
+  if (random < 0.4) return assets.find(({ sys }) => sys.id === Pinball.id);
+  if (random < 0.75) return assets.find(({ sys }) => sys.id === Ampoule.id);
+  return;
 }
 
-function makeCells(length: number) {
+function makeCells(length: number, assets: Asset[]) {
   const cols = Array.from({ length: COLS });
   const rows = Array.from({
     length: Math.floor((length - 2 * WINDOW_PADDING) / CELL_HEIGHT),
   });
 
-  return rows.map((row, r) => {
-    return cols.map((col, c) => {
+  return rows.map((_row, r) => {
+    return cols.map((_col, c) => {
       return {
         id: `row-${r}-$col-${c}`,
         scale: Math.max(0.5, Math.min(Math.random(), 0.75)),
@@ -49,18 +76,22 @@ function makeCells(length: number) {
             : -1 * Math.floor(50 * Math.random()),
         flip: Math.random() > 0.5,
         hidden: c > 2 && c < 6,
-        png: getRandomPNG(),
+        png: getRandomPNG(assets),
       };
     });
   });
 }
 
-export default function RandomBackground() {
-  const [cells, setCells] = useState(makeCells(0));
+type Props = {
+  assets: Asset[];
+};
+
+export default function RandomBackground({ assets }: Props) {
+  const [cells, setCells] = useState(makeCells(0, assets));
   const pathname = usePathname();
   useEffect(() => {
-    setCells(makeCells(document.body.scrollHeight));
-  }, [pathname]);
+    setCells(makeCells(document.body.scrollHeight, assets));
+  }, [pathname, assets]);
 
   if (process.env["NEXT_PUBLIC_SHOW_RANDOM_BACKGROUND"] !== "true")
     return <></>;
@@ -87,7 +118,16 @@ export default function RandomBackground() {
                     translate: `${cell.translateX}px ${cell.translateY}px`,
                   }}
                 >
-                  {cell.hidden ? <></> : <>{cell.png}</>}
+                  {cell.hidden || !cell.png ? (
+                    <></>
+                  ) : (
+                    <Image
+                      src={cell.png.url}
+                      width={cell.png.width}
+                      height={cell.png.height}
+                      alt="drawings"
+                    />
+                  )}
                 </li>
               );
             })}

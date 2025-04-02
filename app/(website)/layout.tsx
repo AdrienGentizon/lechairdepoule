@@ -2,17 +2,19 @@ import type { Metadata } from "next";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import RandomBackground from "@/components/RandomBackground/RandomBackground";
+import getRandomBackground from "@/queries/getRandomBackground";
 
 export const metadata: Metadata = {
   title: "Le Chair de poule",
   description: "Le site web du bar Le Chair de Poule et du Peine perdue aussi",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const assets = (await getRandomBackground())?.assetsCollection.items ?? [];
   return (
     <>
       <Header />
@@ -20,7 +22,7 @@ export default function RootLayout({
         <div className="mx-auto min-h-full bg-black sm:max-w-2xl">
           {children}
         </div>
-        <RandomBackground />
+        <RandomBackground assets={assets} />
       </main>
       <Footer />
     </>
