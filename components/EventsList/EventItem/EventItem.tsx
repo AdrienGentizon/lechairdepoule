@@ -44,7 +44,7 @@ export default function EventItem({ event }: Props) {
         if (!el || top.current > 0) return;
         top.current = Math.floor(
           el.getBoundingClientRect().top -
-            (window.innerWidth < 640 ? 128 : 176),
+            (window.innerWidth < 640 ? 128 : 162),
         );
       }}
       value={event.sys.id}
@@ -59,10 +59,12 @@ export default function EventItem({ event }: Props) {
                 detail: { eventId: event.sys.id },
               }),
             );
-            window.scrollTo({
-              top: top.current,
-              behavior: "smooth",
-            });
+            setTimeout(() => {
+              window.scrollTo({
+                top: top.current,
+                behavior: "smooth",
+              });
+            }, 50);
           }
           setOpen((prev) => !prev);
         }}
