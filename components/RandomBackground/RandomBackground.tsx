@@ -7,6 +7,7 @@ import Image from "next/image";
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
 const COLS = 9;
+const ROWS_SAFE_FACTOR = 1.25;
 
 type Asset = {
   sys: {
@@ -15,6 +16,16 @@ type Asset = {
   url: string;
   width: number;
   height: number;
+};
+
+type Cell = {
+  id: string;
+  scale: number;
+  translateX: number;
+  translateY: number;
+  flip: boolean;
+  hidden: boolean;
+  png: Asset | undefined;
 };
 
 const Ampoule = {
@@ -58,7 +69,9 @@ function getRandomPNG(assets: Asset[]) {
 function makeCells(length: number, assets: Asset[]) {
   const cols = Array.from({ length: COLS });
   const rows = Array.from({
-    length: Math.floor((length - 2 * WINDOW_PADDING) / CELL_HEIGHT),
+    length:
+      ROWS_SAFE_FACTOR *
+      Math.floor((length - 2 * WINDOW_PADDING) / CELL_HEIGHT),
   });
 
   return rows.map((_row, r) => {
@@ -87,17 +100,38 @@ type Props = {
 };
 
 export default function RandomBackground({ assets }: Props) {
-  const [cells, setCells] = useState(makeCells(0, assets));
+  const [cells, setCells] = useState<Cell[][]>(makeCells(0, assets));
+  const [maxHeight, setMaxheight] = useState(0);
   const pathname = usePathname();
+
   useEffect(() => {
+    const abortController = new AbortController();
     setCells(makeCells(document.body.scrollHeight, assets));
+    setMaxheight(document.body.scrollHeight);
+    window.addEventListener(
+      "body:scrollHeight",
+      (e: CustomEventInit<{ scrollHeight: number }>) => {
+        if (!e.detail?.scrollHeight) return;
+        setMaxheight(e.detail.scrollHeight);
+      },
+      abortController,
+    );
+
+    return () => {
+      abortController.abort();
+    };
   }, [pathname, assets]);
 
   if (process.env["NEXT_PUBLIC_SHOW_RANDOM_BACKGROUND"] !== "true")
     return <></>;
 
   return (
-    <div className="absolute left-[-112px] right-[-112px] top-[-112px] -z-10 hidden overflow-hidden sm:block">
+    <div
+      style={{
+        maxHeight: maxHeight + 2 * -WINDOW_PADDING,
+      }}
+      className="absolute left-[-112px] right-[-112px] top-[-112px] -z-10 hidden overflow-hidden sm:block"
+    >
       {cells.map((rows, n) => {
         return (
           <ul

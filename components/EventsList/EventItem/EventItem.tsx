@@ -65,6 +65,13 @@ export default function EventItem({ event }: Props) {
                 behavior: "smooth",
               });
             }, 50);
+            setTimeout(() => {
+              window.dispatchEvent(
+                new CustomEvent("body:scrollHeight", {
+                  detail: { scrollHeight: document.body.scrollHeight },
+                }),
+              );
+            }, 100);
           }
           setOpen((prev) => !prev);
         }}
