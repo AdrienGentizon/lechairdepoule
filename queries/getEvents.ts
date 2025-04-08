@@ -35,7 +35,7 @@ function getStartingDate() {
 
 export default async function getEvents() {
   const date = new Date();
-  const monthFirstDate = getStartingDate();
+  const lastMonday = getStartingDate();
   const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
   const seeOneMoreMonth = true;
   if (seeOneMoreMonth) {
@@ -47,7 +47,7 @@ export default async function getEvents() {
       await fetchCollectionGraphQL<Event>(
         "eventCollection",
         `query {
-    eventCollection(where: {date_gte: "${monthFirstDate.toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
+    eventCollection(where: {date_gte: "${lastMonday.toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
       items {
         sys {
             id
