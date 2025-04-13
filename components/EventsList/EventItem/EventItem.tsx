@@ -111,7 +111,7 @@ export default function EventItem({ event }: Props) {
         {event.atPeinePerdue && (
           <div
             className={cn(
-              "absolute right-0 top-0 z-50 origin-center -translate-y-5 translate-x-6 rotate-12 scale-50 opacity-100 transition-opacity",
+              "absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 rotate-12 scale-90 opacity-100 transition-opacity",
             )}
           >
             <PeinePerdue className="size-20" />
