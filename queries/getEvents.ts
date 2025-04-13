@@ -28,9 +28,13 @@ function getStartingDate() {
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  const days = [1, 2, 3, 4, 5, 6, 0];
-  const oneDayInMs = 24 * 60 * 60 * 1000;
-  return new Date(date.getTime() - days.indexOf(date.getDay()) * oneDayInMs);
+  const showCurrentWeek = false;
+  if (showCurrentWeek) {
+    const days = [1, 2, 3, 4, 5, 6, 0];
+    const oneDayInMs = 24 * 60 * 60 * 1000;
+    return new Date(date.getTime() - days.indexOf(date.getDay()) * oneDayInMs);
+  }
+  return date;
 }
 
 export default async function getEvents() {
