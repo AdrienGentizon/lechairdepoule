@@ -1,5 +1,6 @@
 "use server";
 
+import ContactEmail from "@/components/ContactEmail/ContactEmail";
 import env from "@/lib/env";
 import resend from "@/lib/resend";
 import { z } from "zod";
@@ -26,8 +27,13 @@ export default async function sendEmail(_prev: unknown, formData: FormData) {
     const { error } = await resend.emails.send({
       from: "Le Chair de Poule <noreply@lechairdepoule.fr>",
       to: env().RESEND_TO_EMAIL.split(","),
+      replyTo: parsedInputs.data.email,
       subject: parsedInputs.data.subject ?? "",
-      text: `from:\n${parsedInputs.data.email}\n\nmessage:\n${parsedInputs.data.message}`,
+      react: ContactEmail({
+        subject: parsedInputs.data.subject ?? "Demande d'information",
+        message: parsedInputs.data.message,
+        from: parsedInputs.data.email,
+      }),
     });
     if (error) throw new Error(`${error.name} ${error.message}`);
 
