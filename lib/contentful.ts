@@ -34,6 +34,7 @@ type EntryData<K extends EntryTag, T = unknown> = {
 export async function fetchCollectionGraphQL<T>(
   tag: CollectionTag,
   query: string,
+  revalidate?: number,
 ) {
   try {
     const response = await fetch(
@@ -46,7 +47,7 @@ export async function fetchCollectionGraphQL<T>(
           Authorization: `Bearer ${env().CONTENTFUL_DELIVERY_API_KEY}`,
         },
         body: JSON.stringify({ query }),
-        next: { tags: [tag] },
+        next: { tags: [tag], revalidate },
       },
     );
     return response.json() as Promise<CollectionData<typeof tag, T>>;
