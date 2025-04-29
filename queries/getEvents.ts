@@ -34,7 +34,7 @@ function getStartingDate() {
     const oneDayInMs = 24 * 60 * 60 * 1000;
     return new Date(date.getTime() - days.indexOf(date.getDay()) * oneDayInMs);
   }
-  return date;
+  return new Date(date.getTime() - 2 * 60 * 60 * 1000);
 }
 
 export default async function getEvents() {
