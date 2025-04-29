@@ -24,10 +24,10 @@ export type Event = {
 
 function getStartingDate() {
   const date = new Date();
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
-  date.setMilliseconds(0);
+  date.setUTCHours(0);
+  date.setUTCMinutes(0);
+  date.setUTCSeconds(0);
+  date.setUTCMilliseconds(0);
   const showCurrentWeek = false;
   if (showCurrentWeek) {
     const days = [1, 2, 3, 4, 5, 6, 0];
@@ -39,7 +39,6 @@ function getStartingDate() {
 
 export default async function getEvents() {
   const date = new Date();
-  const lastMonday = getStartingDate();
   const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
   const seeOneMoreMonth = true;
   if (seeOneMoreMonth) {
@@ -51,7 +50,7 @@ export default async function getEvents() {
       await fetchCollectionGraphQL<Event>(
         "eventCollection",
         `query {
-    eventCollection(where: {date_gte: "${lastMonday.toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
+    eventCollection(where: {date_gte: "${getStartingDate().toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
       items {
         sys {
             id
