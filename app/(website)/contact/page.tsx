@@ -10,9 +10,7 @@ export default async function ConctactPage() {
 
   return (
     <>
-      <div />
-
-      <div className="flex flex-col items-center justify-center gap-4 bg-black">
+      <div className="flex h-full flex-col items-center justify-center gap-4 bg-black">
         <div className="flex flex-col items-center justify-center pt-4 sm:pb-4 sm:pt-8">
           <h2 className="sr-only">Adresse</h2>
           <div className="font-mono">
