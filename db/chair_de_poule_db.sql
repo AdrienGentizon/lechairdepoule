@@ -1,15 +1,14 @@
-CREATE TABLE PUBLIC.events (
-	id TEXT PRIMARY KEY,
-	cms_id VARCHAR(64) UNIQUE NOT NULL,
-	title TEXT NOT NULL,
-	description TEXT,
-	message TEXT NOT NULL,
-	date TIMESTAMP NOT NULL,
-	at_peine_perdue BOOLEAN);
+CREATE TABLE users (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    created TIMESTAMP,
+    last_connection TIMESTAMP
+);
 
-CREATE TABLE PUBLIC.pictures (
-	id TEXT PRIMARY KEY,
-	url TEXT NOT NULL,
-	width INTEGER,
-	height INTEGER,
-	event_id TEXT REFERENCES events(id) ON DELETE CASCADE);
+CREATE TABLE connection_tokens (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    value TEXT,
+    expires TIMESTAMP,
+		user_id INTEGER NOT NULL,
+    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
