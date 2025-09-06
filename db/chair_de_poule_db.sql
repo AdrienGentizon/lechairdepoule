@@ -1,6 +1,7 @@
 CREATE TABLE users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
+    pseudo TEXT NOT NULL,
     created TIMESTAMP,
     last_connection TIMESTAMP
 );
