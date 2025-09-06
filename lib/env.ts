@@ -3,6 +3,7 @@ type Env = {
   CONTENTFUL_DELIVERY_API_KEY: string;
   CONTENTFUL_ENVIRONMENT: string;
   SUPABASE_URL: string;
+  JWT_SIGN_KEY: string;
   RESEND_API_KEY: string;
   RESEND_TO_EMAIL: string;
 };
@@ -22,6 +23,7 @@ export default function env() {
       CONTENTFUL_DELIVERY_API_KEY: getEnvVar("CONTENTFUL_DELIVERY_API_KEY"),
       CONTENTFUL_ENVIRONMENT: getEnvVar("CONTENTFUL_ENVIRONMENT"),
       SUPABASE_URL: getEnvVar("SUPABASE_URL"),
+      JWT_SIGN_KEY: getEnvVar("JWT_SIGN_KEY"),
       RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       RESEND_TO_EMAIL: getEnvVar("RESEND_TO_EMAIL"),
     };
