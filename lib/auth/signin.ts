@@ -3,7 +3,7 @@
 import { z } from "zod";
 import crypto from "crypto";
 import sql from "../db";
-import getUserFromEmail from "./getUserFromEmail";
+import selectUserFromEmail from "./selectUserFromEmail";
 import insertUser from "./insertUser";
 
 function generateSixDigits(): string {
@@ -43,7 +43,7 @@ export async function signInWithEmail(formData: FormData): Promise<
       };
     }
 
-    let user = await getUserFromEmail(parsedInputs.data.email);
+    let user = await selectUserFromEmail(parsedInputs.data.email);
     if (!user) {
       user = await insertUser({
         email: parsedInputs.data.email,

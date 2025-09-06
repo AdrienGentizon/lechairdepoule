@@ -2,9 +2,10 @@
 
 import { cookies } from "next/headers";
 import sql from "../db";
-import getUserFromEmail from "./getUserFromEmail";
+import selectUserFromEmail from "./selectUserFromEmail";
 import crypto from "crypto";
 import { createToken } from "./jwt";
+import { User } from "../types";
 
 export async function verifyOTP({
   email,
@@ -17,15 +18,11 @@ export async function verifyOTP({
   | {
       success: true;
       data: {
-        user: {
-          id: string;
-          email: string;
-          pseudo: string;
-        };
+        user: User;
       };
     }
 > {
-  const user = await getUserFromEmail(email);
+  const user = await selectUserFromEmail(email);
   if (!user) {
     return {
       success: false,

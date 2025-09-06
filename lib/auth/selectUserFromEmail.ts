@@ -1,6 +1,6 @@
 import sql from "../db";
 
-export default async function getUserFromEmail(email: string) {
+export default async function selectUserFromEmail(email: string) {
   return (
     await sql<
       {
