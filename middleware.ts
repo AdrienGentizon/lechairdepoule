@@ -11,13 +11,13 @@ export async function middleware(request: NextRequest) {
   }
   try {
     const { id } = await verifyToken((await cookies()).get("token")?.value);
-    if (!id) return NextResponse.redirect(new URL("/signin", request.url));
+    if (!id) return NextResponse.redirect(new URL("/sign-in", request.url));
     console.log(id);
   } catch (error) {
     console.error(
       `[ERROR] middleware: ${(error as Error)?.message ?? "unknown error"}`,
     );
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
   return NextResponse.next();
 }
