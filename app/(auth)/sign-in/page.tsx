@@ -5,8 +5,11 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { signInWithEmail } from "@/lib/auth/signin";
+import { verifyOTP } from "@/lib/auth/verifyOTP";
 import { cn } from "@/lib/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useRouter } from "next/navigation";
 import {
   ButtonHTMLAttributes,
   FormHTMLAttributes,
@@ -91,8 +94,11 @@ function Button({
 export default function SignInPage() {
   const otpLength = 6;
 
+  const router = useRouter();
+
   const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
   const [formValidity, setFormValidity] = useState(false);
+  const [email, setEmail] = useState<string>("");
 
   if (step === "EMAIL")
     return (
@@ -107,9 +113,12 @@ export default function SignInPage() {
           onChange={(e) => {
             setFormValidity(e.currentTarget.checkValidity());
           }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(new FormData(e.currentTarget));
+          action={async (formData) => {
+            const response = await signInWithEmail(formData);
+            if (!response.success) {
+              return console.log(response.errors);
+            }
+            setEmail(response.data.email);
             setStep("OTP");
             setFormValidity(false);
           }}
@@ -154,9 +163,16 @@ export default function SignInPage() {
           if (e.currentTarget.checkValidity() !== formValidity) return;
           setFormValidity(e.currentTarget.checkValidity());
         }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          console.log(new FormData(e.currentTarget));
+        action={async (formData) => {
+          const otp = formData.get("otp")?.toString();
+          if (!email || !otp) return;
+          const response = await verifyOTP({ email, otp });
+          if (!response.success) {
+            return console.error(response.error);
+          }
+
+          console.log(response.data);
+          router.push("/forum");
         }}
       >
         <InputOTP
