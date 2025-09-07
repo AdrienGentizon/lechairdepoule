@@ -7,7 +7,19 @@ export default async function selectUserFromId(id: string) {
         id: string;
         email: string;
         pseudo: string;
+        createdAt: string;
+        bannedAt: string | null;
+        deletedAt: string | null;
+        lastConnection: string | null;
       }[]
-    >`SELECT id::text, email, pseudo FROM public.users WHERE id=${id}`
+    >`SELECT
+        id::text,
+        email,
+        pseudo,
+        created_at::text as "createdAt",
+        banned_at::text as "bannedAt",
+        deleted_at::text as "deletedAt",
+        last_connection::text as "lastConnection"
+      FROM public.users WHERE id=${id}`
   ).at(0);
 }

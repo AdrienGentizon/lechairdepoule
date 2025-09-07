@@ -73,7 +73,7 @@ export async function signInWithEmail(formData: FormData): Promise<
       const hashedCode = hash.digest("hex");
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-      await sql`INSERT INTO connection_tokens (value, expires, user_id) VALUES (${hashedCode}, ${expiresAt.toUTCString()}, ${
+      await sql`INSERT INTO connection_tokens(value, expires_at, user_id) VALUES (${hashedCode}, ${expiresAt.toUTCString()}, ${
         user.id
       })`;
     } catch (e) {

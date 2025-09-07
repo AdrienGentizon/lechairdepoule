@@ -34,12 +34,12 @@ export async function verifyOTP({
       {
         id: number;
         value: string;
-        expires: Date;
+        expires_at: Date;
       }[]
-    >`SELECT id, value::text, expires
-  FROM connection_tokens
-  WHERE user_id = ${user.id}
-  AND expires > CURRENT_TIMESTAMP LIMIT 1`
+    >`SELECT id, value::text, expires_at
+      FROM connection_tokens
+      WHERE user_id = ${user.id}
+      AND expires_at > CURRENT_TIMESTAMP LIMIT 1`
   ).at(0);
 
   if (!token) {

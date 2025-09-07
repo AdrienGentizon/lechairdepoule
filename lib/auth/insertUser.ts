@@ -13,9 +13,20 @@ export default async function insertUser({
         id: string;
         email: string;
         pseudo: string;
+        createdAt: string;
+        bannedAt: string | null;
+        deletedAt: string | null;
+        lastConnection: string | null;
       }[]
-    >`INSERT INTO public.users (email, pseudo)
-        VALUES(${email}, ${pseudo})
-        RETURNING id::text, email, pseudo;`
+    >`INSERT INTO public.users (email, pseudo, created_at)
+        VALUES(${email}, ${pseudo}, ${new Date().toUTCString()}})
+      RETURNING
+        id::text,
+        email,
+        pseudo,
+        created_at::text as "createdAt",
+        banned_at::text as "bannedAt",
+        deleted_at::text as "deletedAt",
+        last_connection::text as "lastConnection";`
   ).at(0);
 }
