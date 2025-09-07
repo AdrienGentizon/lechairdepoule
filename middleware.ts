@@ -1,9 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
-async function verifyToken(token?: string) {
-  return { id: token };
-}
+import { verifyToken } from "./lib/auth/jwt";
 
 export async function middleware(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith("/forum")) {
@@ -11,8 +8,8 @@ export async function middleware(request: NextRequest) {
   }
   try {
     const { id } = await verifyToken((await cookies()).get("token")?.value);
+
     if (!id) return NextResponse.redirect(new URL("/sign-in", request.url));
-    console.log(id);
   } catch (error) {
     console.error(
       `[ERROR] middleware: ${(error as Error)?.message ?? "unknown error"}`,
