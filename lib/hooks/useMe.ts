@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { User } from "../types";
+import { CacheKey, User } from "../types";
 
 export default function useMe() {
   const {
@@ -7,7 +7,7 @@ export default function useMe() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["me"],
+    queryKey: ["me" satisfies CacheKey],
     queryFn: async () => {
       const response = await fetch(`/api/me`, {
         method: "GET",

@@ -1,20 +1,13 @@
 "use client";
 
 import useMainConversation from "@/lib/hooks/useMainConversation";
+import useMe from "@/lib/hooks/useMe";
 import usePostMainConversationMessage from "@/lib/hooks/usePostMainConversationMessage";
-import { supabaseClientSide } from "@/lib/supabaseClientSide";
+import useReportMessage from "@/lib/hooks/useReportMessage";
+import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
-import { ComponentRef, useEffect, useRef } from "react";
+import { ComponentRef, useRef } from "react";
 import { z } from "zod";
-
-interface RealtimePayload<T = unknown> {
-  eventType: "INSERT" | "UPDATE" | "DELETE";
-  new: T;
-  old: T;
-  schema: string;
-  table: string;
-  commit_timestamp: string;
-}
 
 export default function Forum() {
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
@@ -25,54 +18,68 @@ export default function Forum() {
     }, 250);
   };
 
+  const { me } = useMe();
   const { mainConversation, isLoading } = useMainConversation({
     onLoaded: scrollToBottom,
+    onNewMessage: scrollToBottom,
   });
   const { postMainConversationMessage, error, isPending } =
     usePostMainConversationMessage();
-
-  const onNewMessage = (
-    payload: RealtimePayload<{
-      id: string;
-      content: string;
-      author: string;
-    }>,
-  ) => {
-    console.log(payload);
-  };
-
-  useEffect(() => {
-    const subscription = supabaseClientSide
-      .channel("messages")
-      .on("broadcast", { event: "new_message" }, (payload) => {
-        onNewMessage(
-          payload as unknown as RealtimePayload<{
-            id: string;
-            content: string;
-            author: string;
-          }>,
-        );
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  const { reportMessage, isPending: isPendingReportMessage } =
+    useReportMessage();
 
   return (
     <main className="grid h-dvh w-full max-w-3xl grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-2 p-2">
       <h2 className="text-center text-xl uppercase">Forum</h2>
-      <ul className="overflow-y-scroll rounded-sm border border-white">
+      <ul className="flex flex-col gap-2 overflow-y-scroll rounded-sm border border-white px-2">
         {mainConversation.messages.map((message) => {
           return (
-            <li key={`main-conversation-message-${message.id}`}>
-              <h3>{message.userId}</h3>
-              <p>{message.body}</p>
+            <li key={`main-conversation-message-${message.id}`} className="">
+              <div className="flex items-center gap-2">
+                <div
+                  className={cn(
+                    "relative flex w-min gap-2 rounded-t border-l border-r border-t border-white px-4 py-0.5 text-sm font-medium",
+                    "after:absolute after:-bottom-0.5 after:left-1/2 after:z-10 after:h-0.5 after:w-full after:-translate-x-1/2 after:bg-black",
+                  )}
+                >
+                  <h3>{message.userId}</h3>
+                  {me?.role === "admin" && (
+                    <>
+                      <button
+                        popoverTarget={`popover-${message.id}`}
+                        className="rounded-sm border border-gray-600 bg-gray-700 px-1 text-xs font-medium hover:bg-gray-600"
+                      >
+                        Bannir
+                      </button>
+                      <div
+                        id={`popover-${message.id}`}
+                        popover="auto"
+                        onAnimationEnd={(e) => {
+                          console.log(e);
+                        }}
+                      >
+                        nanani
+                      </div>
+                    </>
+                  )}
+                </div>
+                <button
+                  className="rounded-sm border border-gray-600 bg-gray-700 px-1 text-xs font-medium hover:bg-gray-600"
+                  onClick={() => {
+                    reportMessage(message.id);
+                  }}
+                  disabled={isPendingReportMessage}
+                >
+                  Dénoncer
+                </button>
+              </div>
+              <p className="rounded-b border-b border-l border-r border-t border-white px-4 py-2 font-mono">
+                {message.body}
+              </p>
             </li>
           );
         })}
-        <li ref={lastEmptyLiRef} className="h-4 w-full border border-white" />
+        <li ref={lastEmptyLiRef} className="h-1 w-full bg-black p-0.5"></li>
       </ul>
       <form
         className="flex flex-col gap-2 rounded-sm border border-white p-2"
@@ -101,7 +108,7 @@ export default function Forum() {
         <textarea
           id="body"
           name="body"
-          className="min-h-20 rounded-sm p-1 font-mono text-sm text-black"
+          className="min-h-20 rounded-sm px-4 py-2 font-mono text-sm text-black"
           required
         ></textarea>
         {error && <p className="text-red-500">{error.message}</p>}
@@ -118,7 +125,7 @@ export default function Forum() {
           )}
         </button>
       </form>
-      {isLoading && (
+      {(isLoading || isPendingReportMessage) && (
         <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
           <Loader className="animate-spin" />
         </div>

@@ -1,24 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CacheKey, Message } from "../types";
+import { Message } from "../types";
 
-export default function usePostMainConversationMessage() {
+export default function useReportMessage() {
   const queryClient = useQueryClient();
 
   const {
-    mutate: postMainConversationMessage,
+    mutate: reportMessage,
     error,
     isPending,
   } = useMutation({
-    mutationKey: ["main-conversation" satisfies CacheKey],
+    mutationKey: ["main-conversation"],
     mutationFn: async (
-      body: string,
+      messageId: string,
       options?: {
         onSuccess: () => void;
       },
     ) => {
-      const response = await fetch(`/api/messages`, {
+      const response = await fetch(`/api/messages/${messageId}/report`, {
         method: "POST",
-        body: JSON.stringify({ body }),
       });
 
       if (!response.ok)
@@ -29,7 +28,7 @@ export default function usePostMainConversationMessage() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
+        ["main-conversation"],
         (existings: { messages: Message[] } = { messages: [] }) => {
           return {
             ...existings,
@@ -44,7 +43,7 @@ export default function usePostMainConversationMessage() {
   });
 
   return {
-    postMainConversationMessage,
+    reportMessage,
     error,
     isPending,
   };
