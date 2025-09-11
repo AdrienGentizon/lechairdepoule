@@ -16,34 +16,48 @@ export default async function updateMessageAsReported({
         createdAt: string;
         updatedAt: string | null;
         reportedAt: string | null;
-        reportedBy: string | null;
         userId: string;
         conversationId: string | null;
+        userPseudo: string;
       }[]
     >`
-    UPDATE public.messages
+    WITH user_messages as (
+    SELECT
+      m.id as message_id,
+      u.id as user_id,
+      u.pseudo as user_pseudo
+    FROM
+      public.messages m,
+      public.users u
+    WHERE
+      m.id = ${messageId}
+      AND m.user_id = u.id
+      )
+    UPDATE public.messages m
     SET
       reported_by = ${reportedBy.id},
       reported_at = ${new Date().toISOString()}
-    WHERE id = ${messageId}
+    FROM user_messages
+    WHERE id = user_messages.message_id
     RETURNING
-      id::text,
-      body,
-      created_at::text as "createdAt",
-      updated_at::text as "updatedAt",
-      reported_at::text as "reportedAt",
-      reported_by::text as "reportedBy",
-      user_id::text as "userId",
-      conversation_id::text as "conversationId";`
+      m.id::text,
+      m.body,
+      m.created_at::text as "createdAt",
+      m.updated_at::text as "updatedAt",
+      m.reported_at::text as "reportedAt",
+      m.user_id::text as "userId",
+      m.conversation_id::text as "conversationId",
+      user_messages.user_pseudo as "userPseudo";`
   )
-    .map((message) => {
+    .map(({ userPseudo, ...message }) => {
       if (message.reportedAt) {
         return {
           ...message,
           body: "---redacted---",
+          user: { pseudo: userPseudo },
         };
       }
-      return message;
+      return { ...message, user: { pseudo: userPseudo } };
     })
     .at(0);
 }

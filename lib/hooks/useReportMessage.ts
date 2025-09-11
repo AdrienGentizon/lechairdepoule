@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Message } from "../types";
+import { CacheKey, Message } from "../types";
 
 export default function useReportMessage() {
   const queryClient = useQueryClient();
@@ -9,7 +9,6 @@ export default function useReportMessage() {
     error,
     isPending,
   } = useMutation({
-    mutationKey: ["main-conversation"],
     mutationFn: async (
       messageId: string,
       options?: {
@@ -28,7 +27,7 @@ export default function useReportMessage() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["main-conversation"],
+        ["main-conversation" satisfies CacheKey],
         (existings: { messages: Message[] } = { messages: [] }) => {
           return {
             ...existings,

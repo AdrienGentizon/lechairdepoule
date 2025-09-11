@@ -2,7 +2,7 @@ export type User = {
   id: string;
   email: string;
   pseudo: string;
-  role: string;
+  role: string | null;
   createdAt: string;
   bannedAt: string | null;
   deletedAt: string | null;
@@ -15,9 +15,11 @@ export type Message = {
   createdAt: string;
   updatedAt: string | null;
   reportedAt: string | null;
-  reportedBy: string | null;
   userId: string;
   conversationId: string | null;
+  user: {
+    pseudo: string;
+  };
 };
 
 export type Conversation = {

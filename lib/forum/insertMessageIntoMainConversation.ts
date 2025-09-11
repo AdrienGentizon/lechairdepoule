@@ -16,7 +16,6 @@ export default async function insertMessageIntoMainConversation({
         createdAt: string;
         updatedAt: string | null;
         reportedAt: string | null;
-        reportedBy: string | null;
         userId: string;
         conversationId: string | null;
       }[]
@@ -29,7 +28,6 @@ export default async function insertMessageIntoMainConversation({
     created_at::text as "createdAt",
     updated_at::text as "updatedAt",
     reported_at::text as "reportedAt",
-    reported_by::text as "reportedBy",
     user_id::text as "userId",
     conversation_id::text as "conversationId"
     `

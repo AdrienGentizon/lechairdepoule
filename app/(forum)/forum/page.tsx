@@ -42,7 +42,7 @@ export default function Forum() {
                     "after:absolute after:-bottom-0.5 after:left-1/2 after:z-10 after:h-0.5 after:w-full after:-translate-x-1/2 after:bg-black",
                   )}
                 >
-                  <h3>{message.userId}</h3>
+                  <h3>{message.user.pseudo}</h3>
                   {me?.role === "admin" && (
                     <>
                       <button

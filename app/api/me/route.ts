@@ -8,13 +8,14 @@ export async function GET(req: NextRequest) {
     console.log(`[Operation]`, opertationName);
     const user = await getUser();
 
-    if (!user)
+    if (!user || user.bannedAt)
       return NextResponse.json(
         {
-          error: "not found",
+          error: "unauthorized",
         },
-        { status: 404 },
+        { status: 401 },
       );
+
     return NextResponse.json<User>(user, { status: 200 });
   } catch (error) {
     console.error(

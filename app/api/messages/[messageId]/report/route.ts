@@ -13,7 +13,7 @@ export async function POST(
     console.log(`[Operation]`, opertationName);
     const reportedBy = await getUser();
 
-    if (!reportedBy)
+    if (!reportedBy || reportedBy.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",

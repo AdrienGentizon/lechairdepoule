@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     console.log(`[Operation]`, opertationName);
     const user = await getUser();
 
-    if (!user)
+    if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
       payload: message,
     });
 
-    return NextResponse.json<Message>(message, { status: 200 });
+    return NextResponse.json<Message>(
+      { ...message, user: { pseudo: user.pseudo } },
+      { status: 200 },
+    );
   } catch (error) {
     console.error(
       `[Operation]`,
@@ -68,7 +71,7 @@ export async function GET(req: NextRequest) {
     console.log(`[Operation]`, opertationName);
     const user = await getUser();
 
-    if (!user)
+    if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",

@@ -12,32 +12,48 @@ export default async function selectMainConversationMessages(
         createdAt: string;
         updatedAt: string | null;
         reportedAt: string | null;
-        reportedBy: string | null;
         userId: string;
         conversationId: string | null;
+        userPseudo: string;
+        userBannedAt: string | null;
       }[]
     >`
     SELECT
-      id::text,
-      body,
-      created_at::text as "createdAt",
-      updated_at::text as "updatedAt",
-      reported_at::text as "reportedAt",
-      reported_by::text as "reportedBy",
-      user_id::text as "userId",
-      conversation_id::text as "conversationId"
-    FROM public.messages
-    WHERE conversation_id IS NULL
-    ORDER BY created_at DESC
+      m.id::text,
+      m.body,
+      m.created_at::text as "createdAt",
+      m.updated_at::text as "updatedAt",
+      m.reported_at::text as "reportedAt",
+      m.reported_by::text as "reportedBy",
+      m.user_id::text as "userId",
+      m.conversation_id::text as "conversationId",
+      u.pseudo as "userPseudo",
+      u.banned_at::text as "userBannedAt"
+    FROM
+      public.messages m,
+      public.users u
+    WHERE
+      conversation_id IS NULL
+      AND m.user_id = u.id
+    ORDER BY
+      m.created_at DESC
     OFFSET ${offset}
     LIMIT ${limit};`
-  ).map((message) => {
-    if (message.reportedAt) {
+  ).map(({ userBannedAt, userPseudo, ...message }) => {
+    if (message.reportedAt || userBannedAt) {
       return {
         ...message,
         body: "---redacted---",
+        user: {
+          pseudo: userPseudo,
+        },
       };
     }
-    return message;
+    return {
+      ...message,
+      user: {
+        pseudo: userPseudo,
+      },
+    };
   });
 }

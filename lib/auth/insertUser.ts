@@ -13,6 +13,7 @@ export default async function insertUser({
         id: string;
         email: string;
         pseudo: string;
+        role: string | null;
         createdAt: string;
         bannedAt: string | null;
         deletedAt: string | null;
@@ -24,6 +25,7 @@ export default async function insertUser({
         id::text,
         email,
         pseudo,
+        role,
         created_at::text as "createdAt",
         banned_at::text as "bannedAt",
         deleted_at::text as "deletedAt",
