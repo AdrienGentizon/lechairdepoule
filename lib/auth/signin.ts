@@ -8,6 +8,7 @@ import insertUser from "./insertUser";
 import sendEmail from "@/actions/sendEmail";
 import resend from "../resend";
 import OTPEmail from "@/components/OTPEmail/OTPEmail";
+import updateUserPseudo from "./updateUserPseudo";
 
 function generateSixDigits(): string {
   const buf = crypto.randomBytes(3);
@@ -54,6 +55,13 @@ export async function signInWithEmail(formData: FormData): Promise<
       });
       if (!user) {
         throw new Error("Cannot insert user");
+      }
+    } else {
+      if (user.pseudo !== parsedInputs.data.pseudo) {
+        await updateUserPseudo({
+          userId: user.id,
+          pseudo: parsedInputs.data.pseudo,
+        });
       }
     }
 
