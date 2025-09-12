@@ -5,6 +5,9 @@ import crypto from "crypto";
 import sql from "../db";
 import selectUserFromEmail from "./selectUserFromEmail";
 import insertUser from "./insertUser";
+import sendEmail from "@/actions/sendEmail";
+import resend from "../resend";
+import OTPEmail from "@/components/OTPEmail/OTPEmail";
 
 function generateSixDigits(): string {
   const buf = crypto.randomBytes(3);
@@ -85,12 +88,23 @@ export async function signInWithEmail(formData: FormData): Promise<
       throw new Error("Unauthorized");
     }
 
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[Operation]`,
-        `signInWithEmail`,
-        `${parsedInputs.data.email} ${randomCode}`,
-      );
+    console.log(
+      `[Operation]`,
+      `signInWithEmail`,
+      `${parsedInputs.data.email} ${randomCode}`,
+    );
+
+    if (process.env.NODE_ENV === "production") {
+      const { error } = await resend.emails.send({
+        from: "Le Chair de Poule <noreply@lechairdepoule.fr>",
+        to: parsedInputs.data.email,
+        subject: "[Le Chair de poule] Confirmation de votre email",
+        react: OTPEmail({
+          subject: "Code de verification",
+          message: `Vous devez entrer ce code de confirmation ${randomCode}`,
+        }),
+      });
+      if (error) throw new Error(`${error.name} ${error.message}`);
     }
 
     return {
