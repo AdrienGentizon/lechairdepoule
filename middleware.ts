@@ -6,6 +6,11 @@ export async function middleware(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith("/forum")) {
     return NextResponse.next();
   }
+
+  if (process.env["VERCEL_ENV"] === "production") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   try {
     const { id } = await verifyToken((await cookies()).get("token")?.value);
 
