@@ -3,5 +3,5 @@ import env from "./env";
 
 export const supabaseServerSide = createClient(
   env().NEXT_PUBLIC_SUPABASE_URL,
-  env().SUPABASE_SERVER_API_KEY,
+  env().SUPABASE_SERVICE_ROLE_KEY,
 );
