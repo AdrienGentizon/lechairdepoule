@@ -32,7 +32,7 @@ export type Conversation = {
 
 export type CacheKey = "me" | "main-conversation";
 
-export type BroadCastKey = "new_message";
+export type BroadCastKey = "new_message" | "reported_message" | "banned_user";
 
 export type BroadcastPayload<K = BroadCastKey, T = Record<string, unknown>> = {
   type: "broadcast";

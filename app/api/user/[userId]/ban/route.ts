@@ -1,6 +1,7 @@
 import getUser from "@/lib/auth/getUser";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
-import { User } from "@/lib/types";
+import { supabaseServerSide } from "@/lib/supabaseServerSide";
+import { BroadCastKey, User } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -28,6 +29,12 @@ export async function POST(
 
     if (!bannedUser)
       throw new Error(`user (${bannedBy.id}) cannot ban user (${userId})`);
+
+    supabaseServerSide.channel("users").send({
+      type: "broadcast",
+      event: "banned_user" satisfies BroadCastKey,
+      payload: bannedUser,
+    });
 
     return NextResponse.json<User>(bannedUser, {
       status: 200,

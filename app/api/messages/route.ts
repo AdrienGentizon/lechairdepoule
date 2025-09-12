@@ -2,7 +2,7 @@ import getUser from "@/lib/auth/getUser";
 import insertMessageIntoMainConversation from "@/lib/forum/insertMessageIntoMainConversation";
 import selectMainConversationMessages from "@/lib/forum/selectMainConversationMessages";
 import { supabaseServerSide } from "@/lib/supabaseServerSide";
-import { Message } from "@/lib/types";
+import { BroadCastKey, Message } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -40,9 +40,9 @@ export async function POST(req: NextRequest) {
 
     if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
 
-    await supabaseServerSide.channel("messages").send({
+    supabaseServerSide.channel("messages").send({
       type: "broadcast",
-      event: "new_message",
+      event: "new_message" satisfies BroadCastKey,
       payload: message,
     });
 

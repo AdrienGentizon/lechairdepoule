@@ -25,11 +25,6 @@ export default function useBanUser() {
       options?.onSuccess();
       return response.json() as Promise<User>;
     },
-    onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ["main-conversation" satisfies CacheKey],
-      });
-    },
   });
 
   return {

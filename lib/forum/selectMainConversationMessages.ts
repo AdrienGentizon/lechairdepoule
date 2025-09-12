@@ -1,4 +1,5 @@
 import sql from "../db";
+import { reportedMessageBodyReplacement } from "../wordings";
 
 export default async function selectMainConversationMessages(
   offset = 0,
@@ -43,7 +44,7 @@ export default async function selectMainConversationMessages(
     if (message.reportedAt || userBannedAt) {
       return {
         ...message,
-        body: "---redacted---",
+        body: reportedMessageBodyReplacement,
         user: {
           pseudo: userPseudo,
         },

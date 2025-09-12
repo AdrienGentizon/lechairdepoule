@@ -1,5 +1,6 @@
 import sql from "../db";
 import { User } from "../types";
+import { reportedMessageBodyReplacement } from "../wordings";
 
 export default async function updateMessageAsReported({
   messageId,
@@ -53,7 +54,7 @@ export default async function updateMessageAsReported({
       if (message.reportedAt) {
         return {
           ...message,
-          body: "---redacted---",
+          body: reportedMessageBodyReplacement,
           user: { pseudo: userPseudo },
         };
       }

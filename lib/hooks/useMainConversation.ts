@@ -1,7 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BroadCastKey, BroadcastPayload, CacheKey, Message } from "../types";
+import {
+  BroadCastKey,
+  BroadcastPayload,
+  CacheKey,
+  Message,
+  User,
+} from "../types";
 import { useCallback, useEffect } from "react";
 import { supabaseClientSide } from "../supabaseClientSide";
+import { reportedMessageBodyReplacement } from "../wordings";
 
 export default function useMainConversation(options?: {
   onLoaded: () => void;
@@ -46,8 +53,52 @@ export default function useMainConversation(options?: {
     [queryClient],
   );
 
+  const onReportedMessage = useCallback(
+    ({ payload: message }: BroadcastPayload<"reported_message", Message>) => {
+      queryClient.setQueryData(
+        ["main-conversation" satisfies CacheKey],
+        (old: { messages: Message[] } = { messages: [] }) => {
+          return {
+            ...old,
+            messages: [
+              ...old.messages.filter(({ id }) => id !== message.id),
+              message,
+            ],
+          };
+        },
+      );
+      options?.onNewMessage();
+    },
+    [queryClient],
+  );
+
+  const onBannedUser = useCallback(
+    ({ payload: user }: BroadcastPayload<"banned_user", User>) => {
+      queryClient.setQueryData(
+        ["main-conversation" satisfies CacheKey],
+        (old: { messages: Message[] } = { messages: [] }) => {
+          return {
+            ...old,
+            messages: old.messages.reduce((acc: Message[], curr) => {
+              if (curr.userId !== user.id) return [...acc, curr];
+              return [
+                ...acc,
+                {
+                  ...curr,
+                  body: reportedMessageBodyReplacement,
+                },
+              ];
+            }, []),
+          };
+        },
+      );
+      options?.onNewMessage();
+    },
+    [queryClient],
+  );
+
   useEffect(() => {
-    const subscription = supabaseClientSide
+    const newMessageSubscription = supabaseClientSide
       .channel("messages")
       .on(
         "broadcast",
@@ -57,8 +108,32 @@ export default function useMainConversation(options?: {
       )
       .subscribe();
 
+    const reportedMessageSubscription = supabaseClientSide
+      .channel("messages")
+      .on(
+        "broadcast",
+        { event: "reported_message" satisfies BroadCastKey },
+        (payload) =>
+          onReportedMessage(
+            payload as BroadcastPayload<"reported_message", Message>,
+          ),
+      )
+      .subscribe();
+
+    const bannedUserSubscription = supabaseClientSide
+      .channel("messages")
+      .on(
+        "broadcast",
+        { event: "banned_user" satisfies BroadCastKey },
+        (payload) =>
+          onBannedUser(payload as BroadcastPayload<"banned_user", User>),
+      )
+      .subscribe();
+
     return () => {
-      subscription.unsubscribe();
+      newMessageSubscription.unsubscribe();
+      reportedMessageSubscription.unsubscribe();
+      bannedUserSubscription.unsubscribe();
     };
   }, [onNewMessage]);
 

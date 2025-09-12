@@ -1,6 +1,7 @@
 import getUser from "@/lib/auth/getUser";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
-import { Message } from "@/lib/types";
+import { supabaseServerSide } from "@/lib/supabaseServerSide";
+import { BroadCastKey, Message } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -21,25 +22,25 @@ export async function POST(
         { status: 401 },
       );
 
-    const message = await updateMessageAsReported({
+    const reportedMessage = await updateMessageAsReported({
       reportedBy,
       messageId,
     });
 
-    if (!message)
+    if (!reportedMessage)
       throw new Error(
         `user (${reportedBy.id}) cannot report message (${messageId})`,
       );
 
-    return NextResponse.json<Message>(
-      {
-        ...message,
-        body: "---redacted---",
-      },
-      {
-        status: 200,
-      },
-    );
+    supabaseServerSide.channel("messages").send({
+      type: "broadcast",
+      event: "reported_message" satisfies BroadCastKey,
+      payload: reportedMessage,
+    });
+
+    return NextResponse.json<Message>(reportedMessage, {
+      status: 200,
+    });
   } catch (error) {
     console.error(
       `[Operation]`,
