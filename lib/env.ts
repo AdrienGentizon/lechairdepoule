@@ -5,6 +5,7 @@ type Env = {
   SUPABASE_URL: string;
   NEXT_PUBLIC_SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_SERVER_API_KEY: string;
   JWT_SIGN_KEY: string;
   RESEND_API_KEY: string;
   RESEND_TO_EMAIL: string;
@@ -27,6 +28,7 @@ export default function env() {
       SUPABASE_URL: getEnvVar("SUPABASE_URL"),
       NEXT_PUBLIC_SUPABASE_URL: getEnvVar("NEXT_PUBLIC_SUPABASE_URL"),
       SUPABASE_SERVICE_ROLE_KEY: getEnvVar("SUPABASE_SERVICE_ROLE_KEY"),
+      SUPABASE_SERVER_API_KEY: getEnvVar("SUPABASE_SERVER_API_KEY"),
       JWT_SIGN_KEY: getEnvVar("JWT_SIGN_KEY"),
       RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       RESEND_TO_EMAIL: getEnvVar("RESEND_TO_EMAIL"),
