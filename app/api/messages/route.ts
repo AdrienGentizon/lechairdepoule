@@ -33,12 +33,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const message = await insertMessageIntoMainConversation({
+    const insertedMessage = await insertMessageIntoMainConversation({
       body: parsedInputs.data.body,
       user,
     });
 
-    if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
+    if (!insertedMessage)
+      throw new Error(`cannot insert message ${parsedInputs.data}`);
+
+    const message = { ...insertedMessage, user: { pseudo: user.pseudo } };
 
     supabaseServerSide.channel("messages").send({
       type: "broadcast",
@@ -46,10 +49,7 @@ export async function POST(req: NextRequest) {
       payload: message,
     });
 
-    return NextResponse.json<Message>(
-      { ...message, user: { pseudo: user.pseudo } },
-      { status: 200 },
-    );
+    return NextResponse.json<Message>(message, { status: 200 });
   } catch (error) {
     console.error(
       `[Operation]`,
