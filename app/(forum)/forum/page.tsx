@@ -73,7 +73,7 @@ export default function Forum() {
                   Dénoncer
                 </button>
               </div>
-              <p className="rounded-b border-b border-l border-r border-t border-white px-4 py-2 font-mono">
+              <p className="font-courier rounded-b border-b border-l border-r border-t border-white px-4 py-2">
                 {message.body}
               </p>
             </li>
@@ -108,7 +108,7 @@ export default function Forum() {
         <textarea
           id="body"
           name="body"
-          className="min-h-20 rounded-sm px-4 py-2 font-mono text-sm text-black"
+          className="font-courier min-h-20 rounded-sm px-4 py-2 text-black"
           required
         ></textarea>
         {error && <p className="text-red-500">{error.message}</p>}
