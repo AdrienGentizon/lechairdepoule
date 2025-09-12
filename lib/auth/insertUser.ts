@@ -20,7 +20,7 @@ export default async function insertUser({
         lastConnection: string | null;
       }[]
     >`INSERT INTO public.users (email, pseudo, created_at)
-        VALUES(${email}, ${pseudo}, ${new Date().toUTCString()}})
+        VALUES(${email}, ${pseudo}, ${new Date().toUTCString()})
       RETURNING
         id::text,
         email,
