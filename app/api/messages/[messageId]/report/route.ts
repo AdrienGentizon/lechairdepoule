@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { messageId: string } },
+  { params }: { params: Promise<{ messageId: string }> },
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const { messageId } = await params;
