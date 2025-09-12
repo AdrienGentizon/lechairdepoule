@@ -1,12 +1,23 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "./lib/auth/jwt";
 
-const isPrivateRoute = createRouteMatcher(["/admin(.*)"]);
-
-export default clerkMiddleware(async (auth, request) => {
-  if (isPrivateRoute(request)) {
-    await auth.protect();
+export async function middleware(request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith("/forum")) {
+    return NextResponse.next();
   }
-});
+  try {
+    const { id } = await verifyToken((await cookies()).get("token")?.value);
+
+    if (!id) return NextResponse.redirect(new URL("/sign-in", request.url));
+  } catch (error) {
+    console.error(
+      `[ERROR] middleware: ${(error as Error)?.message ?? "unknown error"}`,
+    );
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
