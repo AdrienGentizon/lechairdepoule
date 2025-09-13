@@ -1,5 +1,6 @@
 "use client";
 
+import Popover from "@/components/Popover/Popover";
 import useBanUser from "@/lib/hooks/useBanUser";
 import useMainConversation from "@/lib/hooks/useMainConversation";
 import useMe from "@/lib/hooks/useMe";
@@ -7,7 +8,7 @@ import usePostMainConversationMessage from "@/lib/hooks/usePostMainConversationM
 import useReportMessage from "@/lib/hooks/useReportMessage";
 import { Message, User } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Loader, X } from "lucide-react";
+import { Ellipsis, Loader, X } from "lucide-react";
 import { ComponentRef, useRef } from "react";
 import { z } from "zod";
 
@@ -31,6 +32,11 @@ export default function Forum() {
     useReportMessage();
   const { banUser, isPending: isPendingBanUser } = useBanUser();
 
+  const canReportMessage = (message: Message) => {
+    if (message.user.id === me?.id) return false;
+    return true;
+  };
+
   const canBanMessageUser = (message: Message) => {
     if (me?.role !== "admin") return false;
     if (message.user.id === me?.id) return false;
@@ -45,36 +51,83 @@ export default function Forum() {
           return (
             <li key={`main-conversation-message-${message.id}`} className="">
               <div className="flex items-center gap-2">
-                <div className="flex w-full justify-between text-xs font-medium">
-                  <h3 className="rounded-t-sm bg-white px-2 text-black">
-                    {message.user.pseudo}
-                  </h3>
-                  {canBanMessageUser(message) && (
-                    <>
-                      <button
-                        popoverTarget={`popover-${message.id}`}
-                        className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
-                      >
-                        Bannir
-                      </button>
-                      <div
-                        id={`popover-${message.id}`}
-                        popover="manual"
-                        popoverTargetAction="hide"
-                        className="min-w-72 rounded-sm border p-0 backdrop:bg-black backdrop:opacity-25"
-                      >
-                        <header className="relative w-full bg-black py-1 pl-1 text-left text-white">
-                          <h2 className="font-medium uppercase">
-                            Bannir un utilisateur
-                          </h2>
-                          <button
-                            popoverTarget={`popover-${message.id}`}
-                            className="absolute right-1 top-1"
-                          >
-                            <X className="size-4" />
-                          </button>
-                        </header>
-                        <div className="flex max-w-72 flex-col gap-2 text-pretty p-2 leading-relaxed">
+                <div className="flex w-full text-xs font-medium">
+                  <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
+                    <h3>{message.user.pseudo}</h3>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1">
+                    {canReportMessage(message) && (
+                      <>
+                        <button
+                          popoverTarget={`report-message-popover-${message.id}`}
+                          className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
+                        >
+                          Dénoncer
+                        </button>
+                        <Popover
+                          popoverTarget={`report-message-popover-${message.id}`}
+                          header="Dénoncer un message"
+                          isPendingConfirm={isPendingReportMessage}
+                          confirmButtonProps={{
+                            children: <>Dénoncer un message</>,
+                            onClick: () => {
+                              const popover = document.querySelector(
+                                `#report-message-popover-${message.id}`,
+                              );
+                              if (popover?.tagName === "DIV") {
+                                setTimeout(() => {
+                                  (popover as HTMLDivElement).hidePopover();
+                                }, 750);
+                              }
+
+                              reportMessage(message.id);
+                            },
+                          }}
+                        >
+                          <p>
+                            Vous êtes sur le point de dénoncer un message de{" "}
+                            <strong>{message.user.pseudo}</strong>.
+                          </p>
+                          <p>
+                            Le message ne sera plus lisible, cependant son
+                            contenu sera conservé dans la base données.
+                          </p>
+                          <p>Voulez-vous poursuivre?</p>
+                        </Popover>
+                      </>
+                    )}
+                    {canBanMessageUser(message) && (
+                      <>
+                        <button
+                          popoverTarget={`ban-user-popover-${message.id}`}
+                          className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
+                        >
+                          Bannir
+                        </button>
+                        <Popover
+                          popoverTarget={`popover-${message.id}`}
+                          header="Bannir un utilisateur"
+                          isPendingConfirm={isPendingBanUser}
+                          confirmButtonProps={{
+                            children: (
+                              <>
+                                Bannir <strong>{message.user.pseudo}</strong>
+                              </>
+                            ),
+                            onClick: () => {
+                              const popover = document.querySelector(
+                                `#ban-user-popover-${message.id}`,
+                              );
+                              if (popover?.tagName === "DIV") {
+                                setTimeout(() => {
+                                  (popover as HTMLDivElement).hidePopover();
+                                }, 750);
+                              }
+
+                              banUser(message.user.id);
+                            },
+                          }}
+                        >
                           <p>
                             Vous êtes sur le point de bannir{" "}
                             <strong>{message.user.pseudo}</strong> du forum.
@@ -85,56 +138,19 @@ export default function Forum() {
                             base données.
                           </p>
                           <p>Voulez-vous poursuivre?</p>
-                        </div>
-                        <footer className="flex flex-col gap-1 p-2">
-                          <button
-                            className="w-full rounded-sm border border-black bg-black py-0.5 text-center text-white hover:bg-gray-700"
-                            disabled={isPendingBanUser}
-                            onClick={() => {
-                              const popover = document.querySelector(
-                                `#popover-${message.id}`,
-                              );
-                              if (popover?.tagName === "DIV") {
-                                setTimeout(() => {
-                                  (popover as HTMLDivElement).hidePopover();
-                                }, 750);
-                              }
-
-                              banUser(message.user.id);
-                            }}
-                          >
-                            <span className="relative">
-                              Bannir <strong>{message.user.pseudo}</strong>
-                              {isPendingBanUser && (
-                                <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
-                              )}
-                            </span>
-                          </button>
-
-                          <button
-                            popoverTarget={`popover-${message.id}`}
-                            className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
-                          >
-                            Fermer
-                          </button>
-                        </footer>
-                      </div>
-                    </>
-                  )}
+                        </Popover>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="rounded-b-sm border border-white">
                 <p className="px-4 py-2 font-courier">{message.body}</p>
-                <footer className="flex justify-end px-2 pb-2">
-                  <button
-                    className="text-xs font-medium text-gray-300 hover:text-gray-100 hover:underline"
-                    onClick={() => {
-                      reportMessage(message.id);
-                    }}
-                    disabled={isPendingReportMessage}
-                  >
-                    Dénoncer
-                  </button>
+                <footer className="flex items-center justify-end gap-2 px-2 pb-2 font-mono text-[0.6rem] font-light">
+                  <p className="">
+                    {new Date(message.createdAt).toLocaleDateString()}{" "}
+                    {new Date(message.createdAt).toLocaleTimeString()}
+                  </p>
                 </footer>
               </div>
             </li>
