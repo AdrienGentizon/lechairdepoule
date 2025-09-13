@@ -2,6 +2,7 @@ import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import RandomBackground from "@/components/RandomBackground/RandomBackground";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
+import { cn } from "@/lib/utils";
 import getRandomBackground from "@/queries/getRandomBackground";
 import { ReactNode } from "react";
 
@@ -13,14 +14,12 @@ export default async function ForumLayout({
   const assets = (await getRandomBackground())?.assetsCollection.items ?? [];
   return (
     <ReactQueryProvider>
-      <Header />
-      <main className="no-scrollbar min-h-full w-full [&>*:first-child]:pt-32 sm:[&>*:first-child]:pt-44">
-        <div className="mx-auto min-h-full bg-black sm:max-w-2xl">
-          {children}
-        </div>
+      <div className="grid h-dvh grid-rows-[min-content_1fr_min-content_min-content] overflow-hidden">
+        <Header variant="relative" />
+        {children}
+        <Footer />
         <RandomBackground assets={assets} />
-      </main>
-      <Footer />
+      </div>
     </ReactQueryProvider>
   );
 }
