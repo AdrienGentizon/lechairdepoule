@@ -5,6 +5,7 @@ import DrugstorePNG from "@/public/drugstore.png";
 import ContactPNG from "@/public/contact.png";
 import ForumPNG from "@/public/forum.png";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 function Title() {
   return (
@@ -16,9 +17,14 @@ function Title() {
   );
 }
 
-export default function Header() {
+export default function Header({ variant }: { variant?: "relative" }) {
   return (
-    <header className="fixed z-20 w-full bg-black pb-4 sm:max-w-2xl">
+    <header
+      className={cn(
+        "fixed z-20 w-full bg-black pb-4 sm:max-w-2xl",
+        variant === "relative" && "relative",
+      )}
+    >
       <Link href={`/`}>
         <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
       </Link>
