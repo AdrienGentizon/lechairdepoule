@@ -152,7 +152,7 @@ export default function SignInPage() {
         >
           Confirmation de l&apos;email
         </h2>
-        <p className="px-40 text-center font-light leading-4">
+        <p className="px-4 text-center font-light leading-6 landscape:px-40">
           Pour confirmer votre inscription, vous devez rentrer le numéro de
           validation reçu par email.
         </p>
