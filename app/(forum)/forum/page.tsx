@@ -44,8 +44,7 @@ export default function Forum() {
   };
 
   return (
-    <main className="grid h-dvh w-full max-w-3xl grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-2 p-2">
-      <h2 className="text-center text-xl uppercase">Forum</h2>
+    <>
       <ul className="flex flex-col gap-2 overflow-y-scroll rounded-sm border border-white p-2">
         {mainConversation.messages.map((message) => {
           return (
@@ -207,6 +206,6 @@ export default function Forum() {
           <Loader className="animate-spin" />
         </div>
       )}
-    </main>
+    </>
   );
 }
