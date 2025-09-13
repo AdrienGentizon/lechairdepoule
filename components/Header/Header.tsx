@@ -3,6 +3,7 @@ import LogoSite from "../png/LogoSite";
 import AgendaPNG from "@/public/agenda.png";
 import DrugstorePNG from "@/public/drugstore.png";
 import ContactPNG from "@/public/contact.png";
+import ForumPNG from "@/public/forum.png";
 import Image from "next/image";
 
 function Title() {
@@ -56,6 +57,17 @@ export default function Header() {
                 role="button"
               />
               <span className="sr-only">Contact</span>
+            </Link>
+          </li>
+          <li>
+            <Link href={`/forum`}>
+              <Image
+                src={ForumPNG}
+                alt="Forum"
+                className="w-24 sm:w-40"
+                role="button"
+              />
+              <span className="sr-only">Forum</span>
             </Link>
           </li>
         </ul>
