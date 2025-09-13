@@ -40,12 +40,13 @@ export default async function selectMainConversationMessages(
       m.created_at DESC
     OFFSET ${offset}
     LIMIT ${limit};`
-  ).map(({ userBannedAt, userPseudo, ...message }) => {
+  ).map(({ userBannedAt, userPseudo, userId, ...message }) => {
     if (message.reportedAt || userBannedAt) {
       return {
         ...message,
         body: reportedMessageBodyReplacement,
         user: {
+          id: userId,
           pseudo: userPseudo,
         },
       };
@@ -53,6 +54,7 @@ export default async function selectMainConversationMessages(
     return {
       ...message,
       user: {
+        id: userId,
         pseudo: userPseudo,
       },
     };

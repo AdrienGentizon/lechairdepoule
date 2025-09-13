@@ -15,9 +15,9 @@ export type Message = {
   createdAt: string;
   updatedAt: string | null;
   reportedAt: string | null;
-  userId: string;
   conversationId: string | null;
   user: {
+    id: string;
     pseudo: string;
   };
 };

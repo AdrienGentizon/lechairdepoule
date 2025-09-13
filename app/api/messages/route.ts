@@ -33,15 +33,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const insertedMessage = await insertMessageIntoMainConversation({
+    const message = await insertMessageIntoMainConversation({
       body: parsedInputs.data.body,
       user,
     });
 
-    if (!insertedMessage)
-      throw new Error(`cannot insert message ${parsedInputs.data}`);
-
-    const message = { ...insertedMessage, user: { pseudo: user.pseudo } };
+    if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
 
     supabaseServerSide.channel("messages").send({
       type: "broadcast",
