@@ -14,7 +14,7 @@ export async function POST(
     console.log(`[Operation]`, opertationName);
     const bannedBy = await getUser();
 
-    if (!bannedBy || bannedBy.bannedAt)
+    if (!bannedBy || bannedBy.bannedAt || bannedBy.id === userId)
       return NextResponse.json(
         {
           error: "unauthorized",

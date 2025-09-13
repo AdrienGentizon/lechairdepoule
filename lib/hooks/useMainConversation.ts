@@ -80,7 +80,7 @@ export default function useMainConversation(options?: {
           return {
             ...old,
             messages: old.messages.reduce((acc: Message[], curr) => {
-              if (curr.userId !== user.id) return [...acc, curr];
+              if (curr.user.id !== user.id) return [...acc, curr];
               return [
                 ...acc,
                 {

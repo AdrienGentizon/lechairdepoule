@@ -33,13 +33,14 @@ export default async function updateMessageAsReported({
     WHERE
       m.id = ${messageId}
       AND m.user_id = u.id
+      AND m.user_id != ${reportedBy.id}
       )
     UPDATE public.messages m
     SET
       reported_by = ${reportedBy.id},
       reported_at = ${new Date().toISOString()}
     FROM user_messages
-    WHERE id = user_messages.message_id
+    WHERE m.id = user_messages.message_id
     RETURNING
       m.id::text,
       m.body,
@@ -50,15 +51,15 @@ export default async function updateMessageAsReported({
       m.conversation_id::text as "conversationId",
       user_messages.user_pseudo as "userPseudo";`
   )
-    .map(({ userPseudo, ...message }) => {
+    .map(({ userPseudo, userId, ...message }) => {
       if (message.reportedAt) {
         return {
           ...message,
           body: reportedMessageBodyReplacement,
-          user: { pseudo: userPseudo },
+          user: { id: userId, pseudo: userPseudo },
         };
       }
-      return { ...message, user: { pseudo: userPseudo } };
+      return { ...message, user: { id: userId, pseudo: userPseudo } };
     })
     .at(0);
 }

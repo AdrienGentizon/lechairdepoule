@@ -8,7 +8,7 @@ export default async function insertMessageIntoMainConversation({
   body: string;
   user: User;
 }) {
-  return (
+  const insertedMessage = (
     await sql<
       {
         id: string;
@@ -32,4 +32,14 @@ export default async function insertMessageIntoMainConversation({
     conversation_id::text as "conversationId"
     `
   ).at(0);
+
+  if (!insertedMessage) return;
+  const { userId, ...message } = insertedMessage;
+  return {
+    ...message,
+    user: {
+      id: userId,
+      pseudo: user.pseudo,
+    },
+  };
 }
