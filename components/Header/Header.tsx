@@ -10,9 +10,7 @@ import { cn } from "@/lib/utils";
 function Title() {
   return (
     <Link href={`/`}>
-      <h1 className="w-full py-2 text-center text-4xl font-thin uppercase">
-        Le Chair de Poule
-      </h1>
+      <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
     </Link>
   );
 }
@@ -29,13 +27,13 @@ export default function Header({ variant }: { variant?: "relative" }) {
         <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
       </Link>
       <nav>
-        <ul className="flex cursor-pointer items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
+        <ul className="flex items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
           <li>
             <Link href={`/`}>
               <Image
                 src={AgendaPNG}
                 alt="Agenda"
-                className="w-24 sm:w-40"
+                className="h-6 object-contain landscape:h-10"
                 role="button"
               />
               <span className="sr-only">Agenda</span>
@@ -47,7 +45,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
                 <Image
                   src={DrugstorePNG}
                   alt="Drugstore"
-                  className="w-24 sm:w-40"
+                  className="h-6 object-contain landscape:h-10"
                   role="button"
                 />
                 <span className="sr-only">Drugstore</span>
@@ -59,7 +57,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <Image
                 src={ContactPNG}
                 alt="Contact"
-                className="w-24 sm:w-40"
+                className="h-6 object-contain landscape:h-10"
                 role="button"
               />
               <span className="sr-only">Contact</span>
@@ -70,7 +68,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <Image
                 src={ForumPNG}
                 alt="Forum"
-                className="w-24 sm:w-40"
+                className="h-6 object-contain landscape:h-10"
                 role="button"
               />
               <span className="sr-only">Forum</span>
