@@ -9,6 +9,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { supabaseClientSide } from "../supabaseClientSide";
 import { reportedMessageBodyReplacement } from "../wordings";
+import { getMessageFromRaw } from "../forum/getMessageFromRaw";
 
 export default function useMainConversation(options?: {
   onLoaded: () => void;
@@ -55,6 +56,7 @@ export default function useMainConversation(options?: {
 
   const onReportedMessage = useCallback(
     ({ payload: message }: BroadcastPayload<"reported_message", Message>) => {
+      console.log(message);
       queryClient.setQueryData(
         ["main-conversation" satisfies CacheKey],
         (old: { messages: Message[] } = { messages: [] }) => {
@@ -101,10 +103,20 @@ export default function useMainConversation(options?: {
     const newMessageSubscription = supabaseClientSide
       .channel("messages")
       .on(
-        "broadcast",
-        { event: "new_message" satisfies BroadCastKey },
-        (payload) =>
-          onNewMessage(payload as BroadcastPayload<"new_message", Message>),
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) => {
+          onNewMessage({
+            payload: getMessageFromRaw(payload.new as any, {
+              id: "1",
+              pseudo: "nanani",
+            }),
+          } as BroadcastPayload<"new_message", Message>);
+        },
       )
       .subscribe();
 
@@ -131,9 +143,9 @@ export default function useMainConversation(options?: {
       .subscribe();
 
     return () => {
-      newMessageSubscription.unsubscribe();
-      reportedMessageSubscription.unsubscribe();
-      bannedUserSubscription.unsubscribe();
+      supabaseClientSide.removeChannel(reportedMessageSubscription);
+      supabaseClientSide.removeChannel(bannedUserSubscription);
+      supabaseClientSide.removeChannel(newMessageSubscription);
     };
   }, [onNewMessage]);
 
