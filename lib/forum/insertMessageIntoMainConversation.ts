@@ -1,5 +1,9 @@
 import sql from "../db";
-import { User } from "../types";
+import { supabaseServerSide } from "../supabaseServerSide";
+import { Message, User } from "../types";
+import { getMessageFromRaw } from "./getMessageFromRaw";
+
+const USE_SUPABASE_API = true;
 
 export default async function insertMessageIntoMainConversation({
   body,
@@ -8,6 +12,19 @@ export default async function insertMessageIntoMainConversation({
   body: string;
   user: User;
 }) {
+  if (USE_SUPABASE_API) {
+    const { data, error } = await supabaseServerSide
+      .from("messages")
+      .insert({ body, user_id: user.id, created_at: new Date().toISOString() })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return getMessageFromRaw(data, user);
+  }
   const insertedMessage = (
     await sql<
       {
