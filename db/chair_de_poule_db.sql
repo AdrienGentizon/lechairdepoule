@@ -39,3 +39,4 @@ CREATE TABLE messages (
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
+ALTER PUBLICATION supabase_realtime ADD TABLE messages;
