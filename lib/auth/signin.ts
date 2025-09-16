@@ -53,13 +53,23 @@ export async function signInWithEmail(formData: FormData): Promise<
         email: parsedInputs.data.email,
         pseudo: parsedInputs.data.pseudo,
       });
-      console.log(`[Operation]`, "signInWithEmail", "user inserted", user);
+      console.log(
+        `[Operation]`,
+        "signInWithEmail",
+        "user inserted",
+        user?.email,
+      );
       if (!user) {
         throw new Error("Cannot insert user");
       }
     } else {
       if (user.pseudo !== parsedInputs.data.pseudo) {
-        console.log(`[Operation]`, "signInWithEmail", "user updated", user);
+        console.log(
+          `[Operation]`,
+          "signInWithEmail",
+          "user updated",
+          user.email,
+        );
         await updateUserPseudo({
           userId: user.id,
           pseudo: parsedInputs.data.pseudo,
