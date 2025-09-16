@@ -53,11 +53,13 @@ export async function signInWithEmail(formData: FormData): Promise<
         email: parsedInputs.data.email,
         pseudo: parsedInputs.data.pseudo,
       });
+      console.log(`[Operation]`, "signInWithEmail", "user inserted", user);
       if (!user) {
         throw new Error("Cannot insert user");
       }
     } else {
       if (user.pseudo !== parsedInputs.data.pseudo) {
+        console.log(`[Operation]`, "signInWithEmail", "user updated", user);
         await updateUserPseudo({
           userId: user.id,
           pseudo: parsedInputs.data.pseudo,
@@ -87,6 +89,12 @@ export async function signInWithEmail(formData: FormData): Promise<
       await sql`INSERT INTO connection_tokens(value, expires_at, user_id) VALUES (${hashedCode}, ${expiresAt.toUTCString()}, ${
         user.id
       })`;
+      console.log(
+        `[Operation]`,
+        "signInWithEmail",
+        "connection token created from",
+        user.email,
+      );
     } catch (e) {
       console.error(
         `[Error]`,
