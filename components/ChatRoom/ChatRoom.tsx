@@ -83,7 +83,7 @@ export default function ChatRoom({ conversationId }: Props) {
                             popoverTarget={`report-message-popover-${message.id}`}
                             className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
                           >
-                            Dénoncer
+                            Molo molo
                           </button>
                           <Popover
                             popoverTarget={`report-message-popover-${message.id}`}
