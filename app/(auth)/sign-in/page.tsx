@@ -99,6 +99,9 @@ export default function SignInPage() {
   const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
   const [formValidity, setFormValidity] = useState(false);
   const [email, setEmail] = useState<string>("");
+  const [errors, setErrors] = useState<{
+    otpValidation?: string;
+  }>({});
 
   if (step === "EMAIL")
     return (
@@ -164,10 +167,14 @@ export default function SignInPage() {
           setFormValidity(e.currentTarget.checkValidity());
         }}
         action={async (formData) => {
+          setErrors({});
           const otp = formData.get("otp")?.toString();
           if (!email || !otp) return;
           const response = await verifyOTP({ email, otp });
           if (!response.success) {
+            setErrors({
+              otpValidation: `Désolé quelque chose à foiré. On résoudra ce problème un jour. En attendant, vous pouvez re-actualiser la page et réessayer. Ca finira pas être bon.`,
+            });
             return console.error(response.error);
           }
 
@@ -197,6 +204,11 @@ export default function SignInPage() {
         <Button type="submit" disabled={!formValidity}>
           Confirmer
         </Button>
+        {errors.otpValidation && (
+          <p className="max-w-60 text-center text-sm font-light leading-6 text-red-500">
+            {errors.otpValidation}
+          </p>
+        )}
       </Form>
     </section>
   );
