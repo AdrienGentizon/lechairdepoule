@@ -15,7 +15,7 @@ export default function useBanUser() {
         onSuccess: () => void;
       },
     ) => {
-      const response = await fetch(`/api/user/${userId}/ban`, {
+      const response = await fetch(`/api/users/${userId}/ban`, {
         method: "POST",
       });
 

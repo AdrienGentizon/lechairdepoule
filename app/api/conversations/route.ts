@@ -1,8 +1,7 @@
 import getUser from "@/lib/auth/getUser";
-import insertMessageIntoMainConversation from "@/lib/forum/insertMessageIntoMainConversation";
-import selectMainConversationMessages from "@/lib/forum/selectMainConversationMessages";
-import { supabaseServerSide } from "@/lib/supabaseServerSide";
-import { BroadCastKey, Message } from "@/lib/types";
+import insertConversation from "@/lib/forum/insertConversation";
+import selectConversations from "@/lib/forum/selectConversations";
+import { Conversation } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -22,31 +21,28 @@ export async function POST(req: NextRequest) {
 
     const parsedInputs = z
       .object({
-        body: z.string(),
+        title: z.string(),
+        description: z.string(),
       })
       .safeParse(await req.json());
 
     if (!parsedInputs.success) {
       return NextResponse.json(
-        { error: "le message non valide ne sera pas posté" },
+        { error: "conversation non valide ne sera pas créée" },
         { status: 400 },
       );
     }
 
-    const message = await insertMessageIntoMainConversation({
-      body: parsedInputs.data.body,
+    const conversation = await insertConversation({
+      title: parsedInputs.data.title,
+      description: parsedInputs.data.description,
       user,
     });
 
-    if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
+    if (!conversation)
+      throw new Error(`cannot insert conversation ${parsedInputs.data}`);
 
-    supabaseServerSide.channel("messages").send({
-      type: "broadcast",
-      event: "new_message" satisfies BroadCastKey,
-      payload: message,
-    });
-
-    return NextResponse.json<Message>(message, { status: 200 });
+    return NextResponse.json<Conversation>(conversation, { status: 200 });
   } catch (error) {
     console.error(
       `[Operation]`,
@@ -76,14 +72,11 @@ export async function GET(req: NextRequest) {
         { status: 401 },
       );
 
-    const messages = await selectMainConversationMessages();
+    const conversations = await selectConversations();
 
-    return NextResponse.json<{ messages: Message[] }>(
-      { messages },
-      {
-        status: 200,
-      },
-    );
+    return NextResponse.json<Omit<Conversation, "messages">[]>(conversations, {
+      status: 200,
+    });
   } catch (error) {
     console.error(
       `[Operation]`,

@@ -1,208 +1,152 @@
 "use client";
 
 import Popover from "@/components/Popover/Popover";
-import useBanUser from "@/lib/hooks/useBanUser";
-import useMainConversation from "@/lib/hooks/useMainConversation";
-import useMe from "@/lib/hooks/useMe";
-import usePostMainConversationMessage from "@/lib/hooks/usePostMainConversationMessage";
-import useReportMessage from "@/lib/hooks/useReportMessage";
-import { Message } from "@/lib/types";
-import { Loader } from "lucide-react";
-import { ComponentRef, useRef } from "react";
-import { z } from "zod";
+import useConversations from "@/lib/hooks/useConversations";
+import usePostConversation from "@/lib/hooks/usePostConversation";
+import { ArrowRight, Loader, Plus } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Forum() {
-  const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
-  const scrollToBottom = () => {
-    if (!lastEmptyLiRef.current) return;
-    setTimeout(() => {
-      lastEmptyLiRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 250);
-  };
-
-  const { me } = useMe();
-  const { mainConversation, isLoading } = useMainConversation({
-    onLoaded: scrollToBottom,
-    onNewMessage: scrollToBottom,
-  });
-  const { postMainConversationMessage, error, isPending } =
-    usePostMainConversationMessage();
-  const { reportMessage, isPending: isPendingReportMessage } =
-    useReportMessage();
-  const { banUser, isPending: isPendingBanUser } = useBanUser();
-
-  const canReportMessage = (message: Message) => {
-    if (message.user.id === me?.id) return false;
-    return true;
-  };
-
-  const canBanMessageUser = (message: Message) => {
-    if (me?.role !== "admin") return false;
-    if (message.user.id === me?.id) return false;
-    return true;
-  };
+  const router = useRouter();
+  const [newConversation, setNewConversation] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
+  const { conversations, isLoading } = useConversations();
+  const { postConversation, isPending } = usePostConversation();
 
   return (
     <>
-      <main className="no-scrollbar overflow-y-scroll bg-black sm:max-w-2xl">
-        <ul className="flex flex-col gap-2 rounded-sm py-2">
-          {mainConversation.messages.map((message) => {
-            return (
-              <li key={`main-conversation-message-${message.id}`} className="">
-                <div className="flex items-center gap-2">
-                  <div className="flex w-full text-xs font-medium">
-                    <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
-                      <h3>{message.user.pseudo}</h3>
-                    </div>
-                    <div className="ml-auto flex items-center gap-1">
-                      {canReportMessage(message) && (
-                        <>
-                          <button
-                            popoverTarget={`report-message-popover-${message.id}`}
-                            className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
-                          >
-                            Dénoncer
-                          </button>
-                          <Popover
-                            popoverTarget={`report-message-popover-${message.id}`}
-                            header="Dénoncer un message"
-                            isPendingConfirm={isPendingReportMessage}
-                            confirmButtonProps={{
-                              children: <>Dénoncer un message</>,
-                              onClick: () => {
-                                const popover = document.querySelector(
-                                  `#report-message-popover-${message.id}`,
-                                );
-                                if (popover?.tagName === "DIV") {
-                                  setTimeout(() => {
-                                    (popover as HTMLDivElement).hidePopover();
-                                  }, 750);
-                                }
-
-                                reportMessage(message.id);
-                              },
-                            }}
-                          >
-                            <p>
-                              Vous êtes sur le point de dénoncer un message de{" "}
-                              <strong>{message.user.pseudo}</strong>.
-                            </p>
-                            <p>
-                              Le message ne sera plus lisible, cependant son
-                              contenu sera conservé dans la base données.
-                            </p>
-                            <p>Voulez-vous poursuivre?</p>
-                          </Popover>
-                        </>
-                      )}
-                      {canBanMessageUser(message) && (
-                        <>
-                          <button
-                            popoverTarget={`ban-user-popover-${message.id}`}
-                            className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
-                          >
-                            Bannir
-                          </button>
-                          <Popover
-                            popoverTarget={`popover-${message.id}`}
-                            header="Bannir un utilisateur"
-                            isPendingConfirm={isPendingBanUser}
-                            confirmButtonProps={{
-                              children: (
-                                <>
-                                  Bannir <strong>{message.user.pseudo}</strong>
-                                </>
-                              ),
-                              onClick: () => {
-                                const popover = document.querySelector(
-                                  `#ban-user-popover-${message.id}`,
-                                );
-                                if (popover?.tagName === "DIV") {
-                                  setTimeout(() => {
-                                    (popover as HTMLDivElement).hidePopover();
-                                  }, 750);
-                                }
-
-                                banUser(message.user.id);
-                              },
-                            }}
-                          >
-                            <p>
-                              Vous êtes sur le point de bannir{" "}
-                              <strong>{message.user.pseudo}</strong> du forum.
-                            </p>
-                            <p>
-                              Cet utilisateur ne pourra plus participer au
-                              forum. Cependant tous ses messages sont conservés
-                              dans la base données.
-                            </p>
-                            <p>Voulez-vous poursuivre?</p>
-                          </Popover>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-b-sm border border-white">
-                  <p className="px-4 py-2 font-courier">{message.body}</p>
-                  <footer className="flex items-center justify-end gap-2 px-2 pb-2 font-mono text-[0.6rem] font-light">
-                    <p className="">
-                      {new Date(message.createdAt).toLocaleDateString()}{" "}
-                      {new Date(message.createdAt).toLocaleTimeString()}
+      <header aria-label="" className="">
+        <nav>
+          <ul className="flex flex-col">
+            {conversations.map((conversation) => {
+              return (
+                <li
+                  key={`forum-${conversation.id}`}
+                  className="group relative flex flex-col border-b border-white bg-black p-4 first:border-t"
+                  onClick={() => {
+                    router.push(`/forum/${conversation.id}`);
+                  }}
+                  role="link"
+                  aria-labelledby={`forum-${conversation.id}`}
+                >
+                  <Link href={`/forum/${conversation.id}`}>
+                    <h2
+                      id={`forum-${conversation.id}`}
+                      className="font-semibold uppercase"
+                    >
+                      {conversation.title}
+                    </h2>
+                    <p className="pl-2 text-sm font-light">
+                      {conversation.description}
                     </p>
-                  </footer>
-                </div>
-              </li>
-            );
-          })}
-          <li ref={lastEmptyLiRef} className="h-1 w-full bg-black p-0.5"></li>
-        </ul>
-      </main>
-      <form
-        className="flex flex-col gap-2 rounded-sm border border-white bg-black p-2 sm:max-w-2xl"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!e.currentTarget.checkValidity()) return;
-          const parsedInputs = z
-            .object({ body: z.string() })
-            .safeParse(
-              Object.fromEntries(new FormData(e.currentTarget).entries()),
-            );
+                    <button className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center font-thin uppercase group-hover:flex">
+                      Rejoindre <ArrowRight />
+                    </button>
+                  </Link>
+                </li>
+              );
+            })}
+            <li className="group relative flex flex-col border-b border-white bg-black first:border-t">
+              <button
+                popoverTarget={`create-conversation-popover`}
+                className="flex w-full items-center justify-center gap-2 px-4 py-6 font-light uppercase"
+              >
+                <Plus className="stroke-1" />
+                Créer un Topic
+              </button>
+              <Popover
+                popoverTarget={`create-conversation-popover`}
+                header="Dénoncer un message"
+                isPendingConfirm={isPending}
+                confirmButtonProps={{
+                  children: <>Créer un Topic</>,
+                  disabled:
+                    !newConversation.title && !newConversation.description,
+                  onClick: () => {
+                    if (!newConversation.title || !newConversation.description)
+                      return;
+                    const popover = document.querySelector(
+                      `#create-conversation-popover`,
+                    );
+                    if (popover?.tagName === "DIV") {
+                      setTimeout(() => {
+                        (popover as HTMLDivElement).hidePopover();
+                      }, 750);
+                    }
 
-          if (!parsedInputs.success) {
-            return console.error(parsedInputs.error.message);
-          }
-
-          postMainConversationMessage(parsedInputs.data.body, {
-            onSuccess: () => {
-              scrollToBottom();
-              (e.target as HTMLFormElement).reset();
-            },
-          });
-        }}
-      >
-        <label htmlFor="body">Message</label>
-        <textarea
-          id="body"
-          name="body"
-          className="min-h-20 rounded-sm px-4 py-2 font-courier text-black"
-          required
-        ></textarea>
-        {error && <p className="text-red-500">{error.message}</p>}
-        <button
-          className="flex items-center justify-center rounded-sm border border-white px-8 py-0.5 font-semibold hover:bg-white/25 disabled:opacity-50"
-          type="submit"
-          disabled={isPending}
-        >
-          Envoyer
-          {isPending && (
-            <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
-              <Loader className="animate-spin" />
-            </div>
-          )}
-        </button>
-      </form>
-      {(isLoading || isPendingReportMessage) && (
+                    postConversation({
+                      title: newConversation.title,
+                      description: newConversation.description,
+                    });
+                  },
+                }}
+              >
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
+                  className="flex flex-col gap-1"
+                >
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="title"
+                      className="pb-0.5 text-sm font-semibold"
+                    >
+                      Titre
+                    </label>
+                    <input
+                      className="rounded-sm border border-black px-2 py-0.5 text-sm font-light"
+                      id="title"
+                      name="title"
+                      type="text"
+                      required
+                      autoFocus
+                      value={newConversation?.title ?? ""}
+                      onChange={(e) => {
+                        setNewConversation((prev) => {
+                          return {
+                            ...prev,
+                            title: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="description"
+                      className="pb-0.5 text-sm font-semibold"
+                    >
+                      Description
+                    </label>
+                    <input
+                      className="rounded-sm border border-black px-2 py-0.5 text-sm font-light"
+                      id="description"
+                      name="description"
+                      type="text"
+                      required
+                      value={newConversation?.description ?? ""}
+                      onChange={(e) => {
+                        setNewConversation((prev) => {
+                          return {
+                            ...prev,
+                            description: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </div>
+                </form>
+              </Popover>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      {isLoading && (
         <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
           <Loader className="animate-spin" />
         </div>

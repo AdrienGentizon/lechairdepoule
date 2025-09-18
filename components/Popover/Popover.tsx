@@ -8,6 +8,7 @@ type Props = {
   children: ReactNode;
   confirmButtonProps: {
     children: ReactNode;
+    disabled?: boolean;
     onClick: () => void;
   };
 };
@@ -41,7 +42,7 @@ export default function Popover({
       <footer className="flex flex-col gap-1 p-2">
         <button
           className="w-full rounded-sm border border-black bg-black py-0.5 text-center text-white hover:bg-gray-700"
-          disabled={isPendingConfirm}
+          disabled={isPendingConfirm || confirmButtonProps.disabled}
           onClick={() => {
             const popover = document.querySelector(`#${popoverTarget}`);
             if (popover?.tagName === "DIV") {
