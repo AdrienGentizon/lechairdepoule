@@ -1,0 +1,111 @@
+import getUser from "@/lib/auth/getUser";
+import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
+import selectConversationFromId from "@/lib/forum/selectConversationFromId";
+import selectConversationMessages from "@/lib/forum/selectConversationMessages";
+import { Conversation, Message } from "@/lib/types";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+export async function GET(
+  req: NextRequest,
+  ctx: { params: Promise<{ conversationId: string }> },
+) {
+  const opertationName = `${req.method} ${req.url}`;
+  const params = await ctx.params;
+  try {
+    console.log(`[Operation]`, opertationName);
+    const user = await getUser();
+
+    if (!user || user.bannedAt)
+      return NextResponse.json(
+        {
+          error: "unauthorized",
+        },
+        { status: 401 },
+      );
+
+    const conversation = await selectConversationFromId(params.conversationId);
+
+    if (!conversation)
+      return NextResponse.json(
+        {
+          error: "not found",
+        },
+        { status: 404 },
+      );
+    const messages = await selectConversationMessages(params.conversationId);
+    return NextResponse.json<Conversation>(
+      { ...conversation, messages },
+      {
+        status: 200,
+      },
+    );
+  } catch (error) {
+    console.error(
+      `[Operation]`,
+      opertationName,
+      (error as Error)?.message ?? error,
+    );
+    return NextResponse.json(
+      {
+        error: "server error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(
+  req: NextRequest,
+  ctx: { params: Promise<{ conversationId: string }> },
+) {
+  const opertationName = `${req.method} ${req.url}`;
+  const params = await ctx.params;
+  try {
+    console.log(`[Operation]`, opertationName);
+    const user = await getUser();
+
+    if (!user || user.bannedAt)
+      return NextResponse.json(
+        {
+          error: "unauthorized",
+        },
+        { status: 401 },
+      );
+
+    const parsedInputs = z
+      .object({
+        body: z.string(),
+      })
+      .safeParse(await req.json());
+
+    if (!parsedInputs.success) {
+      return NextResponse.json(
+        { error: "message non valide ne sera pas posté" },
+        { status: 400 },
+      );
+    }
+
+    const message = await insertMessageIntoConversation({
+      conversationId: params.conversationId,
+      body: parsedInputs.data.body,
+      user,
+    });
+
+    if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
+
+    return NextResponse.json<Message>(message, { status: 200 });
+  } catch (error) {
+    console.error(
+      `[Operation]`,
+      opertationName,
+      (error as Error)?.message ?? error,
+    );
+    return NextResponse.json(
+      {
+        error: "server error",
+      },
+      { status: 500 },
+    );
+  }
+}

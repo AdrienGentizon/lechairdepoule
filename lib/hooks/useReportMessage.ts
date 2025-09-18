@@ -27,7 +27,7 @@ export default function useReportMessage() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
+        [`conversation-${data.conversationId}` satisfies CacheKey],
         (existings: { messages: Message[] } = { messages: [] }) => {
           return {
             ...existings,

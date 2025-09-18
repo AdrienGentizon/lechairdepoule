@@ -26,11 +26,15 @@ export type Conversation = {
   id: string;
   title: string;
   description: string | null;
-  createdBy: string;
   createdAt: string;
+  createdBy: {
+    id: string;
+    pseudo: string;
+  };
+  messages: Message[];
 };
 
-export type CacheKey = "me" | "main-conversation";
+export type CacheKey = "me" | `conversation-${string}` | "conversations";
 
 export type BroadCastKey = "new_message" | "reported_message" | "banned_user";
 

@@ -3,6 +3,7 @@ import {
   BroadCastKey,
   BroadcastPayload,
   CacheKey,
+  Conversation,
   Message,
   User,
 } from "../types";
@@ -11,19 +12,22 @@ import { supabaseClientSide } from "../supabaseClientSide";
 import { reportedMessageBodyReplacement } from "../wordings";
 import { getMessageFromRaw } from "../forum/getMessageFromRaw";
 
-export default function useMainConversation(options?: {
-  onLoaded: () => void;
-  onNewMessage: () => void;
-}) {
+export default function useMainConversation(
+  conversationId: string,
+  options?: {
+    onLoaded: () => void;
+    onNewMessage: () => void;
+  },
+) {
   const queryClient = useQueryClient();
   const {
-    data: mainConversation = { messages: [] },
+    data: conversation,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["main-conversation" satisfies CacheKey],
+    queryKey: [`conversation-${conversationId}` satisfies CacheKey],
     queryFn: async () => {
-      const response = await fetch(`/api/messages`, {
+      const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "GET",
       });
 
@@ -31,15 +35,15 @@ export default function useMainConversation(options?: {
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
       options?.onLoaded();
-      return response.json() as Promise<{ messages: Message[] }>;
+      return response.json() as Promise<Conversation>;
     },
   });
 
   const onNewMessage = useCallback(
     ({ payload: message }: BroadcastPayload<"new_message", Message>) => {
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
-        (old: { messages: Message[] } = { messages: [] }) => {
+        [`conversation-${conversationId}` satisfies CacheKey],
+        (old: Conversation) => {
           return {
             ...old,
             messages: [
@@ -58,8 +62,8 @@ export default function useMainConversation(options?: {
     ({ payload: message }: BroadcastPayload<"reported_message", Message>) => {
       console.log(message);
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
-        (old: { messages: Message[] } = { messages: [] }) => {
+        [`conversation-${conversationId}` satisfies CacheKey],
+        (old: Conversation) => {
           return {
             ...old,
             messages: [
@@ -77,8 +81,8 @@ export default function useMainConversation(options?: {
   const onBannedUser = useCallback(
     ({ payload: user }: BroadcastPayload<"banned_user", User>) => {
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
-        (old: { messages: Message[] } = { messages: [] }) => {
+        [`conversation-${conversationId}` satisfies CacheKey],
+        (old: Conversation) => {
           return {
             ...old,
             messages: old.messages.reduce((acc: Message[], curr) => {
@@ -150,9 +154,9 @@ export default function useMainConversation(options?: {
   }, [onNewMessage]);
 
   return {
-    mainConversation: {
-      ...mainConversation,
-      messages: mainConversation.messages.sort((a, b) => {
+    conversation: conversation && {
+      ...conversation,
+      messages: conversation.messages.sort((a, b) => {
         return (
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );

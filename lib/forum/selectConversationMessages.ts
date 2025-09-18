@@ -1,7 +1,8 @@
 import sql from "../db";
 import { reportedMessageBodyReplacement } from "../wordings";
 
-export default async function selectMainConversationMessages(
+export default async function selectConversationMessages(
+  conversationId: string,
   offset = 0,
   limit = 100,
 ) {
@@ -34,7 +35,7 @@ export default async function selectMainConversationMessages(
       public.messages m,
       public.users u
     WHERE
-      conversation_id IS NULL
+      conversation_id = ${conversationId}
       AND m.user_id = u.id
     ORDER BY
       m.created_at DESC

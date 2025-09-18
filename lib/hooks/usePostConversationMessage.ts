@@ -1,22 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CacheKey, Message } from "../types";
+import { CacheKey, Conversation, Message } from "../types";
 
-export default function usePostMainConversationMessage() {
+export default function usePostConversationMessage(conversationId: string) {
   const queryClient = useQueryClient();
 
   const {
-    mutate: postMainConversationMessage,
+    mutate: postConversationMessage,
     error,
     isPending,
   } = useMutation({
-    mutationKey: ["main-conversation" satisfies CacheKey],
     mutationFn: async (
       body: string,
       options?: {
         onSuccess: () => void;
       },
     ) => {
-      const response = await fetch(`/api/messages`, {
+      const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "POST",
         body: JSON.stringify({ body }),
       });
@@ -29,12 +28,12 @@ export default function usePostMainConversationMessage() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["main-conversation" satisfies CacheKey],
-        (existings: { messages: Message[] } = { messages: [] }) => {
+        [`conversation-${conversationId}` satisfies CacheKey],
+        (old: Conversation) => {
           return {
-            ...existings,
+            ...old,
             messages: [
-              ...existings.messages.filter(({ id }) => id !== data.id),
+              ...old.messages.filter(({ id }) => id !== data.id),
               data,
             ],
           };
@@ -44,7 +43,7 @@ export default function usePostMainConversationMessage() {
   });
 
   return {
-    postMainConversationMessage,
+    postConversationMessage,
     error,
     isPending,
   };
