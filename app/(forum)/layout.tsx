@@ -14,7 +14,7 @@ export default async function ForumLayout({
   const assets = (await getRandomBackground())?.assetsCollection.items ?? [];
   return (
     <ReactQueryProvider>
-      <div className="grid h-dvh grid-rows-[min-content_1fr_min-content_min-content] overflow-hidden">
+      <div className="grid h-dvh grid-rows-[min-content_min-content_1fr_min-content_min-content] overflow-hidden">
         <Header variant="relative" />
         {children}
         <Footer />
