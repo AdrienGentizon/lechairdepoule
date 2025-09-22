@@ -8,7 +8,7 @@ import useReportMessage from "@/lib/hooks/useReportMessage";
 import { Message } from "@/lib/types";
 import { ArrowLeft, Loader } from "lucide-react";
 import Link from "next/link";
-import { ComponentRef, useRef, useState } from "react";
+import { ComponentRef, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
   Dialog,
@@ -24,6 +24,7 @@ type Props = {
 
 export default function ChatRoom({ conversationId }: Props) {
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
+
   const scrollToBottom = () => {
     if (!lastEmptyLiRef.current) return;
     setTimeout(() => {
@@ -55,6 +56,10 @@ export default function ChatRoom({ conversationId }: Props) {
     if (message.user.id === me?.id) return false;
     return true;
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [scrollToBottom]);
 
   if (!conversation) return null;
 
