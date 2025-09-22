@@ -9,6 +9,7 @@ import { signInWithEmail } from "@/lib/auth/signin";
 import { verifyOTP } from "@/lib/auth/verifyOTP";
 import { cn } from "@/lib/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   ButtonHTMLAttributes,
@@ -96,6 +97,7 @@ export default function SignInPage() {
 
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
   const [formValidity, setFormValidity] = useState(false);
   const [email, setEmail] = useState<string>("");
@@ -110,13 +112,14 @@ export default function SignInPage() {
           id="forum-signin"
           className="py-2 text-center text-lg font-light uppercase"
         >
-          M&apos;inscrire au forum
+          Me connecter au forum
         </h2>
         <Form
           onChange={(e) => {
             setFormValidity(e.currentTarget.checkValidity());
           }}
           action={async (formData) => {
+            setLoading(true);
             const response = await signInWithEmail(formData);
             if (!response.success) {
               return console.log(response.errors);
@@ -124,6 +127,7 @@ export default function SignInPage() {
             setEmail(response.data.email);
             setStep("OTP");
             setFormValidity(false);
+            setLoading(false);
           }}
         >
           <FormGroup>
@@ -140,7 +144,8 @@ export default function SignInPage() {
             <Input id="pseudo" name="pseudo" type="text" required />
           </FormGroup>
           <Button type="submit" disabled={!formValidity}>
-            M&apos;inscrire
+            {loading && <Loader className="size-4 animate-spin" />}
+            Me connecter
           </Button>
         </Form>
       </section>
@@ -168,6 +173,7 @@ export default function SignInPage() {
         }}
         action={async (formData) => {
           setErrors({});
+          setLoading(true);
           const otp = formData.get("otp")?.toString();
           if (!email || !otp) return;
           const response = await verifyOTP({ email, otp });
@@ -178,7 +184,7 @@ export default function SignInPage() {
             return console.error(response.error);
           }
 
-          console.log(response.data);
+          setLoading(false);
           router.push("/forum");
         }}
       >
@@ -202,6 +208,7 @@ export default function SignInPage() {
           </InputOTPGroup>
         </InputOTP>
         <Button type="submit" disabled={!formValidity}>
+          {loading && <Loader className="size-4 animate-spin" />}
           Confirmer
         </Button>
         {errors.otpValidation && (
@@ -210,6 +217,7 @@ export default function SignInPage() {
           </p>
         )}
       </Form>
+      {loading && <></>}
     </section>
   );
 }
