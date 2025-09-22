@@ -1,5 +1,6 @@
 "use client";
 
+import CguCheckbox from "@/components/CguCheckbox/CguCheckbox";
 import {
   InputOTP,
   InputOTPGroup,
@@ -82,7 +83,7 @@ function Button({
   return (
     <button
       className={cn(
-        "flex items-center justify-center gap-2 rounded-sm border border-white px-8 py-0.5 font-semibold hover:bg-white/25 disabled:opacity-50",
+        "hover:not:disabled:bg-white/25 flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-white px-8 py-0.5 font-semibold disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
@@ -101,6 +102,7 @@ export default function SignInPage() {
   const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
   const [formValidity, setFormValidity] = useState(false);
   const [email, setEmail] = useState<string>("");
+  const [accepted, setAccepted] = useState(false);
   const [errors, setErrors] = useState<{
     otpValidation?: string;
     email?: string;
@@ -110,7 +112,10 @@ export default function SignInPage() {
 
   if (step === "EMAIL")
     return (
-      <section aria-labelledby="forum-signin">
+      <section
+        aria-labelledby="forum-signin"
+        className="max-w-[90dvw] landscape:max-w-lg"
+      >
         <h2
           id="forum-signin"
           className="py-2 text-center text-lg font-light uppercase"
@@ -144,12 +149,29 @@ export default function SignInPage() {
 
           <FormGroup>
             <Label htmlFor="pseudo" aria-required>
-              Pseudo
+              Pseudo <em className="font-light">(4 caractères minimum)</em>
             </Label>
-            <Input id="pseudo" name="pseudo" type="text" required />
-            <p className="text-red-500">{errors.pseudo}</p>
+            <Input
+              id="pseudo"
+              name="pseudo"
+              type="text"
+              required
+              minLength={4}
+            />
+            {errors.pseudo && <p className="text-red-500">{errors.pseudo}</p>}
+            {!errors.pseudo && (
+              <p className="text-sm font-light text-gray-300">
+                Le pseudo peut être changé à chaque nouvelle connexion
+              </p>
+            )}
           </FormGroup>
-          <Button type="submit" disabled={!formValidity}>
+          <CguCheckbox
+            value={accepted ? "on" : "off"}
+            onChange={(e) => {
+              setAccepted(e.target.checked);
+            }}
+          />
+          <Button type="submit" disabled={!formValidity || !accepted}>
             {loading && <Loader className="size-4 animate-spin" />}
             Me connecter
           </Button>

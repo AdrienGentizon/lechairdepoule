@@ -43,3 +43,8 @@ export type BroadcastPayload<K = BroadCastKey, T = Record<string, unknown>> = {
   event: K;
   payload: T;
 };
+
+export type TermsOfService = {
+  sys: { id: string };
+  cgu: string;
+};

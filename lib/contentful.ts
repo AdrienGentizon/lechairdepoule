@@ -15,7 +15,7 @@ export default function contentful() {
   return client;
 }
 
-export type EntryTag = "contact" | "randomBackground";
+export type EntryTag = "contact" | "randomBackground" | "termsOfService";
 export type CollectionTag = "eventCollection" | "itemCollection";
 
 type CollectionData<K extends CollectionTag, T = unknown> = {
