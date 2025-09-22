@@ -14,6 +14,10 @@ export default function Forum() {
     title?: string;
     description?: string;
   }>({});
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
   const { conversations, isLoading } = useConversations();
   const { postConversation, isPending } = usePostConversation();
 
@@ -65,23 +69,35 @@ export default function Forum() {
                 confirmButtonProps={{
                   children: <>Créer un Topic</>,
                   disabled:
-                    !newConversation.title && !newConversation.description,
+                    (newConversation.title?.length ?? 0) <= 0 ||
+                    (newConversation.description?.length ?? 0) <= 0,
                   onClick: () => {
-                    if (!newConversation.title || !newConversation.description)
-                      return;
-                    const popover = document.querySelector(
-                      `#create-conversation-popover`,
-                    );
-                    if (popover?.tagName === "DIV") {
-                      setTimeout(() => {
-                        (popover as HTMLDivElement).hidePopover();
-                      }, 750);
-                    }
+                    const titleEmpty =
+                      (newConversation.title?.length ?? 0) <= 0;
+                    const descriptionEmpty =
+                      (newConversation.description?.length ?? 0) <= 0;
+
+                    console.log({ titleEmpty, descriptionEmpty });
+
+                    if (
+                      !newConversation.title ||
+                      !newConversation.description ||
+                      titleEmpty ||
+                      descriptionEmpty
+                    )
+                      return setErrors({
+                        title: titleEmpty ? `Titre obligatoire` : undefined,
+                        description: titleEmpty
+                          ? `Description obligatoire`
+                          : undefined,
+                      });
 
                     postConversation({
                       title: newConversation.title,
                       description: newConversation.description,
                     });
+                    setNewConversation({});
+                    setErrors({});
                   },
                 }}
               >
@@ -94,7 +110,7 @@ export default function Forum() {
                   <div className="flex flex-col">
                     <label
                       htmlFor="title"
-                      className="pb-0.5 text-sm font-semibold"
+                      className="pb-0.5 text-sm font-semibold after:content-['*']"
                     >
                       Titre
                     </label>
@@ -115,11 +131,12 @@ export default function Forum() {
                         });
                       }}
                     />
+                    <p className="text-red-600">{errors.title}</p>
                   </div>
                   <div className="flex flex-col">
                     <label
                       htmlFor="description"
-                      className="pb-0.5 text-sm font-semibold"
+                      className="pb-0.5 text-sm font-semibold after:content-['*']"
                     >
                       Description
                     </label>
