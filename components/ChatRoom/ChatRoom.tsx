@@ -1,6 +1,5 @@
 "use client";
 
-import Popover from "@/components/Popover/Popover";
 import useBanUser from "@/lib/hooks/useBanUser";
 import useConversation from "@/lib/hooks/useConversation";
 import useMe from "@/lib/hooks/useMe";
@@ -9,9 +8,15 @@ import useReportMessage from "@/lib/hooks/useReportMessage";
 import { Message } from "@/lib/types";
 import { ArrowLeft, Loader } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ComponentRef, useRef } from "react";
+import { ComponentRef, useRef, useState } from "react";
 import { z } from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
 type Props = {
   conversationId: string;
@@ -31,6 +36,8 @@ export default function ChatRoom({ conversationId }: Props) {
     onLoaded: scrollToBottom,
     onNewMessage: scrollToBottom,
   });
+  const [openReport, setOpenReport] = useState(false);
+  const [openBan, setOpenBan] = useState(false);
 
   const { postConversationMessage, error, isPending } =
     usePostConversationMessage(conversationId);
@@ -78,88 +85,102 @@ export default function ChatRoom({ conversationId }: Props) {
                     </div>
                     <div className="ml-auto flex items-center gap-1">
                       {canReportMessage(message) && (
-                        <>
-                          <button
-                            popoverTarget={`report-message-popover-${message.id}`}
-                            className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
-                          >
+                        <Dialog open={openReport} onOpenChange={setOpenReport}>
+                          <DialogTrigger className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600">
                             Molo molo
-                          </button>
-                          <Popover
-                            popoverTarget={`report-message-popover-${message.id}`}
-                            header="Dénoncer un message"
-                            isPendingConfirm={isPendingReportMessage}
-                            confirmButtonProps={{
-                              children: <>Dénoncer un message</>,
-                              onClick: () => {
-                                const popover = document.querySelector(
-                                  `#report-message-popover-${message.id}`,
-                                );
-                                if (popover?.tagName === "DIV") {
-                                  setTimeout(() => {
-                                    (popover as HTMLDivElement).hidePopover();
-                                  }, 750);
-                                }
+                          </DialogTrigger>
+                          <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
+                            <DialogHeader className="bg-black p-4 text-white">
+                              <DialogTitle>Dénoncer un message</DialogTitle>
+                            </DialogHeader>
+                            <div className="bg-white p-2">
+                              <p>
+                                Vous êtes sur le point de dénoncer un message de{" "}
+                                <strong>{message.user.pseudo}</strong>.
+                              </p>
+                              <p>
+                                Le message ne sera plus lisible, cependant son
+                                contenu sera conservé dans la base données.
+                              </p>
+                              <p>Voulez-vous poursuivre?</p>
+                            </div>
+                            <footer className="flex flex-col gap-1 p-2">
+                              <button
+                                className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={isPendingReportMessage}
+                                onClick={() => {
+                                  reportMessage(message.id);
+                                }}
+                              >
+                                <span className="relative">
+                                  Dénoncer un message
+                                  {isPendingReportMessage && (
+                                    <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
+                                  )}
+                                </span>
+                              </button>
 
-                                reportMessage(message.id);
-                              },
-                            }}
-                          >
-                            <p>
-                              Vous êtes sur le point de dénoncer un message de{" "}
-                              <strong>{message.user.pseudo}</strong>.
-                            </p>
-                            <p>
-                              Le message ne sera plus lisible, cependant son
-                              contenu sera conservé dans la base données.
-                            </p>
-                            <p>Voulez-vous poursuivre?</p>
-                          </Popover>
-                        </>
+                              <button
+                                className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
+                                onClick={() => {
+                                  setOpenReport(false);
+                                }}
+                              >
+                                Fermer
+                              </button>
+                            </footer>
+                          </DialogContent>
+                        </Dialog>
                       )}
                       {canBanMessageUser(message) && (
                         <>
-                          <button
-                            popoverTarget={`ban-user-popover-${message.id}`}
-                            className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600"
-                          >
-                            Bannir
-                          </button>
-                          <Popover
-                            popoverTarget={`popover-${message.id}`}
-                            header="Bannir un utilisateur"
-                            isPendingConfirm={isPendingBanUser}
-                            confirmButtonProps={{
-                              children: (
-                                <>
-                                  Bannir <strong>{message.user.pseudo}</strong>
-                                </>
-                              ),
-                              onClick: () => {
-                                const popover = document.querySelector(
-                                  `#ban-user-popover-${message.id}`,
-                                );
-                                if (popover?.tagName === "DIV") {
-                                  setTimeout(() => {
-                                    (popover as HTMLDivElement).hidePopover();
-                                  }, 750);
-                                }
+                          <Dialog open={openBan} onOpenChange={setOpenBan}>
+                            <DialogTrigger className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600">
+                              Bannir
+                            </DialogTrigger>
+                            <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
+                              <DialogHeader className="bg-black p-4 text-white">
+                                <DialogTitle>Bannir un utilisateur</DialogTitle>
+                              </DialogHeader>
+                              <div className="bg-white p-2">
+                                <p>
+                                  Vous êtes sur le point de dénoncer un message
+                                  de <strong>{message.user.pseudo}</strong>.
+                                </p>
+                                <p>
+                                  Le message ne sera plus lisible, cependant son
+                                  contenu sera conservé dans la base données.
+                                </p>
+                                <p>Voulez-vous poursuivre?</p>
+                              </div>
+                              <footer className="flex flex-col gap-1 p-2">
+                                <button
+                                  className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                  disabled={isPendingBanUser}
+                                  onClick={() => {
+                                    banUser(message.user.id);
+                                  }}
+                                >
+                                  <span className="relative">
+                                    Bannir{" "}
+                                    <strong>{message.user.pseudo}</strong>
+                                    {isPendingBanUser && (
+                                      <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
+                                    )}
+                                  </span>
+                                </button>
 
-                                banUser(message.user.id);
-                              },
-                            }}
-                          >
-                            <p>
-                              Vous êtes sur le point de bannir{" "}
-                              <strong>{message.user.pseudo}</strong> du forum.
-                            </p>
-                            <p>
-                              Cet utilisateur ne pourra plus participer au
-                              forum. Cependant tous ses messages sont conservés
-                              dans la base données.
-                            </p>
-                            <p>Voulez-vous poursuivre?</p>
-                          </Popover>
+                                <button
+                                  className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
+                                  onClick={() => {
+                                    setOpenBan(false);
+                                  }}
+                                >
+                                  Fermer
+                                </button>
+                              </footer>
+                            </DialogContent>
+                          </Dialog>
                         </>
                       )}
                     </div>
