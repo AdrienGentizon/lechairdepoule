@@ -103,6 +103,9 @@ export default function SignInPage() {
   const [email, setEmail] = useState<string>("");
   const [errors, setErrors] = useState<{
     otpValidation?: string;
+    email?: string;
+    pseudo?: string;
+    server?: string;
   }>({});
 
   if (step === "EMAIL")
@@ -120,9 +123,10 @@ export default function SignInPage() {
           }}
           action={async (formData) => {
             setLoading(true);
+            setErrors({});
             const response = await signInWithEmail(formData);
             if (!response.success) {
-              return console.log(response.errors);
+              return setErrors(response.errors);
             }
             setEmail(response.data.email);
             setStep("OTP");
@@ -135,6 +139,7 @@ export default function SignInPage() {
               Email
             </Label>
             <Input id="email" name="email" type="email" required />
+            <p className="text-red-500">{errors.email}</p>
           </FormGroup>
 
           <FormGroup>
@@ -142,11 +147,13 @@ export default function SignInPage() {
               Pseudo
             </Label>
             <Input id="pseudo" name="pseudo" type="text" required />
+            <p className="text-red-500">{errors.pseudo}</p>
           </FormGroup>
           <Button type="submit" disabled={!formValidity}>
             {loading && <Loader className="size-4 animate-spin" />}
             Me connecter
           </Button>
+          <p className="text-red-500">{errors.server}</p>
         </Form>
       </section>
     );
