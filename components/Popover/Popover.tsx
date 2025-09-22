@@ -41,7 +41,7 @@ export default function Popover({
       </div>
       <footer className="flex flex-col gap-1 p-2">
         <button
-          className="w-full rounded-sm border border-black bg-black py-0.5 text-center text-white hover:bg-gray-700"
+          className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isPendingConfirm || confirmButtonProps.disabled}
           onClick={() => {
             const popover = document.querySelector(`#${popoverTarget}`);
