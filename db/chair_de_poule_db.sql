@@ -22,16 +22,16 @@ CREATE TABLE conversations (
     title TEXT NOT NULL,
     description TEXT,
 		created_by INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE messages (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     body TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP,
-    reported_at TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ,
+    reported_at TIMESTAMPTZ,
 		reported_by INTEGER,
 		user_id INTEGER NOT NULL,
 		conversation_id INTEGER,
