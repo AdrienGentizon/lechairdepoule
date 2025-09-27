@@ -5,8 +5,10 @@ CREATE TABLE users (
     created_at TIMESTAMP,
     banned_at TIMESTAMP,
     deleted_at TIMESTAMP,
+    banned_by INTEGER,
     role TEXT,
-    last_connection TIMESTAMP
+    last_connection TIMESTAMP,
+    CONSTRAINT banned_by_fk FOREIGN KEY (banned_by) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE connection_tokens (
