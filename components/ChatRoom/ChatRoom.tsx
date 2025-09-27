@@ -34,7 +34,7 @@ export default function ChatRoom({ conversationId }: Props) {
         </div>
       </header>
 
-      <main className="no-scrollbar overflow-y-scroll bg-black sm:max-w-2xl">
+      <main className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0">
         <MessagesList
           me={me}
           conversation={conversation}
@@ -42,13 +42,15 @@ export default function ChatRoom({ conversationId }: Props) {
           scrollToBottom={scrollToBottom}
         />
       </main>
-      <SubmitMessageForm
-        conversationId={conversation.id}
-        onSuccess={(e) => {
-          scrollToBottom();
-          (e.target as HTMLFormElement).reset();
-        }}
-      />
+      <div className="px-1 landscape:px-0">
+        <SubmitMessageForm
+          conversationId={conversation.id}
+          onSuccess={(e) => {
+            scrollToBottom();
+            (e.target as HTMLFormElement).reset();
+          }}
+        />
+      </div>
 
       {isLoading && (
         <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">

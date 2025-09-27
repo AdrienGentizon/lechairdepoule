@@ -49,7 +49,7 @@ export default function MessagesList({
                     {message.user.pseudo}
                   </h3>
                 </div>
-                <div className="ml-auto hidden items-center gap-1 group-hover:flex">
+                <div className="ml-auto flex items-center gap-1 group-hover:flex landscape:hidden">
                   {canReportMessage(message) && (
                     <ReportMessageButton message={message} />
                   )}
