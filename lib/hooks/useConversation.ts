@@ -7,18 +7,21 @@ import {
   Message,
   User,
 } from "../types";
-import { useCallback, useEffect } from "react";
+import { ComponentRef, useCallback, useEffect, useRef } from "react";
 import { supabaseClientSide } from "../supabaseClientSide";
 import { reportedMessageBodyReplacement } from "../wordings";
 import { getMessageFromRaw } from "../forum/getMessageFromRaw";
 
-export default function useMainConversation(
-  conversationId: string,
-  options?: {
-    onLoaded: () => void;
-    onNewMessage: () => void;
-  },
-) {
+export default function useMainConversation(conversationId: string) {
+  const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
+
+  const scrollToBottom = () => {
+    if (!lastEmptyLiRef.current) return;
+    setTimeout(() => {
+      lastEmptyLiRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 250);
+  };
+
   const queryClient = useQueryClient();
   const {
     data: conversation,
@@ -34,7 +37,7 @@ export default function useMainConversation(
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      options?.onLoaded();
+      scrollToBottom();
       return response.json() as Promise<Conversation>;
     },
   });
@@ -53,7 +56,7 @@ export default function useMainConversation(
           };
         },
       );
-      options?.onNewMessage();
+      scrollToBottom();
     },
     [queryClient],
   );
@@ -73,7 +76,7 @@ export default function useMainConversation(
           };
         },
       );
-      options?.onNewMessage();
+      scrollToBottom;
     },
     [queryClient],
   );
@@ -98,7 +101,7 @@ export default function useMainConversation(
           };
         },
       );
-      options?.onNewMessage();
+      scrollToBottom();
     },
     [queryClient],
   );
@@ -164,5 +167,7 @@ export default function useMainConversation(
     },
     error,
     isLoading,
+    scrollToBottom,
+    lastEmptyLiRef,
   };
 }
