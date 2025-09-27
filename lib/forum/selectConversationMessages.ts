@@ -49,6 +49,7 @@ export default async function selectConversationMessages(
         user: {
           id: userId,
           pseudo: userPseudo,
+          bannedAt: userBannedAt,
         },
       };
     }
@@ -57,6 +58,7 @@ export default async function selectConversationMessages(
       user: {
         id: userId,
         pseudo: userPseudo,
+        bannedAt: userBannedAt,
       },
     };
   });

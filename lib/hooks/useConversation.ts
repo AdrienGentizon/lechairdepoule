@@ -5,14 +5,20 @@ import {
   CacheKey,
   Conversation,
   Message,
+  RawMessage,
+  RawUser,
   User,
 } from "../types";
 import { ComponentRef, useCallback, useEffect, useRef } from "react";
 import { supabaseClientSide } from "../supabaseClientSide";
 import { reportedMessageBodyReplacement } from "../wordings";
 import { getMessageFromRaw } from "../forum/getMessageFromRaw";
+import useUsers from "./useUsers";
+import useConversations from "./useConversations";
 
-export default function useMainConversation(conversationId: string) {
+export default function useConversation(conversationId: string) {
+  const { conversations } = useConversations();
+  const { users } = useUsers();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
 
   const scrollToBottom = () => {
@@ -43,7 +49,21 @@ export default function useMainConversation(conversationId: string) {
   });
 
   const onNewMessage = useCallback(
-    ({ payload: message }: BroadcastPayload<"new_message", Message>) => {
+    ({ rawMessage }: { rawMessage: RawMessage }) => {
+      const author = users.find(
+        ({ id }) => parseInt(id) === rawMessage.user_id,
+      ) ?? {
+        id: "-1",
+        pseudo: "nanani",
+        bannedAt: null,
+      };
+
+      const message = getMessageFromRaw(rawMessage, {
+        id: author.id,
+        pseudo: author.pseudo,
+        bannedAt: author.bannedAt,
+      });
+
       queryClient.setQueryData(
         [`conversation-${conversationId}` satisfies CacheKey],
         (old: Conversation) => {
@@ -62,8 +82,7 @@ export default function useMainConversation(conversationId: string) {
   );
 
   const onReportedMessage = useCallback(
-    ({ payload: message }: BroadcastPayload<"reported_message", Message>) => {
-      console.log(message);
+    ({ message }: { message: Message }) => {
       queryClient.setQueryData(
         [`conversation-${conversationId}` satisfies CacheKey],
         (old: Conversation) => {
@@ -82,28 +101,37 @@ export default function useMainConversation(conversationId: string) {
   );
 
   const onBannedUser = useCallback(
-    ({ payload: user }: BroadcastPayload<"banned_user", User>) => {
-      queryClient.setQueryData(
-        [`conversation-${conversationId}` satisfies CacheKey],
-        (old: Conversation) => {
-          return {
-            ...old,
-            messages: old.messages.reduce((acc: Message[], curr) => {
-              if (curr.user.id !== user.id) return [...acc, curr];
-              return [
-                ...acc,
-                {
-                  ...curr,
-                  body: reportedMessageBodyReplacement,
-                },
-              ];
-            }, []),
-          };
-        },
-      );
+    ({ user }: { user: User }) => {
+      for (const conversation of conversations) {
+        queryClient.setQueryData(
+          [`conversation-${conversation.id}` satisfies CacheKey],
+          (old: Conversation) => {
+            if (!old) return;
+            return {
+              ...old,
+              messages: old.messages.reduce((acc: Message[], curr) => {
+                return [
+                  ...acc,
+                  {
+                    ...curr,
+                    body:
+                      curr.user.id === user.id
+                        ? reportedMessageBodyReplacement
+                        : curr.body,
+                    user: {
+                      ...curr.user,
+                      bannedAt: user.bannedAt,
+                    },
+                  },
+                ];
+              }, []),
+            };
+          },
+        );
+      }
       scrollToBottom();
     },
-    [queryClient],
+    [queryClient, conversations],
   );
 
   useEffect(() => {
@@ -116,13 +144,8 @@ export default function useMainConversation(conversationId: string) {
           schema: "public",
           table: "messages",
         },
-        (payload) => {
-          onNewMessage({
-            payload: getMessageFromRaw(payload.new as any, {
-              id: "1",
-              pseudo: "nanani",
-            }),
-          } as BroadcastPayload<"new_message", Message>);
+        (payload: unknown & { new: RawMessage }) => {
+          onNewMessage({ rawMessage: payload.new });
         },
       )
       .subscribe();
@@ -132,20 +155,22 @@ export default function useMainConversation(conversationId: string) {
       .on(
         "broadcast",
         { event: "reported_message" satisfies BroadCastKey },
-        (payload) =>
-          onReportedMessage(
-            payload as BroadcastPayload<"reported_message", Message>,
-          ),
+        ({ payload }: unknown & { payload: Message }) => {
+          onReportedMessage({ message: payload });
+        },
       )
       .subscribe();
 
     const bannedUserSubscription = supabaseClientSide
-      .channel("messages")
+      .channel("users")
       .on(
         "broadcast",
         { event: "banned_user" satisfies BroadCastKey },
-        (payload) =>
-          onBannedUser(payload as BroadcastPayload<"banned_user", User>),
+        ({ payload }: unknown & { payload: User }) => {
+          onBannedUser({
+            user: payload,
+          });
+        },
       )
       .subscribe();
 
@@ -154,7 +179,9 @@ export default function useMainConversation(conversationId: string) {
       supabaseClientSide.removeChannel(bannedUserSubscription);
       supabaseClientSide.removeChannel(newMessageSubscription);
     };
-  }, [onNewMessage]);
+  }, [onNewMessage, onReportedMessage, onBannedUser]);
+
+  console.log(conversations);
 
   return {
     conversation: conversation && {

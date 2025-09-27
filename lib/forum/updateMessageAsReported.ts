@@ -17,16 +17,18 @@ export default async function updateMessageAsReported({
         createdAt: string;
         updatedAt: string | null;
         reportedAt: string | null;
-        userId: string;
         conversationId: string | null;
+        userId: string;
         userPseudo: string;
+        userBannedAt: string | null;
       }[]
     >`
     WITH user_messages as (
     SELECT
       m.id as message_id,
       u.id as user_id,
-      u.pseudo as user_pseudo
+      u.pseudo as user_pseudo,
+      u.banned_at as user_banned_at
     FROM
       public.messages m,
       public.users u
@@ -49,17 +51,21 @@ export default async function updateMessageAsReported({
       m.reported_at::text as "reportedAt",
       m.user_id::text as "userId",
       m.conversation_id::text as "conversationId",
-      user_messages.user_pseudo as "userPseudo";`
+      user_messages.user_pseudo as "userPseudo",
+      user_messages.user_banned_at as "userBannedAt";`
   )
-    .map(({ userPseudo, userId, ...message }) => {
+    .map(({ userPseudo, userId, userBannedAt, ...message }) => {
       if (message.reportedAt) {
         return {
           ...message,
           body: reportedMessageBodyReplacement,
-          user: { id: userId, pseudo: userPseudo },
+          user: { id: userId, pseudo: userPseudo, bannedAt: userBannedAt },
         };
       }
-      return { ...message, user: { id: userId, pseudo: userPseudo } };
+      return {
+        ...message,
+        user: { id: userId, pseudo: userPseudo, bannedAt: userBannedAt },
+      };
     })
     .at(0);
 }

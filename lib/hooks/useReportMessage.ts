@@ -1,9 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CacheKey, Message } from "../types";
+import { useMutation } from "@tanstack/react-query";
+import { Message } from "../types";
 
 export default function useReportMessage() {
-  const queryClient = useQueryClient();
-
   const {
     mutate: reportMessage,
     error,
@@ -24,20 +22,6 @@ export default function useReportMessage() {
 
       options?.onSuccess();
       return response.json() as Promise<Message>;
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(
-        [`conversation-${data.conversationId}` satisfies CacheKey],
-        (existings: { messages: Message[] } = { messages: [] }) => {
-          return {
-            ...existings,
-            messages: [
-              ...existings.messages.filter(({ id }) => id !== data.id),
-              data,
-            ],
-          };
-        },
-      );
     },
   });
 

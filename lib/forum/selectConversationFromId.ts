@@ -27,21 +27,15 @@ export default async function selectConversationFromId(conversationId: string) {
     WHERE
       c.id = ${conversationId};`
   )
-    .map(
-      ({
-        userId,
-        userPseudo,
-        userBannedAt: _userBannedAt,
-        ...conversation
-      }) => {
-        return {
-          ...conversation,
-          createdBy: {
-            id: userId,
-            pseudo: userPseudo,
-          },
-        };
-      },
-    )
+    .map(({ userId, userPseudo, userBannedAt, ...conversation }) => {
+      return {
+        ...conversation,
+        createdBy: {
+          id: userId,
+          pseudo: userPseudo,
+          bannedAt: userBannedAt,
+        },
+      };
+    })
     .at(0);
 }

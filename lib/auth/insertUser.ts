@@ -1,4 +1,6 @@
+import { revalidateTag } from "next/cache";
 import sql from "../db";
+import { CacheKey } from "../types";
 
 export default async function insertUser({
   email,
@@ -7,6 +9,7 @@ export default async function insertUser({
   email: string;
   pseudo: string;
 }) {
+  revalidateTag("users" satisfies CacheKey);
   return (
     await sql<
       {

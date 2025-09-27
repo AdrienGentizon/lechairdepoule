@@ -1,4 +1,3 @@
-import sql from "../db";
 import { supabaseServerSide } from "../supabaseServerSide";
 import { Conversation, User } from "../types";
 
@@ -10,7 +9,7 @@ function getConversationFromRaw(
     created_by: string;
     created_at: string;
   },
-  createdBy: { id: string; pseudo: string },
+  createdBy: { id: string; pseudo: string; bannedAt: string | null },
 ): Conversation {
   return {
     id: raw.id,
@@ -49,5 +48,6 @@ export default async function insertConversation({
   return getConversationFromRaw(data, {
     id: user.id,
     pseudo: user.pseudo,
+    bannedAt: user.bannedAt,
   });
 }

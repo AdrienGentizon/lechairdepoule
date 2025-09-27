@@ -1,5 +1,6 @@
+import { revalidateTag } from "next/cache";
 import sql from "../db";
-import { User } from "../types";
+import { CacheKey, User } from "../types";
 
 export default async function updateUserAsBanned({
   userId,
@@ -8,6 +9,8 @@ export default async function updateUserAsBanned({
   userId: string;
   bannedBy: User;
 }) {
+  revalidateTag("users" satisfies CacheKey);
+
   return (
     await sql<
       {

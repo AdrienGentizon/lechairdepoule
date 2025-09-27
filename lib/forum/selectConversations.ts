@@ -28,15 +28,14 @@ export default async function selectConversations() {
       c.created_by = u.id
     ORDER BY
       c.created_at DESC;`
-  ).map(
-    ({ userId, userPseudo, userBannedAt: _userBannedAt, ...conversation }) => {
-      return {
-        ...conversation,
-        createdBy: {
-          id: userId,
-          pseudo: userPseudo,
-        },
-      };
-    },
-  );
+  ).map(({ userId, userPseudo, userBannedAt, ...conversation }) => {
+    return {
+      ...conversation,
+      createdBy: {
+        id: userId,
+        pseudo: userPseudo,
+        bannedAt: userBannedAt,
+      },
+    };
+  });
 }

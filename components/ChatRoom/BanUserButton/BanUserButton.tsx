@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import useBanUser from "@/lib/hooks/useBanUser";
 import { Message } from "@/lib/types";
-import { Loader } from "lucide-react";
+import { Loader, Skull } from "lucide-react";
 import { useState } from "react";
 
 type Props = { message: Message };
@@ -19,7 +19,11 @@ export default function BanUserButton({ message }: Props) {
 
   return (
     <Dialog open={openBan} onOpenChange={setOpenBan}>
-      <DialogTrigger className="rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600">
+      <DialogTrigger
+        disabled={message.user.bannedAt !== null}
+        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600 disabled:hidden"
+      >
+        <Skull className="size-3" />
         Bannir
       </DialogTrigger>
       <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
@@ -42,7 +46,11 @@ export default function BanUserButton({ message }: Props) {
             className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isPendingBanUser}
             onClick={() => {
-              banUser(message.user.id);
+              banUser(message.user.id, {
+                onSuccess: () => {
+                  setOpenBan(false);
+                },
+              });
             }}
           >
             <span className="relative">

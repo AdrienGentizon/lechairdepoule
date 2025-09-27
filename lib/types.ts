@@ -1,3 +1,14 @@
+export type RawUser = {
+  id: number;
+  email: string;
+  pseudo: string;
+  role: string | null;
+  createdAt: string;
+  bannedAt: string | null;
+  deletedAt: string | null;
+  lastConnection: string | null;
+};
+
 export type User = {
   id: string;
   email: string;
@@ -7,6 +18,17 @@ export type User = {
   bannedAt: string | null;
   deletedAt: string | null;
   lastConnection: string | null;
+};
+
+export type RawMessage = {
+  id: number;
+  body: string;
+  created_at: string;
+  updated_at: string | null;
+  reported_at: string | null;
+  conversation_id: number;
+  user_id: number;
+  reported_by: number | null;
 };
 
 export type Message = {
@@ -19,6 +41,7 @@ export type Message = {
   user: {
     id: string;
     pseudo: string;
+    bannedAt: string | null;
   };
 };
 
@@ -30,11 +53,16 @@ export type Conversation = {
   createdBy: {
     id: string;
     pseudo: string;
+    bannedAt: string | null;
   };
   messages: Message[];
 };
 
-export type CacheKey = "me" | `conversation-${string}` | "conversations";
+export type CacheKey =
+  | "me"
+  | `conversation-${string}`
+  | "conversations"
+  | "users";
 
 export type BroadCastKey = "new_message" | "reported_message" | "banned_user";
 
