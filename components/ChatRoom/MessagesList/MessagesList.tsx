@@ -33,7 +33,7 @@ export default function MessagesList({
   }, [scrollToBottom]);
 
   return (
-    <ul className="flex flex-col gap-2 rounded-sm py-2">
+    <ul className="flex min-h-[calc(100dvh-400px)] flex-col gap-2 rounded-sm py-2">
       {conversation.messages.map((message) => {
         return (
           <li key={`main-conversation-message-${message.id}`} className="group">
