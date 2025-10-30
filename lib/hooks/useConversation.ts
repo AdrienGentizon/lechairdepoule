@@ -181,8 +181,6 @@ export default function useConversation(conversationId: string) {
     };
   }, [onNewMessage, onReportedMessage, onBannedUser]);
 
-  console.log(conversations);
-
   return {
     conversation: conversation && {
       ...conversation,
