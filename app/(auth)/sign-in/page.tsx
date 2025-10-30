@@ -254,6 +254,7 @@ export default function SignInPage() {
         {Object.values(errors).length > 0 && (
           <Button
             role="link"
+            type="button"
             onClick={() => {
               router.refresh();
             }}
