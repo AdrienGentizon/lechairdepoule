@@ -102,7 +102,7 @@ export async function signInWithEmail(formData: FormData): Promise<
       console.log(
         `[Operation]`,
         "signInWithEmail",
-        "connection token created from",
+        "connection token created for",
         user.email,
       );
     } catch (e) {

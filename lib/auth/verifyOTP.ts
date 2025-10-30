@@ -22,8 +22,11 @@ export async function verifyOTP({
       };
     }
 > {
+  console.log(`[Operation]`, "verifyOTP");
   const user = await selectUserFromEmail(email);
   if (!user) {
+    console.error(`[Error]`, "verifyOTP", "email not found");
+
     return {
       success: false,
       error: `Email introuvable`,
@@ -43,6 +46,13 @@ export async function verifyOTP({
   ).at(0);
 
   if (!token) {
+    console.error(
+      `[Error]`,
+      "verifyOTP",
+      "no connection token for",
+      `user(${user.id})::${user.email}`,
+    );
+
     return {
       success: false,
       error: `Numéro de vérification non valide`,
@@ -54,6 +64,13 @@ export async function verifyOTP({
   const hashedCode = hash.digest("hex");
 
   if (hashedCode !== token.value) {
+    console.error(
+      `[Error]`,
+      "verifyOTP",
+      "invalid otp for",
+      `user(${user.id})::${user.email}`,
+    );
+
     return {
       success: false,
       error: `Numéro de vérification non valide`,

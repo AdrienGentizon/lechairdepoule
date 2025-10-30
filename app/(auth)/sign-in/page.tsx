@@ -204,13 +204,22 @@ export default function SignInPage() {
           setErrors({});
           setLoading(true);
           const otp = formData.get("otp")?.toString();
-          if (!email || !otp) return;
+          if (!email || !otp) {
+            setErrors({
+              email: "Email requis",
+              otpValidation: "Code de vérification requis",
+            });
+            setLoading(false);
+            return;
+          }
           const response = await verifyOTP({ email, otp });
           if (!response.success) {
             setErrors({
               otpValidation: `Désolé quelque chose à foiré. On résoudra ce problème un jour. En attendant, vous pouvez re-actualiser la page et réessayer. Ca finira pas être bon.`,
             });
-            return console.error(response.error);
+            setLoading(false);
+            console.error(response.error);
+            return;
           }
 
           setLoading(false);
@@ -236,17 +245,28 @@ export default function SignInPage() {
             <InputOTPSlot className="border-inherit" index={5} />
           </InputOTPGroup>
         </InputOTP>
-        <Button type="submit" disabled={!formValidity}>
-          {loading && <Loader className="size-4 animate-spin" />}
-          Confirmer
-        </Button>
+        {Object.values(errors).length === 0 && (
+          <Button type="submit" disabled={!formValidity}>
+            {loading && <Loader className="size-4 animate-spin" />}
+            Confirmer
+          </Button>
+        )}
+        {Object.values(errors).length > 0 && (
+          <Button
+            role="link"
+            onClick={() => {
+              router.refresh();
+            }}
+          >
+            Essayer à nouveau
+          </Button>
+        )}
         {errors.otpValidation && (
           <p className="max-w-60 text-center text-sm font-light leading-6 text-red-500">
             {errors.otpValidation}
           </p>
         )}
       </Form>
-      {loading && <></>}
     </section>
   );
 }
