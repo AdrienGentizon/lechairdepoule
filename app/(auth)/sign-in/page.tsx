@@ -131,7 +131,9 @@ export default function SignInPage() {
             setErrors({});
             const response = await signInWithEmail(formData);
             if (!response.success) {
-              return setErrors(response.errors);
+              setLoading(false);
+              setErrors(response.errors);
+              return;
             }
             setEmail(response.data.email);
             setStep("OTP");
