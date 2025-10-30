@@ -63,17 +63,19 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <span className="sr-only">Contact</span>
             </Link>
           </li>
-          <li>
-            <Link href={`/forum`}>
-              <Image
-                src={ForumPNG}
-                alt="Forum"
-                className="h-6 object-contain landscape:h-10"
-                role="button"
-              />
-              <span className="sr-only">Forum</span>
-            </Link>
-          </li>
+          {process.env["NEXT_PUBLIC_SHOW_FORUM"] === "true" && (
+            <li>
+              <Link href={`/forum`}>
+                <Image
+                  src={ForumPNG}
+                  alt="Forum"
+                  className="h-6 object-contain landscape:h-10"
+                  role="button"
+                />
+                <span className="sr-only">Forum</span>
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </header>
