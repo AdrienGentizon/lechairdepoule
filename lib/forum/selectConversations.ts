@@ -18,7 +18,7 @@ export default async function selectConversations() {
       c.title,
       c.description,
       c.created_at::text as "createdAt",
-      u.id as "userId",
+      u.id::text as "userId",
       u.pseudo as "userPseudo",
       u.banned_at::text as "userBannedAt"
     FROM
