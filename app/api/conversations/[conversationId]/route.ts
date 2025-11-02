@@ -1,4 +1,5 @@
 import getUser from "@/lib/auth/getUser";
+import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
@@ -95,6 +96,57 @@ export async function POST(
     if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
 
     return NextResponse.json<Message>(message, { status: 200 });
+  } catch (error) {
+    console.error(
+      `[Operation]`,
+      opertationName,
+      (error as Error)?.message ?? error,
+    );
+    return NextResponse.json(
+      {
+        error: "server error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  ctx: { params: Promise<{ conversationId: string }> },
+) {
+  const opertationName = `${req.method} ${req.url}`;
+  const params = await ctx.params;
+  try {
+    console.log(`[Operation]`, opertationName);
+    const user = await getUser();
+
+    if (!user || user.bannedAt)
+      return NextResponse.json(
+        {
+          error: "unauthorized",
+        },
+        { status: 401 },
+      );
+
+    const conversation = await deleteConversationFromId({
+      userId: user.id,
+      conversationId: params.conversationId,
+    });
+
+    if (!conversation)
+      return NextResponse.json(
+        {
+          error: "not found",
+        },
+        { status: 404 },
+      );
+    return NextResponse.json<{ conversationId: string }>(
+      { conversationId: conversation.id },
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     console.error(
       `[Operation]`,
