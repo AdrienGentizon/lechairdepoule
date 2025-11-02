@@ -12,20 +12,20 @@ export default async function selectConversationFromId(conversationId: string) {
         userPseudo: string;
         userBannedAt: string | null;
       }[]
-    >`
-    SELECT
-      c.id::text,
-      c.title,
-      c.description,
-      c.created_at::text as "createdAt",
-      u.id as "userId",
-      u.pseudo as "userPseudo",
-      u.banned_at::text as "userBannedAt"
-    FROM
-      public.conversations c LEFT JOIN public.messages m ON c.id = m.conversation_id,
-      public.users u
-    WHERE
-      c.id = ${conversationId};`
+    >`SELECT
+        c.id::text,
+        c.title,
+        c.description,
+        c.created_at::text AS "createdAt",
+        u.id::text AS "userId",
+        u.pseudo AS "userPseudo",
+        u.banned_at::text AS "userBannedAt"
+      FROM
+        public.conversations c,
+        public.users u
+      WHERE
+        c.id = ${conversationId}
+        AND c.created_by = u.id;`
   )
     .map(({ userId, userPseudo, userBannedAt, ...conversation }) => {
       return {
