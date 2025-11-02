@@ -24,7 +24,7 @@ export default function ForumPage() {
     title?: string;
     description?: string;
   }>({});
-  const [openChat, setOpenChat] = useState(false);
+  const [openCreateConversation, setOpenCreateConversation] = useState(false);
 
   const { conversations, isLoading } = useConversations();
   const { postConversation, isPending } = usePostConversation();
@@ -62,7 +62,10 @@ export default function ForumPage() {
         })}
       </ul>
       <div className="group relative flex flex-col border-b border-t border-white">
-        <Dialog open={openChat} onOpenChange={setOpenChat}>
+        <Dialog
+          open={openCreateConversation}
+          onOpenChange={setOpenCreateConversation}
+        >
           <DialogTrigger className="flex w-full items-center justify-center gap-2 px-4 py-6 font-light uppercase">
             <Plus className="stroke-1" />
             Créer un Topic
@@ -162,6 +165,9 @@ export default function ForumPage() {
                   });
                   setNewConversation({});
                   setErrors({});
+                  setTimeout(() => {
+                    setOpenCreateConversation(false);
+                  }, 750);
                 }}
               >
                 <span className="relative">
@@ -175,7 +181,7 @@ export default function ForumPage() {
               <button
                 className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
                 onClick={() => {
-                  setOpenChat(false);
+                  setOpenCreateConversation(false);
                 }}
               >
                 Fermer
