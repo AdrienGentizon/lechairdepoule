@@ -3,6 +3,7 @@ import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
+import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import { Conversation, Message } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -147,6 +148,75 @@ export async function DELETE(
         status: 200,
       },
     );
+  } catch (error) {
+    console.error(
+      `[Operation]`,
+      opertationName,
+      (error as Error)?.message ?? error,
+    );
+    return NextResponse.json(
+      {
+        error: "server error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  ctx: { params: Promise<{ conversationId: string }> },
+) {
+  const opertationName = `${req.method} ${req.url}`;
+  const params = await ctx.params;
+  try {
+    console.log(`[Operation]`, opertationName);
+    const user = await getUser();
+
+    if (!user || user.bannedAt)
+      return NextResponse.json(
+        {
+          error: "unauthorized",
+        },
+        { status: 401 },
+      );
+
+    const parsedInputs = z
+      .object({
+        title: z.optional(z.string()),
+        description: z.optional(z.string()),
+      })
+      .safeParse(await req.json());
+
+    if (!parsedInputs.success) {
+      return NextResponse.json(
+        {
+          error: "modification non valide la conversation ne sera pas mofifiée",
+        },
+        { status: 400 },
+      );
+    }
+
+    const conversation = await updateConversationFromId({
+      userId: user.id,
+      conversationId: params.conversationId,
+      payload: parsedInputs.data,
+    });
+
+    if (!conversation)
+      return NextResponse.json(
+        {
+          error: "not found",
+        },
+        { status: 404 },
+      );
+    return NextResponse.json<{
+      id: string;
+      title: string;
+      description: string;
+    }>(conversation, {
+      status: 200,
+    });
   } catch (error) {
     console.error(
       `[Operation]`,
