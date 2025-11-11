@@ -19,7 +19,7 @@ export default async function updateConversationFromId({
         title: string;
         description: string;
       }[]
-    >`UPDATE FROM public.conversations
+    >`UPDATE public.conversations
       SET ${sql(payload, ...(["title", "description"] satisfies (keyof AllowedFields)[]))}
       WHERE
         id = ${conversationId}
