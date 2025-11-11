@@ -1,3 +1,4 @@
+import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
 
 export default async function selectConversationFromId(conversationId: string) {
@@ -9,7 +10,8 @@ export default async function selectConversationFromId(conversationId: string) {
         description: string;
         createdAt: string;
         userId: string;
-        userPseudo: string;
+        userPseudo: string | null;
+        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`SELECT
@@ -19,6 +21,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.created_at::text AS "createdAt",
         u.id::text AS "userId",
         u.pseudo AS "userPseudo",
+        u.email AS "userEmail",
         u.banned_at::text AS "userBannedAt"
       FROM
         public.conversations c,
@@ -27,12 +30,12 @@ export default async function selectConversationFromId(conversationId: string) {
         c.id = ${conversationId}
         AND c.created_by = u.id;`
   )
-    .map(({ userId, userPseudo, userBannedAt, ...conversation }) => {
+    .map(({ userId, userPseudo, userEmail, userBannedAt, ...conversation }) => {
       return {
         ...conversation,
         createdBy: {
           id: userId,
-          pseudo: userPseudo,
+          pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
           bannedAt: userBannedAt,
         },
       };

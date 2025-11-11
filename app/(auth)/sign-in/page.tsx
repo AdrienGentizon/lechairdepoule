@@ -148,25 +148,6 @@ export default function SignInPage() {
             <Input id="email" name="email" type="email" required />
             <p className="text-red-500">{errors.email}</p>
           </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="pseudo" aria-required>
-              Pseudo <em className="font-light">(4 caractères minimum)</em>
-            </Label>
-            <Input
-              id="pseudo"
-              name="pseudo"
-              type="text"
-              required
-              minLength={4}
-            />
-            {errors.pseudo && <p className="text-red-500">{errors.pseudo}</p>}
-            {!errors.pseudo && (
-              <p className="text-sm font-light text-gray-300">
-                Le pseudo peut être changé à chaque nouvelle connexion
-              </p>
-            )}
-          </FormGroup>
           <CguCheckbox
             value={accepted ? "on" : "off"}
             onChange={(e) => {

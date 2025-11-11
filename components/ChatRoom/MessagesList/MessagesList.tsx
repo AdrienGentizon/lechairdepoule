@@ -1,7 +1,7 @@
 import { Conversation, Message, User } from "@/lib/types";
 import ReportMessageButton from "../ReportMessageButton/ReportMessageButton";
 import BanUserButton from "../BanUserButton/BanUserButton";
-import { useRef, ComponentRef, useEffect, RefObject } from "react";
+import { useEffect, RefObject } from "react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -35,6 +35,7 @@ export default function MessagesList({
   return (
     <ul className="flex min-h-[calc(100dvh-400px)] flex-col gap-2 rounded-sm py-2">
       {conversation.messages.map((message) => {
+        console.log(message.user);
         return (
           <li key={`main-conversation-message-${message.id}`} className="group">
             <div className="flex items-center gap-2">

@@ -2,13 +2,7 @@ import { revalidateTag } from "next/cache";
 import sql from "../db";
 import { CacheKey } from "../types";
 
-export default async function insertUser({
-  email,
-  pseudo,
-}: {
-  email: string;
-  pseudo: string;
-}) {
+export default async function insertUser({ email }: { email: string }) {
   revalidateTag("users" satisfies CacheKey);
   return (
     await sql<
@@ -22,8 +16,8 @@ export default async function insertUser({
         deletedAt: string | null;
         lastConnection: string | null;
       }[]
-    >`INSERT INTO public.users (email, pseudo, created_at)
-        VALUES(${email}, ${pseudo}, ${new Date().toUTCString()})
+    >`INSERT INTO public.users (email, created_at)
+        VALUES(${email}, ${new Date().toUTCString()})
       RETURNING
         id::text,
         email,

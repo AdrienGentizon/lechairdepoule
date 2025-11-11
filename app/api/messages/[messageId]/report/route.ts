@@ -1,4 +1,5 @@
 import getUser from "@/lib/auth/getUser";
+import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
 import { supabaseServerSide } from "@/lib/supabaseServerSide";
 import { BroadCastKey, Message } from "@/lib/types";
@@ -23,7 +24,7 @@ export async function POST(
       );
 
     const reportedMessage = await updateMessageAsReported({
-      reportedBy,
+      reportedBy: { ...reportedBy, pseudo: getUserPseudo(reportedBy) },
       messageId,
     });
 
