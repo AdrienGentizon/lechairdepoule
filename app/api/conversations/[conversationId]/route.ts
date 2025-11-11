@@ -1,4 +1,5 @@
 import getUser from "@/lib/auth/getUser";
+import getUserPseudo from "@/lib/auth/getUserPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
@@ -91,7 +92,10 @@ export async function POST(
     const message = await insertMessageIntoConversation({
       conversationId: params.conversationId,
       body: parsedInputs.data.body,
-      user,
+      user: {
+        ...user,
+        pseudo: getUserPseudo(user),
+      },
     });
 
     if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);

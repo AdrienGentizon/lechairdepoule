@@ -6,6 +6,7 @@ import selectUserFromEmail from "./selectUserFromEmail";
 import crypto from "crypto";
 import { createToken } from "./jwt";
 import { User } from "../types";
+import getUserPseudo from "./getUserPseudo";
 
 export async function verifyOTP({
   email,
@@ -87,6 +88,6 @@ export async function verifyOTP({
   });
   return {
     success: true,
-    data: { user },
+    data: { user: { ...user, pseudo: getUserPseudo(user) } },
   };
 }

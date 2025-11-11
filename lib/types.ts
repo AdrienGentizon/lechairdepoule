@@ -1,7 +1,7 @@
 export type RawUser = {
   id: number;
   email: string;
-  pseudo: string;
+  pseudo: string | null;
   role: string | null;
   createdAt: string;
   bannedAt: string | null;

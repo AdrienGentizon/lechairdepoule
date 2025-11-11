@@ -1,4 +1,5 @@
 import getUser from "@/lib/auth/getUser";
+import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { Conversation } from "@/lib/types";
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     const conversation = await insertConversation({
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
-      user,
+      user: { ...user, pseudo: getUserPseudo(user) },
     });
 
     if (!conversation)
