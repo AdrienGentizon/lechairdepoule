@@ -3,6 +3,10 @@ import { Courier_Prime, Quicksand } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
+import getRandomBackground from "@/queries/getRandomBackground";
+import Header from "@/components/Header/Header";
+import RandomBackground from "@/components/RandomBackground/RandomBackground";
+import Footer from "@/components/Footer/Footer";
 
 const sans = Quicksand({
   subsets: ["latin"],
@@ -20,20 +24,29 @@ export const metadata: Metadata = {
   description: "Le site web du bar Le Chair de Poule et du Peine perdue aussi",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const assets = (await getRandomBackground())?.assetsCollection.items ?? [];
+
   return (
     <html lang="fr">
       <body
         className={cn(
           `${sans.variable} ${mono.variable} antialiased`,
-          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[min-content_1fr_min-content] justify-items-center overflow-x-hidden",
+          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[1fr_min-content] justify-items-center overflow-hidden",
         )}
       >
-        {children}
+        <Header />
+        <main className="no-scrollbar grid min-h-full w-full max-w-2xl grid-cols-1 grid-rows-1 [&>*:first-child]:pt-32 sm:[&>*:first-child]:pt-44">
+          <div className="mx-auto grid w-full grid-cols-1 grid-rows-1 overflow-y-scroll bg-black">
+            {children}
+          </div>
+          <RandomBackground assets={assets} />
+        </main>
+        <Footer />
       </body>
       <Analytics />
     </html>

@@ -154,17 +154,22 @@ export default function ChatRoom({ conversationId }: Props) {
   const { conversation, isLoading, lastEmptyLiRef, scrollToBottom } =
     useConversation(conversationId);
 
+  if (isLoading)
+    return (
+      <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
+        <Loader className="animate-spin" />
+      </div>
+    );
+
   if (!conversation || !me)
     return (
-      <main className="row-span-2 grid grid-cols-1 grid-rows-1 items-center justify-center">
-        <p className="self-center text-center font-light">
-          Conversation introuvable...
-        </p>
-      </main>
+      <p className="self-center text-center font-light">
+        Conversation introuvable...
+      </p>
     );
 
   return (
-    <>
+    <div className="grid grid-cols-1 grid-rows-[min-content_1fr_min-content]">
       <header className="flex items-center gap-4 bg-black pb-2">
         <nav>
           <Link href={`/forum`}>
@@ -185,14 +190,20 @@ export default function ChatRoom({ conversationId }: Props) {
         )}
       </header>
 
-      <main className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0">
+      <section
+        aria-labelledby="messages-section"
+        className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0"
+      >
+        <h2 className="sr-only" id="messages-section">
+          Messages
+        </h2>
         <MessagesList
           me={me}
           conversation={conversation}
           lastEmptyLiRef={lastEmptyLiRef}
           scrollToBottom={scrollToBottom}
         />
-      </main>
+      </section>
       <div className="px-1 landscape:px-0">
         <SubmitMessageForm
           conversationId={conversation.id}
@@ -208,6 +219,6 @@ export default function ChatRoom({ conversationId }: Props) {
           <Loader className="animate-spin" />
         </div>
       )}
-    </>
+    </div>
   );
 }
