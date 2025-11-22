@@ -8,11 +8,6 @@ export default function getUserPseudo(user: {
   if (shouldGetPseudoFromEmail) {
     const separators = [".", "-", "_"];
     for (const separator of separators) {
-      console.log(
-        mailbox,
-        mailbox.includes(separator),
-        `${mailbox.split(separator).at(0)} ${mailbox.split(separator).at(1)}`,
-      );
       if (mailbox.includes(separator))
         return `${mailbox.split(separator).at(0)} ${mailbox.split(separator).at(1)}`;
     }

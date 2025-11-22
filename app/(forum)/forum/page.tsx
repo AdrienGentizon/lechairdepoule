@@ -144,8 +144,6 @@ export default function ForumPage() {
                   const descriptionEmpty =
                     (newConversation.description?.length ?? 0) <= 0;
 
-                  console.log({ titleEmpty, descriptionEmpty });
-
                   if (
                     !newConversation.title ||
                     !newConversation.description ||

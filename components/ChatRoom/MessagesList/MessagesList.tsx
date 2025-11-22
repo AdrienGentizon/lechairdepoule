@@ -35,7 +35,6 @@ export default function MessagesList({
   return (
     <ul className="flex min-h-[calc(100dvh-400px)] flex-col gap-2 rounded-sm py-2">
       {conversation.messages.map((message) => {
-        console.log(message.user);
         return (
           <li key={`main-conversation-message-${message.id}`} className="group">
             <div className="flex items-center gap-2">

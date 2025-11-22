@@ -16,7 +16,6 @@ export default function useUpdateConversation() {
       title?: string;
       description?: string;
     }) => {
-      console.log(payload);
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
