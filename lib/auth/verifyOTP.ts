@@ -78,8 +78,8 @@ export async function verifyOTP({
     };
   }
 
-  await sql`DELETE FROM connection_tokens WHERE id = ${token.id}`;
   await sql`UPDATE users SET last_connection = CURRENT_TIMESTAMP WHERE id = ${user.id}`;
+  await sql`DELETE FROM connection_tokens WHERE id = ${token.id}`;
 
   const jwt = await createToken(user.id, user.email);
   (await cookies()).set("token", jwt, {

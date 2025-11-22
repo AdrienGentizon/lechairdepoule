@@ -82,7 +82,9 @@ export async function signInWithEmail(formData: FormData): Promise<
       console.log(
         `[Operation]`,
         "signInWithEmail",
-        "connection token created for",
+        "connection token",
+        `${hashedCode.substring(8)}...`,
+        "created for",
         user.email,
       );
     } catch (e) {
