@@ -6,6 +6,7 @@ import selectUserFromEmail from "./selectUserFromEmail";
 import crypto from "crypto";
 import { createToken } from "./jwt";
 import { User } from "../types";
+import getUserPseudo from "./getUserPseudo";
 
 export async function verifyOTP({
   email,
@@ -77,8 +78,8 @@ export async function verifyOTP({
     };
   }
 
-  await sql`DELETE FROM connection_tokens WHERE id = ${token.id}`;
   await sql`UPDATE users SET last_connection = CURRENT_TIMESTAMP WHERE id = ${user.id}`;
+  await sql`DELETE FROM connection_tokens WHERE id = ${token.id}`;
 
   const jwt = await createToken(user.id, user.email);
   (await cookies()).set("token", jwt, {
@@ -87,6 +88,6 @@ export async function verifyOTP({
   });
   return {
     success: true,
-    data: { user },
+    data: { user: { ...user, pseudo: getUserPseudo(user) } },
   };
 }

@@ -6,7 +6,7 @@ export default async function selectUserFromEmail(email: string) {
       {
         id: string;
         email: string;
-        pseudo: string;
+        pseudo: string | null;
         role: string | null;
         createdAt: string;
         bannedAt: string | null;

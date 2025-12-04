@@ -5,10 +5,8 @@ import crypto from "crypto";
 import sql from "../db";
 import selectUserFromEmail from "./selectUserFromEmail";
 import insertUser from "./insertUser";
-import sendEmail from "@/actions/sendEmail";
 import resend from "../resend";
 import OTPEmail from "@/components/OTPEmail/OTPEmail";
-import updateUserPseudo from "./updateUserPseudo";
 
 function generateSixDigits(): string {
   const buf = crypto.randomBytes(3);
@@ -31,9 +29,6 @@ export async function signInWithEmail(formData: FormData): Promise<
     const parsedInputs = z
       .object({
         email: z.string().email(),
-        pseudo: z
-          .string()
-          .min(4, { message: "Pseudo trop court, 4 caractères minimum" }),
       })
       .safeParse(Object.fromEntries(formData.entries()));
 
@@ -42,7 +37,6 @@ export async function signInWithEmail(formData: FormData): Promise<
         success: false,
         errors: {
           email: parsedInputs.error.formErrors.fieldErrors.email?.at(0),
-          pseudo: parsedInputs.error.formErrors.fieldErrors.pseudo?.at(0),
         },
       };
     }
@@ -51,7 +45,6 @@ export async function signInWithEmail(formData: FormData): Promise<
     if (!user) {
       user = await insertUser({
         email: parsedInputs.data.email,
-        pseudo: parsedInputs.data.pseudo,
       });
       console.log(
         `[Operation]`,
@@ -61,19 +54,6 @@ export async function signInWithEmail(formData: FormData): Promise<
       );
       if (!user) {
         throw new Error("Cannot insert user");
-      }
-    } else {
-      if (user.pseudo !== parsedInputs.data.pseudo) {
-        console.log(
-          `[Operation]`,
-          "signInWithEmail",
-          "user updated",
-          user.email,
-        );
-        await updateUserPseudo({
-          userId: user.id,
-          pseudo: parsedInputs.data.pseudo,
-        });
       }
     }
 
@@ -102,7 +82,9 @@ export async function signInWithEmail(formData: FormData): Promise<
       console.log(
         `[Operation]`,
         "signInWithEmail",
-        "connection token created for",
+        "connection token",
+        `${hashedCode.substring(8)}...`,
+        "created for",
         user.email,
       );
     } catch (e) {

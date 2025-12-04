@@ -1,7 +1,6 @@
 import Link from "next/link";
 import LogoSite from "../png/LogoSite";
 import AgendaPNG from "@/public/agenda.png";
-import DrugstorePNG from "@/public/drugstore.png";
 import ContactPNG from "@/public/contact.png";
 import ForumPNG from "@/public/forum.png";
 import Image from "next/image";
@@ -39,19 +38,6 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <span className="sr-only">Agenda</span>
             </Link>
           </li>
-          {process.env["NEXT_PUBLIC_SHOW_STORE"] === "true" && (
-            <li>
-              <Link href={`/drugstore`}>
-                <Image
-                  src={DrugstorePNG}
-                  alt="Drugstore"
-                  className="h-6 object-contain landscape:h-10"
-                  role="button"
-                />
-                <span className="sr-only">Drugstore</span>
-              </Link>
-            </li>
-          )}
           <li>
             <Link href={`/contact`}>
               <Image

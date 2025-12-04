@@ -1,7 +1,7 @@
 import { Conversation, Message, User } from "@/lib/types";
 import ReportMessageButton from "../ReportMessageButton/ReportMessageButton";
 import BanUserButton from "../BanUserButton/BanUserButton";
-import { useRef, ComponentRef, useEffect, RefObject } from "react";
+import { useEffect, RefObject } from "react";
 import { cn } from "@/lib/utils";
 
 type Props = {

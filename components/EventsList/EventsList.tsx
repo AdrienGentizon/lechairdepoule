@@ -9,7 +9,7 @@ type Props = {
 
 export default function EventsList({ events }: Props) {
   return (
-    <ul className="flex w-full flex-col gap-0 bg-black">
+    <ul className="grid auto-rows-max grid-cols-1 overflow-y-scroll bg-black">
       {events.map((event) => {
         return <EventItem key={`item-${event.sys.id}`} event={event} />;
       })}

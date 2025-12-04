@@ -1,4 +1,5 @@
 import getUser from "@/lib/auth/getUser";
+import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
 import { supabaseServerSide } from "@/lib/supabaseServerSide";
 import { BroadCastKey, User } from "@/lib/types";
@@ -23,7 +24,7 @@ export async function POST(
       );
 
     const bannedUser = await updateUserAsBanned({
-      bannedBy,
+      bannedBy: { ...bannedBy, pseudo: getUserPseudo(bannedBy) },
       userId,
     });
 
