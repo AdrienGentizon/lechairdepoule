@@ -7,16 +7,9 @@ CREATE TABLE users (
     deleted_at TIMESTAMP,
     banned_by INTEGER,
     role TEXT,
-    last_connection TIMESTAMP,
+    auth_id TEXT UNIQUE NOT NULL,
+    auth_provider TEXT NOT NULL,
     CONSTRAINT banned_by_fk FOREIGN KEY (banned_by) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE connection_tokens (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    value TEXT,
-    expires_at TIMESTAMP,
-		user_id INTEGER NOT NULL,
-    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE conversations (
@@ -41,4 +34,3 @@ CREATE TABLE messages (
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
-ALTER PUBLICATION supabase_realtime ADD TABLE messages;

@@ -1,11 +1,12 @@
-import { CollectionTag } from "@/lib/contentful";
-import env from "@/lib/env";
-import { logApiError, logApiOperation } from "@/lib/logger";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import { CollectionTag } from "@/lib/contentful";
+import env from "@/lib/env";
+import { logApiError, logApiOperation } from "@/lib/logger";
+
 export async function POST(req: NextRequest) {
-  logApiOperation(`WEBHOOKS`, req);
+  logApiOperation(`[Webhook]`, req);
 
   try {
     const requestHeaders = new Headers(req.headers);

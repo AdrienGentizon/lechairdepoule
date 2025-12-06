@@ -1,5 +1,6 @@
-import sql from "../db";
 import { unstable_cache } from "next/cache";
+
+import sql from "../db";
 import { CacheKey } from "../types";
 
 export async function selectUsers() {
@@ -16,14 +17,13 @@ export async function selectUsers() {
     }[]
   >`SELECT 
       id::text,
-        email,
-        pseudo,
-        role,
-        created_at::text as "createdAt",
-        banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt",
-        last_connection::text as "lastConnection"
-      FROM public.users;`;
+      email,
+      pseudo,
+      role,
+      created_at::text as "createdAt",
+      banned_at::text as "bannedAt",
+      deleted_at::text as "deletedAt"
+    FROM public.users;`;
 }
 
 const selectUsersCached = unstable_cache(async () => {

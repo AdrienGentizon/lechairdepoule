@@ -1,4 +1,5 @@
 import { revalidateTag } from "next/cache";
+
 import sql from "../db";
 import { CacheKey, User } from "../types";
 
@@ -30,13 +31,12 @@ export default async function updateUserAsBanned({
       banned_at = ${new Date().toISOString()}
     WHERE id = ${userId}
     RETURNING
-        id::text,
-        email,
-        pseudo,
-        role,
-        created_at::text as "createdAt",
-        banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt",
-        last_connection::text as "lastConnection";`
+      id::text,
+      email,
+      pseudo,
+      role,
+      created_at::text as "createdAt",
+      banned_at::text as "bannedAt",
+      deleted_at::text as "deletedAt";`
   ).at(0);
 }

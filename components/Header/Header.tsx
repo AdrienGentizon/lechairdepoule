@@ -1,10 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
-import LogoSite from "../png/LogoSite";
+
+import { cn } from "@/lib/utils";
 import AgendaPNG from "@/public/agenda.png";
 import ContactPNG from "@/public/contact.png";
 import ForumPNG from "@/public/forum.png";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+
+import LogoSite from "../png/LogoSite";
 
 function Title() {
   return (
@@ -19,7 +21,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
     <header
       className={cn(
         "fixed z-20 w-full bg-black pb-4 sm:max-w-2xl",
-        variant === "relative" && "relative",
+        variant === "relative" && "relative"
       )}
     >
       <Link href={`/`}>

@@ -1,3 +1,6 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
@@ -6,25 +9,23 @@ import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import { Conversation, Message } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 
 export async function GET(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> },
+  ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const conversation = await selectConversationFromId(params.conversationId);
@@ -34,46 +35,46 @@ export async function GET(
         {
           error: "not found",
         },
-        { status: 404 },
+        { status: 404 }
       );
     const messages = await selectConversationMessages(params.conversationId);
     return NextResponse.json<Conversation>(
       { ...conversation, messages },
       {
         status: 200,
-      },
+      }
     );
   } catch (error) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> },
+  ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const parsedInputs = z
@@ -85,7 +86,7 @@ export async function POST(
     if (!parsedInputs.success) {
       return NextResponse.json(
         { error: "message non valide ne sera pas posté" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -105,33 +106,33 @@ export async function POST(
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> },
+  ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const conversation = await deleteConversationFromId({
@@ -144,45 +145,45 @@ export async function DELETE(
         {
           error: "not found",
         },
-        { status: 404 },
+        { status: 404 }
       );
     return NextResponse.json<{ conversationId: string }>(
       { conversationId: conversation.id },
       {
         status: 200,
-      },
+      }
     );
   } catch (error) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> },
+  ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const parsedInputs = z
@@ -197,7 +198,7 @@ export async function PATCH(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -212,7 +213,7 @@ export async function PATCH(
         {
           error: "not found",
         },
-        { status: 404 },
+        { status: 404 }
       );
     return NextResponse.json<{
       id: string;
@@ -225,13 +226,13 @@ export async function PATCH(
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

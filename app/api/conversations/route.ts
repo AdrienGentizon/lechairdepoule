@@ -1,23 +1,24 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { Conversation } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 
 export async function POST(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const parsedInputs = z
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
     if (!parsedInputs.success) {
       return NextResponse.json(
         { error: "conversation non valide ne sera pas créée" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -48,13 +49,13 @@ export async function POST(req: NextRequest) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -63,14 +64,14 @@ export async function GET(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const conversations = await selectConversations();
@@ -82,13 +83,13 @@ export async function GET(req: NextRequest) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

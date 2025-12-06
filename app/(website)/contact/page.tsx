@@ -1,9 +1,11 @@
-import ChairDePoule from "@/components/png/ChairDePoule";
+import Markdown from "react-markdown";
+
+import { notFound } from "next/navigation";
+
 import ContactForm from "@/components/ContactForm/ContactForm";
+import ChairDePoule from "@/components/png/ChairDePoule";
 import PeinePerdue from "@/components/png/PeinePerdue";
 import getContactPage from "@/queries/getContactPage";
-import Markdown from "react-markdown";
-import { notFound } from "next/navigation";
 
 export default async function ContactPage() {
   const contactPage = await getContactPage();

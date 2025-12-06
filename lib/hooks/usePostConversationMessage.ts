@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, Conversation, Message } from "../types";
 
 export default function usePostConversationMessage(conversationId: string) {
@@ -13,7 +14,7 @@ export default function usePostConversationMessage(conversationId: string) {
       body: string,
       options?: {
         onSuccess: () => void;
-      },
+      }
     ) => {
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "POST",
@@ -37,7 +38,7 @@ export default function usePostConversationMessage(conversationId: string) {
               data,
             ],
           };
-        },
+        }
       );
     },
   });

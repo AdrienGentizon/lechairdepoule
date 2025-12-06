@@ -1,11 +1,13 @@
 "use client";
 
-import sendEmail from "@/actions/sendEmail";
-import { cn } from "@/lib/utils";
-import { Mail, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+
+import { Mail, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import sendEmail from "@/actions/sendEmail";
+import { cn } from "@/lib/utils";
 
 function SubmitMessageButton() {
   const { pending } = useFormStatus();
@@ -104,7 +106,7 @@ export default function ContactForm() {
             <p
               className={cn(
                 "text-center font-light text-green-400",
-                actionResult.status > 200 && "text-red-400",
+                actionResult.status > 200 && "text-red-400"
               )}
             >
               {actionResult.message}

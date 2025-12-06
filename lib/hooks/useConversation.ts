@@ -1,20 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  BroadCastKey,
-  BroadcastPayload,
-  CacheKey,
-  Conversation,
-  Message,
-  RawMessage,
-  RawUser,
-  User,
-} from "../types";
-import { ComponentRef, useCallback, useEffect, useRef } from "react";
-import { supabaseClientSide } from "../supabaseClientSide";
-import { reportedMessageBodyReplacement } from "../wordings";
+
+import { ComponentRef, useCallback, useRef } from "react";
+
 import { getMessageFromRaw } from "../forum/getMessageFromRaw";
-import useUsers from "./useUsers";
+import { CacheKey, Conversation, Message, RawMessage, User } from "../types";
+import { reportedMessageBodyReplacement } from "../wordings";
 import useConversations from "./useConversations";
+import useUsers from "./useUsers";
 
 export default function useConversation(conversationId: string) {
   const { conversations } = useConversations();
@@ -50,9 +42,7 @@ export default function useConversation(conversationId: string) {
 
   const onNewMessage = useCallback(
     ({ rawMessage }: { rawMessage: RawMessage }) => {
-      const author = users.find(
-        ({ id }) => parseInt(id) === rawMessage.user_id,
-      ) ?? {
+      const author = users.find(({ id }) => id === rawMessage.user_id) ?? {
         id: "-1",
         pseudo: "nanani",
         bannedAt: null,
@@ -74,11 +64,11 @@ export default function useConversation(conversationId: string) {
               message,
             ],
           };
-        },
+        }
       );
       scrollToBottom();
     },
-    [queryClient],
+    [queryClient]
   );
 
   const onReportedMessage = useCallback(
@@ -93,11 +83,11 @@ export default function useConversation(conversationId: string) {
               message,
             ],
           };
-        },
+        }
       );
       scrollToBottom;
     },
-    [queryClient],
+    [queryClient]
   );
 
   const onBannedUser = useCallback(
@@ -126,60 +116,13 @@ export default function useConversation(conversationId: string) {
                 ];
               }, []),
             };
-          },
+          }
         );
       }
       scrollToBottom();
     },
-    [queryClient, conversations],
+    [queryClient, conversations]
   );
-
-  useEffect(() => {
-    const newMessageSubscription = supabaseClientSide
-      .channel("messages")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-        },
-        (payload: unknown & { new: RawMessage }) => {
-          onNewMessage({ rawMessage: payload.new });
-        },
-      )
-      .subscribe();
-
-    const reportedMessageSubscription = supabaseClientSide
-      .channel("messages")
-      .on(
-        "broadcast",
-        { event: "reported_message" satisfies BroadCastKey },
-        ({ payload }: unknown & { payload: Message }) => {
-          onReportedMessage({ message: payload });
-        },
-      )
-      .subscribe();
-
-    const bannedUserSubscription = supabaseClientSide
-      .channel("users")
-      .on(
-        "broadcast",
-        { event: "banned_user" satisfies BroadCastKey },
-        ({ payload }: unknown & { payload: User }) => {
-          onBannedUser({
-            user: payload,
-          });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabaseClientSide.removeChannel(reportedMessageSubscription);
-      supabaseClientSide.removeChannel(bannedUserSubscription);
-      supabaseClientSide.removeChannel(newMessageSubscription);
-    };
-  }, [onNewMessage, onReportedMessage, onBannedUser]);
 
   return {
     conversation: conversation && {

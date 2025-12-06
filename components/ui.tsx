@@ -1,11 +1,12 @@
-import { cn } from "@/lib/utils";
 import {
+  ButtonHTMLAttributes,
   FormHTMLAttributes,
   HTMLAttributes,
-  LabelHTMLAttributes,
   InputHTMLAttributes,
-  ButtonHTMLAttributes,
+  LabelHTMLAttributes,
 } from "react";
+
+import { cn } from "@/lib/utils";
 
 export function Form({
   className,
@@ -43,7 +44,7 @@ export function Label({
       className={cn(
         "text-sm font-semibold",
         ariaRequired && "after:pl-1 after:content-['*']",
-        className,
+        className
       )}
       {...props}
     >
@@ -64,7 +65,7 @@ export function Input({
       className={cn(
         "w-full rounded-sm border border-white bg-black px-2 py-0.5 font-light",
         variant === "secondary" && "border-black bg-white text-black",
-        className,
+        className
       )}
       {...props}
     />
@@ -85,7 +86,7 @@ export function Button({
         "hover:not:disabled:bg-white/25 flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-white px-8 py-0.5 font-semibold disabled:cursor-not-allowed disabled:opacity-50",
         variant === "secondary" &&
           "hover:not:disabled:bg-gray-700 border border-black bg-black text-white",
-        className,
+        className
       )}
       {...props}
     >

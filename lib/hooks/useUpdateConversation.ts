@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, Conversation } from "../types";
 
 export default function useUpdateConversation() {
@@ -46,7 +47,7 @@ export default function useUpdateConversation() {
               },
             ];
           }, []);
-        },
+        }
       );
       queryClient.setQueryData(
         [`conversation-${data.id}` satisfies CacheKey],
@@ -56,7 +57,7 @@ export default function useUpdateConversation() {
             title: data.title,
             description: data.description,
           };
-        },
+        }
       );
     },
   });
