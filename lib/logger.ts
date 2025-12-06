@@ -1,7 +1,11 @@
 import { NextRequest } from "next/server";
 
-export function logApiOperation(prefix: string, req: NextRequest) {
-  console.log(`[API:${prefix}] ${req.url}`);
+export function logApiOperation(
+  prefix: string,
+  req: NextRequest,
+  message: string = ""
+) {
+  console.log(`[API:${prefix}] ${req.url} ${message}`);
 }
 
 export function logApiError(prefix: string, req: NextRequest, error: unknown) {
