@@ -8,6 +8,7 @@ import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversa
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
+import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
 
 export async function GET(
@@ -100,6 +101,12 @@ export async function POST(
     });
 
     if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
+
+    await pusher.trigger(
+      `conversations-${params.conversationId}`,
+      "conversation:message:new",
+      message
+    );
 
     return NextResponse.json<Message>(message, { status: 200 });
   } catch (error) {

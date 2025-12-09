@@ -1,16 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { ComponentRef, useCallback, useRef } from "react";
+import { ComponentRef, useCallback, useEffect, useRef } from "react";
 
-import { getMessageFromRaw } from "../forum/getMessageFromRaw";
-import { CacheKey, Conversation, Message, RawMessage, User } from "../types";
+import { usePusher } from "@/components/providers/PusherProvider";
+
+import { CacheKey, Conversation, Message, User } from "../types";
 import { reportedMessageBodyReplacement } from "../wordings";
 import useConversations from "./useConversations";
-import useUsers from "./useUsers";
 
 export default function useConversation(conversationId: string) {
+  const { pusher } = usePusher();
   const { conversations } = useConversations();
-  const { users } = useUsers();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
 
   const scrollToBottom = () => {
@@ -41,19 +41,7 @@ export default function useConversation(conversationId: string) {
   });
 
   const onNewMessage = useCallback(
-    ({ rawMessage }: { rawMessage: RawMessage }) => {
-      const author = users.find(({ id }) => id === rawMessage.user_id) ?? {
-        id: "-1",
-        pseudo: "nanani",
-        bannedAt: null,
-      };
-
-      const message = getMessageFromRaw(rawMessage, {
-        id: author.id,
-        pseudo: author.pseudo,
-        bannedAt: author.bannedAt,
-      });
-
+    ({ message }: { message: Message }) => {
       queryClient.setQueryData(
         [`conversation-${conversationId}` satisfies CacheKey],
         (old: Conversation) => {
@@ -123,6 +111,36 @@ export default function useConversation(conversationId: string) {
     },
     [queryClient, conversations]
   );
+
+  useEffect(() => {
+    const conversationChannel = pusher.subscribe(
+      `conversations-${conversationId}`
+    );
+    conversationChannel.bind(
+      "conversation:message:new",
+      function (message: Message) {
+        onNewMessage({ message });
+      }
+    );
+
+    conversationChannel.bind(
+      "conversation:message:report",
+      function (message: Message) {
+        onReportedMessage({ message });
+      }
+    );
+
+    const usersChannel = pusher.subscribe(`users`);
+
+    usersChannel.bind("user:ban", function (user: User) {
+      onBannedUser({ user });
+    });
+
+    return () => {
+      conversationChannel.disconnect();
+      usersChannel.disconnect();
+    };
+  }, []);
 
   return {
     conversation: conversation && {

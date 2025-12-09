@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
+import pusher from "@/lib/pusher";
 import { Message } from "@/lib/types";
 
 export async function POST(
@@ -32,6 +33,12 @@ export async function POST(
       throw new Error(
         `user (${reportedBy.id}) cannot report message (${messageId})`
       );
+
+    await pusher.trigger(
+      `conversations-${reportedMessage.conversationId}`,
+      `conversation:message:report`,
+      reportedMessage
+    );
 
     return NextResponse.json<Message>(reportedMessage, {
       status: 200,

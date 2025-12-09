@@ -10,10 +10,11 @@ type Context = {
 
 const PusherContext = createContext<Context | null>(null);
 
-export function usePusherContext() {
+export function usePusher() {
   const context = useContext(PusherContext);
   if (!context)
     throw new Error(`PusherProvider required to access its context.`);
+  return context;
 }
 
 export default function PusherProvider({ children }: { children: ReactNode }) {

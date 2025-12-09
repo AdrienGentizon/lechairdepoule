@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
+import pusher from "@/lib/pusher";
 import { BroadCastKey, User } from "@/lib/types";
 
 export async function POST(
@@ -30,6 +31,8 @@ export async function POST(
 
     if (!bannedUser)
       throw new Error(`user (${bannedBy.id}) cannot ban user (${userId})`);
+
+    await pusher.trigger(`users`, `user:ban`, bannedUser);
 
     return NextResponse.json<User>(bannedUser, {
       status: 200,
