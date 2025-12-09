@@ -13,6 +13,7 @@ const getUserCached = cache(async (req: NextRequest) => {
       authorizedParties: [
         "https://lechairdepoule.fr/",
         "https://www.lechairdepoule.fr/",
+        "https://dev.lechairdepoule.fr/",
         "http://localhost:3000",
       ],
     });
