@@ -1,24 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  BroadCastKey,
-  BroadcastPayload,
-  CacheKey,
-  Conversation,
-  Message,
-  RawMessage,
-  RawUser,
-  User,
-} from "../types";
+
 import { ComponentRef, useCallback, useEffect, useRef } from "react";
-import { supabaseClientSide } from "../supabaseClientSide";
+
+import { usePusher } from "@/components/providers/PusherProvider";
+
+import { CacheKey, Conversation, Message, User } from "../types";
 import { reportedMessageBodyReplacement } from "../wordings";
-import { getMessageFromRaw } from "../forum/getMessageFromRaw";
-import useUsers from "./useUsers";
 import useConversations from "./useConversations";
 
 export default function useConversation(conversationId: string) {
+  const { pusher } = usePusher();
   const { conversations } = useConversations();
-  const { users } = useUsers();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
 
   const scrollToBottom = () => {
@@ -49,21 +41,7 @@ export default function useConversation(conversationId: string) {
   });
 
   const onNewMessage = useCallback(
-    ({ rawMessage }: { rawMessage: RawMessage }) => {
-      const author = users.find(
-        ({ id }) => parseInt(id) === rawMessage.user_id,
-      ) ?? {
-        id: "-1",
-        pseudo: "nanani",
-        bannedAt: null,
-      };
-
-      const message = getMessageFromRaw(rawMessage, {
-        id: author.id,
-        pseudo: author.pseudo,
-        bannedAt: author.bannedAt,
-      });
-
+    ({ message }: { message: Message }) => {
       queryClient.setQueryData(
         [`conversation-${conversationId}` satisfies CacheKey],
         (old: Conversation) => {
@@ -74,11 +52,11 @@ export default function useConversation(conversationId: string) {
               message,
             ],
           };
-        },
+        }
       );
       scrollToBottom();
     },
-    [queryClient],
+    [queryClient]
   );
 
   const onReportedMessage = useCallback(
@@ -93,11 +71,11 @@ export default function useConversation(conversationId: string) {
               message,
             ],
           };
-        },
+        }
       );
       scrollToBottom;
     },
-    [queryClient],
+    [queryClient]
   );
 
   const onBannedUser = useCallback(
@@ -126,60 +104,43 @@ export default function useConversation(conversationId: string) {
                 ];
               }, []),
             };
-          },
+          }
         );
       }
       scrollToBottom();
     },
-    [queryClient, conversations],
+    [queryClient, conversations]
   );
 
   useEffect(() => {
-    const newMessageSubscription = supabaseClientSide
-      .channel("messages")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-        },
-        (payload: unknown & { new: RawMessage }) => {
-          onNewMessage({ rawMessage: payload.new });
-        },
-      )
-      .subscribe();
+    const conversationChannel = pusher.subscribe(
+      `conversations-${conversationId}`
+    );
+    conversationChannel.bind(
+      "conversation:message:new",
+      function (message: Message) {
+        onNewMessage({ message });
+      }
+    );
 
-    const reportedMessageSubscription = supabaseClientSide
-      .channel("messages")
-      .on(
-        "broadcast",
-        { event: "reported_message" satisfies BroadCastKey },
-        ({ payload }: unknown & { payload: Message }) => {
-          onReportedMessage({ message: payload });
-        },
-      )
-      .subscribe();
+    conversationChannel.bind(
+      "conversation:message:report",
+      function (message: Message) {
+        onReportedMessage({ message });
+      }
+    );
 
-    const bannedUserSubscription = supabaseClientSide
-      .channel("users")
-      .on(
-        "broadcast",
-        { event: "banned_user" satisfies BroadCastKey },
-        ({ payload }: unknown & { payload: User }) => {
-          onBannedUser({
-            user: payload,
-          });
-        },
-      )
-      .subscribe();
+    const usersChannel = pusher.subscribe(`users`);
+
+    usersChannel.bind("user:ban", function (user: User) {
+      onBannedUser({ user });
+    });
 
     return () => {
-      supabaseClientSide.removeChannel(reportedMessageSubscription);
-      supabaseClientSide.removeChannel(bannedUserSubscription);
-      supabaseClientSide.removeChannel(newMessageSubscription);
+      pusher.unsubscribe(`conversations-${conversationId}`);
+      pusher.unsubscribe(`users`);
     };
-  }, [onNewMessage, onReportedMessage, onBannedUser]);
+  }, []);
 
   return {
     conversation: conversation && {

@@ -34,7 +34,7 @@ export default async function getRandomBackground() {
           }
         }
       }
-    }`,
+    }`
     )
   )?.data?.randomBackground;
 }

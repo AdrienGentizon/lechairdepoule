@@ -6,7 +6,7 @@ export function getMessageFromRaw(
     id: string;
     pseudo: string;
     bannedAt: string | null;
-  },
+  }
 ) {
   return {
     id: raw.id.toString(),

@@ -5,7 +5,7 @@ import { reportedMessageBodyReplacement } from "../wordings";
 export default async function selectConversationMessages(
   conversationId: string,
   offset = 0,
-  limit = 100,
+  limit = 100
 ) {
   return (
     await sql<

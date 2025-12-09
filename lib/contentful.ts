@@ -34,7 +34,7 @@ type EntryData<K extends EntryTag, T = unknown> = {
 export async function fetchCollectionGraphQL<T>(
   tag: CollectionTag,
   query: string,
-  revalidate?: number,
+  revalidate?: number
 ) {
   try {
     const response = await fetch(
@@ -48,13 +48,13 @@ export async function fetchCollectionGraphQL<T>(
         },
         body: JSON.stringify({ query }),
         next: { tags: [tag], revalidate },
-      },
+      }
     );
     return response.json() as Promise<CollectionData<typeof tag, T>>;
   } catch (error) {
     console.error(
       "[ERROR:CONTENTFUL]",
-      (error as Error)?.message ?? "unknown error",
+      (error as Error)?.message ?? "unknown error"
     );
     return undefined;
   }
@@ -73,13 +73,13 @@ export async function fetchEntryGraphQL<T>(tag: EntryTag, query: string) {
         },
         body: JSON.stringify({ query }),
         next: { tags: [tag] },
-      },
+      }
     );
     return response.json() as Promise<EntryData<typeof tag, T>>;
   } catch (error) {
     console.error(
       "[ERROR:CONTENTFUL]",
-      (error as Error)?.message ?? "unknown error",
+      (error as Error)?.message ?? "unknown error"
     );
     return undefined;
   }

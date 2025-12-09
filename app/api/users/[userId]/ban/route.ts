@@ -1,26 +1,27 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
-import { supabaseServerSide } from "@/lib/supabaseServerSide";
+import pusher from "@/lib/pusher";
 import { BroadCastKey, User } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const { userId } = await params;
   try {
     console.log(`[Operation]`, opertationName);
-    const bannedBy = await getUser();
+    const bannedBy = await getUser(req);
 
     if (!bannedBy || bannedBy.bannedAt || bannedBy.id === userId)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const bannedUser = await updateUserAsBanned({
@@ -31,11 +32,7 @@ export async function POST(
     if (!bannedUser)
       throw new Error(`user (${bannedBy.id}) cannot ban user (${userId})`);
 
-    supabaseServerSide.channel("users").send({
-      type: "broadcast",
-      event: "banned_user" satisfies BroadCastKey,
-      payload: bannedUser,
-    });
+    await pusher.trigger(`users`, `user:ban`, bannedUser);
 
     return NextResponse.json<User>(bannedUser, {
       status: 200,
@@ -44,13 +41,13 @@ export async function POST(
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

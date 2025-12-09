@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+
 import { Message } from "../types";
 
 export default function useReportMessage() {
@@ -11,7 +12,7 @@ export default function useReportMessage() {
       messageId: string,
       options?: {
         onSuccess: () => void;
-      },
+      }
     ) => {
       const response = await fetch(`/api/messages/${messageId}/report`, {
         method: "POST",

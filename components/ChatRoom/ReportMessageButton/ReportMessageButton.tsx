@@ -1,3 +1,7 @@
+import { useState } from "react";
+
+import { Ban, Loader } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -7,9 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import useReportMessage from "@/lib/hooks/useReportMessage";
 import { Message } from "@/lib/types";
-
-import { Ban, Loader } from "lucide-react";
-import { useState } from "react";
 
 type Props = { message: Message };
 

@@ -1,5 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
+import { ArrowRight, Loader, Plus } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
@@ -9,10 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import useConversations from "@/lib/hooks/useConversations";
 import usePostConversation from "@/lib/hooks/usePostConversation";
-import { ArrowRight, Loader, Plus } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function ForumPage() {
   const router = useRouter();
@@ -36,7 +38,7 @@ export default function ForumPage() {
           return (
             <li
               key={`forum-${conversation.id}`}
-              className="group relative flex flex-col border-b border-white p-4 first:border-t"
+              className="group relative flex h-min flex-col border-b border-white p-4 first:border-t"
               onClick={() => {
                 router.push(`/forum/${conversation.id}`);
               }}

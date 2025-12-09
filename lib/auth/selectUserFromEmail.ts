@@ -20,8 +20,7 @@ export default async function selectUserFromEmail(email: string) {
         role,
         created_at::text as "createdAt",
         banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt",
-        last_connection::text as "lastConnection"
+        deleted_at::text as "deletedAt"
       FROM public.users WHERE email=${email}`
   ).at(0);
 }

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { CacheKey, User } from "../types";
 
 export default function useMe() {

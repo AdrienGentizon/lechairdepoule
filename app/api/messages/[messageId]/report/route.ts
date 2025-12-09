@@ -1,26 +1,27 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
-import { supabaseServerSide } from "@/lib/supabaseServerSide";
-import { BroadCastKey, Message } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
+import pusher from "@/lib/pusher";
+import { Message } from "@/lib/types";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ messageId: string }> },
+  { params }: { params: Promise<{ messageId: string }> }
 ) {
   const opertationName = `${req.method} ${req.url}`;
   const { messageId } = await params;
   try {
     console.log(`[Operation]`, opertationName);
-    const reportedBy = await getUser();
+    const reportedBy = await getUser(req);
 
     if (!reportedBy || reportedBy.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const reportedMessage = await updateMessageAsReported({
@@ -30,14 +31,14 @@ export async function POST(
 
     if (!reportedMessage)
       throw new Error(
-        `user (${reportedBy.id}) cannot report message (${messageId})`,
+        `user (${reportedBy.id}) cannot report message (${messageId})`
       );
 
-    supabaseServerSide.channel("messages").send({
-      type: "broadcast",
-      event: "reported_message" satisfies BroadCastKey,
-      payload: reportedMessage,
-    });
+    await pusher.trigger(
+      `conversations-${reportedMessage.conversationId}`,
+      `conversation:message:report`,
+      reportedMessage
+    );
 
     return NextResponse.json<Message>(reportedMessage, {
       status: 200,
@@ -46,13 +47,13 @@ export async function POST(
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

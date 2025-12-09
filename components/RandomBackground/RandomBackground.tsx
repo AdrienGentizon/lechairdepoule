@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
@@ -115,7 +116,7 @@ export default function RandomBackground({ assets }: Props) {
         if (!e.detail?.scrollHeight) return;
         setMaxheight(e.detail.scrollHeight);
       },
-      abortController,
+      abortController
     );
 
     return () => {

@@ -1,4 +1,4 @@
-import { supabaseServerSide } from "../supabaseServerSide";
+import sql from "../db";
 import { User } from "../types";
 import { getMessageFromRaw } from "./getMessageFromRaw";
 
@@ -11,20 +11,37 @@ export default async function insertMessageIntoConversation({
   body: string;
   user: User;
 }) {
-  const { data, error } = await supabaseServerSide
-    .from("messages")
-    .insert({
-      conversation_id: conversationId,
-      body,
-      user_id: user.id,
-      created_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
+  const rows = await sql<
+    {
+      id: string;
+      body: string;
+      created_at: string;
+      updated_at: string | null;
+      reported_at: string | null;
+      conversation_id: string;
+      user_id: string;
+      reported_by: string | null;
+    }[]
+  >`
+  INSERT INTO
+	messages (conversation_id, body, user_id, created_at)
+  VALUES
+    (${conversationId}, ${body}, ${user.id}, ${Date.now()})
+  RETURNING
+    id::text,
+    body,
+    created_at::text,
+    updated_at::text,
+    reported_at::text,
+    conversation_id::text,
+    user_id::text,
+    reported_by::text;`;
 
-  if (error) {
-    throw new Error(error.message);
+  const newMessage = rows.at(0);
+
+  if (!newMessage) {
+    throw new Error("cannot insert message");
   }
 
-  return getMessageFromRaw(data, user);
+  return getMessageFromRaw(newMessage, user);
 }

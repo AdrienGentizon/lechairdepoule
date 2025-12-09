@@ -1,8 +1,10 @@
+import { RefObject, useEffect } from "react";
+
 import { Conversation, Message, User } from "@/lib/types";
-import ReportMessageButton from "../ReportMessageButton/ReportMessageButton";
-import BanUserButton from "../BanUserButton/BanUserButton";
-import { useEffect, RefObject } from "react";
 import { cn } from "@/lib/utils";
+
+import BanUserButton from "../BanUserButton/BanUserButton";
+import ReportMessageButton from "../ReportMessageButton/ReportMessageButton";
 
 type Props = {
   me: User;
@@ -43,7 +45,7 @@ export default function MessagesList({
                   <h3
                     className={cn(
                       "text-sm",
-                      message.user.bannedAt && "line-through",
+                      message.user.bannedAt && "line-through"
                     )}
                   >
                     {message.user.pseudo}
@@ -65,7 +67,7 @@ export default function MessagesList({
                   "px-4 py-2 font-courier",
                   (message.reportedAt !== null ||
                     message.user.bannedAt !== null) &&
-                    "text-neutral-400 line-through",
+                    "text-neutral-400 line-through"
                 )}
               >
                 {message.body}

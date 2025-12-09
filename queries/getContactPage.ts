@@ -23,7 +23,7 @@ export default async function getContactPage() {
       peineperdueOpeningHours
       contactNumbers
       }
-    }`,
+    }`
     )
   )?.data?.contact;
 }

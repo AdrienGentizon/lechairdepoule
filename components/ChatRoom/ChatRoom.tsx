@@ -1,24 +1,28 @@
 "use client";
 
-import useConversation from "@/lib/hooks/useConversation";
-import useMe from "@/lib/hooks/useMe";
+import { DialogTitle } from "@radix-ui/react-dialog";
+
+import { useState } from "react";
+
 import { ArrowLeft, Loader, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
-import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
-import MessagesList from "./MessagesList/MessagesList";
-import { Conversation } from "@/lib/types";
-import useDeleteConversation from "@/lib/hooks/useDeleteConversation";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+
+import useConversation from "@/lib/hooks/useConversation";
+import useDeleteConversation from "@/lib/hooks/useDeleteConversation";
+import useMe from "@/lib/hooks/useMe";
 import useUpdateConversation from "@/lib/hooks/useUpdateConversation";
+import { Conversation } from "@/lib/types";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTrigger,
 } from "../ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
-import { z } from "zod";
-import { useState } from "react";
+import MessagesList from "./MessagesList/MessagesList";
+import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
 
 function DeleteConversationButton({
   conversation,
@@ -85,16 +89,16 @@ function UpdateConversationButton({
                 title: z.optional(
                   z
                     .string()
-                    .min(3, { message: "titre trop court (3 char min)" }),
+                    .min(3, { message: "titre trop court (3 char min)" })
                 ),
                 description: z.optional(
                   z
                     .string()
-                    .min(3, { message: "titre trop court (3 char min)" }),
+                    .min(3, { message: "titre trop court (3 char min)" })
                 ),
               })
               .safeParse(
-                Object.fromEntries(new FormData(e.currentTarget).entries()),
+                Object.fromEntries(new FormData(e.currentTarget).entries())
               );
 
             if (!parsedInputs.success) {
