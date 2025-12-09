@@ -25,13 +25,12 @@ export default async function updateUserPseudo({
       pseudo = ${pseudo}
     WHERE id = ${userId}
     RETURNING
-        id::text,
-        email,
-        pseudo,
-        role,
-        created_at::text as "createdAt",
-        banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt",
-        last_connection::text as "lastConnection";`
+      id::text,
+      email,
+      pseudo,
+      role,
+      created_at::text as "createdAt",
+      banned_at::text as "bannedAt",
+      deleted_at::text as "deletedAt";`
   ).at(0);
 }

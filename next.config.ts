@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+
 import env from "./lib/env";
 
 const flaggedRedirections = [
@@ -30,12 +31,12 @@ const nextConfig: NextConfig = {
           destination: string;
           permanent: boolean;
         }[],
-        curr,
+        curr
       ) => {
         if (!curr.enabled) return acc;
         return [...acc, curr.redirection];
       },
-      [],
+      []
     );
   },
 };

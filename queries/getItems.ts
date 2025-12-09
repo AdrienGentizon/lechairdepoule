@@ -45,7 +45,7 @@ export default async function getItems() {
               }
             }
           }
-        }`,
+        }`
       )
     )?.data?.itemCollection.items ?? []
   );

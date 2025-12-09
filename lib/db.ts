@@ -1,6 +1,10 @@
-import env from "@/lib/env";
 import postgres from "postgres";
 
-const sql = postgres(env().SUPABASE_CONNECTION_STRING, { ssl: "require" });
+import env from "@/lib/env";
+
+const sql = postgres(
+  `postgresql://${env().POSTGRES_USER}:${env().POSTGRES_PASSWORD}@${env().POSTGRES_HOST}/${env().POSTGRES_DATABASE}?sslmode=require&channel_binding=require`,
+  { ssl: "require" }
+);
 
 export default sql;

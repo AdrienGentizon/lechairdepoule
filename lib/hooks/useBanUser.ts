@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, User } from "../types";
 
 export default function useBanUser() {
@@ -13,7 +14,7 @@ export default function useBanUser() {
       userId: string,
       options?: {
         onSuccess: () => void;
-      },
+      }
     ) => {
       const response = await fetch(`/api/users/${userId}/ban`, {
         method: "POST",
@@ -30,7 +31,7 @@ export default function useBanUser() {
         ["users" satisfies CacheKey],
         (olds: User[] = []) => {
           return [...olds.filter(({ id }) => id !== data.id), data];
-        },
+        }
       );
     },
   });

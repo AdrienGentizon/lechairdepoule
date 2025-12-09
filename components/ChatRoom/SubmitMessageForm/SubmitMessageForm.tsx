@@ -1,7 +1,9 @@
-import usePostConversationMessage from "@/lib/hooks/usePostConversationMessage";
-import { Loader } from "lucide-react";
 import { FormEvent } from "react";
+
+import { Loader } from "lucide-react";
 import { z } from "zod";
+
+import usePostConversationMessage from "@/lib/hooks/usePostConversationMessage";
 
 type Props = {
   conversationId: string;
@@ -24,7 +26,7 @@ export default function SubmitMessageForm({
         const parsedInputs = z
           .object({ body: z.string() })
           .safeParse(
-            Object.fromEntries(new FormData(e.currentTarget).entries()),
+            Object.fromEntries(new FormData(e.currentTarget).entries())
           );
 
         if (!parsedInputs.success) {

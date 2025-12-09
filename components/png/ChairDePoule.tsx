@@ -1,5 +1,6 @@
-import ChaitDePoulsPNG from "@/public/chair-de-poule.png";
 import Image, { ImageProps } from "next/image";
+
+import ChaitDePoulsPNG from "@/public/chair-de-poule.png";
 
 export default function ChairDePoule({
   ...props

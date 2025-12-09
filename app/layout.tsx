@@ -1,12 +1,15 @@
+import { Analytics } from "@vercel/analytics/react";
+
 import type { Metadata } from "next";
 import { Courier_Prime, Quicksand } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-import { Analytics } from "@vercel/analytics/react";
-import getRandomBackground from "@/queries/getRandomBackground";
+
+import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import RandomBackground from "@/components/RandomBackground/RandomBackground";
-import Footer from "@/components/Footer/Footer";
+import { cn } from "@/lib/utils";
+import getRandomBackground from "@/queries/getRandomBackground";
+
+import "./globals.css";
 
 const sans = Quicksand({
   subsets: ["latin"],
@@ -36,7 +39,7 @@ export default async function RootLayout({
       <body
         className={cn(
           `${sans.variable} ${mono.variable} antialiased`,
-          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[1fr_min-content] justify-items-center overflow-hidden",
+          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[1fr_min-content] justify-items-center overflow-hidden"
         )}
       >
         <Header />

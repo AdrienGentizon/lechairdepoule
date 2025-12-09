@@ -1,5 +1,6 @@
-import LogoPNG from "@/public/logo.png";
 import Image, { ImageProps } from "next/image";
+
+import LogoPNG from "@/public/logo.png";
 
 export default function LogoSite({
   ...props

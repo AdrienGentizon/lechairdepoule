@@ -1,13 +1,14 @@
 "use client";
 
-import { Event } from "@/queries/getEvents";
+import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
 
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import PeinePerdue from "@/components/png/PeinePerdue";
+
 import ChairDePoule from "@/components/png/ChairDePoule";
-import Markdown from "react-markdown";
-import { useEffect, useRef, useState } from "react";
+import PeinePerdue from "@/components/png/PeinePerdue";
+import { cn } from "@/lib/utils";
+import { Event } from "@/queries/getEvents";
 
 type Props = {
   event: Event;
@@ -29,7 +30,7 @@ export default function EventItem({ event }: Props) {
         (e: CustomEventInit<{ eventId: string }>) => {
           if (e.detail?.eventId !== event.sys.id) setOpen(false);
         },
-        abortController,
+        abortController
       );
     }
 
@@ -43,8 +44,7 @@ export default function EventItem({ event }: Props) {
       ref={(el) => {
         if (!el || top.current > 0) return;
         top.current = Math.floor(
-          el.getBoundingClientRect().top -
-            (window.innerWidth < 640 ? 128 : 162),
+          el.getBoundingClientRect().top - (window.innerWidth < 640 ? 128 : 162)
         );
       }}
       value={event.sys.id}
@@ -57,7 +57,7 @@ export default function EventItem({ event }: Props) {
             window.dispatchEvent(
               new CustomEvent("event:select", {
                 detail: { eventId: event.sys.id },
-              }),
+              })
             );
             setTimeout(() => {
               window.scrollTo({
@@ -70,7 +70,7 @@ export default function EventItem({ event }: Props) {
             window.dispatchEvent(
               new CustomEvent("body:scrollHeight", {
                 detail: { scrollHeight: document.body.scrollHeight },
-              }),
+              })
             );
           }, 100);
           setOpen((prev) => !prev);
@@ -111,7 +111,7 @@ export default function EventItem({ event }: Props) {
         {event.atPeinePerdue && (
           <div
             className={cn(
-              "absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 rotate-12 scale-90 opacity-100 transition-opacity",
+              "absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 rotate-12 scale-90 opacity-100 transition-opacity"
             )}
           >
             <PeinePerdue className="size-20" />

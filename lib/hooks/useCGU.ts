@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { TermsOfService } from "../types";
 
 export default function useCGU() {

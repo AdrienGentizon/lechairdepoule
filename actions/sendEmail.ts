@@ -1,9 +1,10 @@
 "use server";
 
+import { z } from "zod";
+
 import ContactEmail from "@/components/ContactEmail/ContactEmail";
 import env from "@/lib/env";
 import resend from "@/lib/resend";
-import { z } from "zod";
 
 export default async function sendEmail(_prev: unknown, formData: FormData) {
   try {

@@ -1,12 +1,14 @@
 import { NextRequest } from "next/server";
 
-export function logApiOperation(prefix: string, req: NextRequest) {
-  console.log(`[API:${prefix}] ${req.url}`);
+export function logApiOperation(req: NextRequest, message?: string) {
+  console.log(`[Operation] ${req.url}${message ? ` ${message}` : ""}`);
 }
 
-export function logApiError(prefix: string, req: NextRequest, error: unknown) {
-  console.error(
-    `[API-ERROR:${prefix}] ${req.url} (${(error as Error)?.message ?? "unknown error"})`,
-  );
-  return `[API-ERROR:${prefix}] ${req.url} (${(error as Error)?.message ?? "unknown error"})`;
+export function logApiError(req: NextRequest, error: unknown) {
+  const message =
+    (error as Error)?.message ??
+    (typeof error === "string" && error) ??
+    "unknown error";
+  console.error(`[Error] ${req.url} ${message}`);
+  return `[Error] ${req.url} ${message}`;
 }

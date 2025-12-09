@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, Conversation, Message, User } from "../types";
 
 export default function useUpdateUserPseudo(options?: {
@@ -51,7 +52,7 @@ export default function useUpdateUserPseudo(options?: {
               },
             ];
           }, []);
-        },
+        }
       );
 
       options?.onSuccess?.();

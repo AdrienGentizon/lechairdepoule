@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, Conversation } from "../types";
 
 export default function useDeleteConversation(options?: {
@@ -26,7 +27,7 @@ export default function useDeleteConversation(options?: {
         ["conversations" satisfies CacheKey],
         (olds: Omit<Conversation, "messages">[] = []) => {
           return olds.filter(({ id }) => id !== data.conversationId);
-        },
+        }
       );
       options?.onSuccess?.();
     },

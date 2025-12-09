@@ -1,5 +1,6 @@
-import PeinePerduePNG from "@/public/peine-perdue.png";
 import Image, { ImageProps } from "next/image";
+
+import PeinePerduePNG from "@/public/peine-perdue.png";
 
 export default function PeinePerdue({
   ...props

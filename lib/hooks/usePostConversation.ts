@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { CacheKey, Conversation } from "../types";
 
 export default function usePostConversation() {
@@ -30,7 +31,7 @@ export default function usePostConversation() {
         ["conversations" satisfies CacheKey],
         (olds: Omit<Conversation, "messages">[] = []) => {
           return [...olds, conversation];
-        },
+        }
       );
     },
   });

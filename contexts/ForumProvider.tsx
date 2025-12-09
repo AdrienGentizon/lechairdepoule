@@ -1,6 +1,10 @@
 "use client";
 
-import { FormGroup, Label, Input, Button, Form } from "@/components/ui";
+import { ReactNode, createContext, useContext, useState } from "react";
+
+import { z } from "zod";
+
+import { Button, Form, FormGroup, Input, Label } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +15,6 @@ import getUserPseudo from "@/lib/auth/getUserPseudo";
 import useMe from "@/lib/hooks/useMe";
 import useUpdateUserPseudo from "@/lib/hooks/useUpdateUserPseudo";
 import { User } from "@/lib/types";
-import { createContext, ReactNode, useContext, useState } from "react";
-import { z } from "zod";
 
 type Context = {
   me: User | undefined;
@@ -64,8 +66,8 @@ export default function ForumProvider({ children }: { children: ReactNode }) {
                     })
                     .safeParse(
                       Object.fromEntries(
-                        new FormData(e.currentTarget).entries(),
-                      ),
+                        new FormData(e.currentTarget).entries()
+                      )
                     );
 
                   if (!parsedInputs.success) {

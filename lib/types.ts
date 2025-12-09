@@ -21,14 +21,14 @@ export type User = {
 };
 
 export type RawMessage = {
-  id: number;
+  id: string;
   body: string;
   created_at: string;
   updated_at: string | null;
   reported_at: string | null;
-  conversation_id: number;
-  user_id: number;
-  reported_by: number | null;
+  conversation_id: string;
+  user_id: string;
+  reported_by: string | null;
 };
 
 export type Message = {

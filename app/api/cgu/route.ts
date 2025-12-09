@@ -1,6 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { fetchEntryGraphQL } from "@/lib/contentful";
 import { TermsOfService } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
         }
       cgu
       }
-    }`,
+    }`
     );
 
     if (!response?.data)
@@ -31,13 +32,13 @@ export async function GET(req: NextRequest) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

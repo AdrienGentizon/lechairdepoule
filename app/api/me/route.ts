@@ -1,22 +1,24 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserPseudo from "@/lib/auth/updateUserPseudo";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import { User } from "@/lib/types";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 
 export async function GET(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    logApiOperation(req);
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     return NextResponse.json<User>(
@@ -24,19 +26,15 @@ export async function GET(req: NextRequest) {
         ...user,
         pseudo: getUserPseudo(user),
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error,
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -45,14 +43,14 @@ export async function PATCH(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
   try {
     console.log(`[Operation]`, opertationName);
-    const user = await getUser();
+    const user = await getUser(req);
 
     if (!user || user.bannedAt)
       return NextResponse.json(
         {
           error: "unauthorized",
         },
-        { status: 401 },
+        { status: 401 }
       );
 
     const parsedInputs = z
@@ -68,7 +66,7 @@ export async function PATCH(req: NextRequest) {
         {
           error: "bad request",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -82,7 +80,7 @@ export async function PATCH(req: NextRequest) {
         {
           error: "server error",
         },
-        { status: 500 },
+        { status: 500 }
       );
 
     return NextResponse.json<User>(updatedUser, { status: 200 });
@@ -90,13 +88,13 @@ export async function PATCH(req: NextRequest) {
     console.error(
       `[Operation]`,
       opertationName,
-      (error as Error)?.message ?? error,
+      (error as Error)?.message ?? error
     );
     return NextResponse.json(
       {
         error: "server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
