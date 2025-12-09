@@ -24,7 +24,7 @@ export default async function insertMessageIntoConversation({
     }[]
   >`
   INSERT INTO
-	conversations (conversation_id, body, user_id, created_at)
+	messages (conversation_id, body, user_id, created_at)
   VALUES
     (${conversationId}, ${body}, ${user.id}, ${Date.now()})
   RETURNING
