@@ -3,6 +3,7 @@ import { dark } from "@clerk/themes";
 
 import { ReactNode } from "react";
 
+import PusherProvider from "@/components/providers/PusherProvider";
 import ForumProvider from "@/contexts/ForumProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 
@@ -17,9 +18,11 @@ export default async function ForumLayout({
         theme: dark,
       }}
     >
-      <ReactQueryProvider>
-        <ForumProvider>{children}</ForumProvider>
-      </ReactQueryProvider>
+      <PusherProvider>
+        <ReactQueryProvider>
+          <ForumProvider>{children}</ForumProvider>
+        </ReactQueryProvider>
+      </PusherProvider>
     </ClerkProvider>
   );
 }

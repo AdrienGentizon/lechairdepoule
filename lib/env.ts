@@ -21,6 +21,12 @@ type Env = {
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
   CLERK_SECRET_KEY: string;
   CLERK_SIGNIN_SECRET: string;
+
+  // WS - PUSHER
+  PUSHER_APP_ID: string;
+  PUSHER_KEY: string;
+  PUSHER_SECRET: string;
+  PUSHER_CLUSTER: string;
 };
 
 let envVars: undefined | Env = undefined;
@@ -49,6 +55,10 @@ export default function env() {
       ),
       CLERK_SECRET_KEY: getEnvVar("CLERK_SECRET_KEY"),
       CLERK_SIGNIN_SECRET: getEnvVar("CLERK_SIGNIN_SECRET"),
+      PUSHER_APP_ID: getEnvVar("PUSHER_APP_ID"),
+      PUSHER_KEY: getEnvVar("PUSHER_KEY"),
+      PUSHER_SECRET: getEnvVar("PUSHER_SECRET"),
+      PUSHER_CLUSTER: getEnvVar("PUSHER_CLUSTER"),
     };
   }
 
