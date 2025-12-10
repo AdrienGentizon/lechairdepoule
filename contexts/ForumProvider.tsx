@@ -4,7 +4,8 @@ import { ReactNode, createContext, useContext, useState } from "react";
 
 import { z } from "zod";
 
-import { Button, Form, FormGroup, Input, Label } from "@/components/ui";
+import Button from "@/components/Button/Button";
+import Form, { FormField, Input, Label } from "@/components/Form/Form";
 import {
   Dialog,
   DialogContent,
@@ -80,20 +81,15 @@ export default function ForumProvider({ children }: { children: ReactNode }) {
                   updateUserPseudo(parsedInputs.data);
                 }}
               >
-                <FormGroup>
+                <FormField>
                   <Label htmlFor="pseudo" aria-required>
                     Pseudo
                   </Label>
-                  <Input
-                    variant="secondary"
-                    id="pseudo"
-                    name="pseudo"
-                    required
-                  />
+                  <Input id="pseudo" name="pseudo" required />
                   <p className="text-sm text-red-500">
                     {errors.pseudo ?? error?.message ?? <>&nbsp;</>}
                   </p>
-                </FormGroup>
+                </FormField>
                 <Button
                   variant="secondary"
                   className="w-full"

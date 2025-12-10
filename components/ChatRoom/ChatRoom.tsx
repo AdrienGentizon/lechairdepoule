@@ -5,6 +5,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
 
 import { ArrowLeft, Loader, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -174,24 +175,40 @@ export default function ChatRoom({ conversationId }: Props) {
 
   return (
     <div className="grid grid-cols-1 grid-rows-[min-content_1fr_min-content]">
-      <header className="flex items-center gap-4 bg-black pb-2">
-        <nav>
-          <Link href={`/forum`}>
-            <ArrowLeft />
-          </Link>
-        </nav>
-        <div className="mr-auto">
-          <h1 className="font-semibold uppercase leading-[1]">
-            {conversation.title}
-          </h1>
-          <p className="pl-2 text-sm font-light">{conversation.description}</p>
+      <header className="flex flex-col">
+        <div className="flex items-center gap-4 bg-black pb-2">
+          <nav>
+            <Link href={`/forum`}>
+              <ArrowLeft />
+            </Link>
+          </nav>
+          <div className="mr-auto">
+            <h1 className="font-semibold uppercase leading-[1]">
+              {conversation.title}
+            </h1>
+            <p className="pl-2 text-sm font-light">
+              {conversation.description}
+            </p>
+          </div>
+          {conversation.createdBy.id === me.id && (
+            <>
+              <UpdateConversationButton conversation={conversation} />
+              <DeleteConversationButton conversation={conversation} />
+            </>
+          )}
         </div>
-        {conversation.createdBy.id === me.id && (
-          <>
-            <UpdateConversationButton conversation={conversation} />
-            <DeleteConversationButton conversation={conversation} />
-          </>
-        )}
+        {conversation.coverUrl &&
+          conversation.coverWidth &&
+          conversation.coverHeight && (
+            <Image
+              src={conversation.coverUrl}
+              width={conversation.coverWidth}
+              height={conversation.coverHeight}
+              alt=""
+              aria-hidden
+              className=""
+            />
+          )}
       </header>
 
       <section
