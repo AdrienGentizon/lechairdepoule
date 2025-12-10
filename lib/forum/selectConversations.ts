@@ -7,7 +7,10 @@ export default async function selectConversations() {
       {
         id: string;
         title: string;
-        description: string;
+        description: string | null;
+        coverUrl: string | null;
+        coverWidth: string | null;
+        coverHeight: string | null;
         createdAt: string;
         userId: string;
         userPseudo: string | null;
@@ -19,6 +22,9 @@ export default async function selectConversations() {
       c.id::text,
       c.title,
       c.description,
+      c.image_url as "coverUrl",
+      c.image_width as "coverWidth",
+      c.image_height as "coverHeight",
       c.created_at::text as "createdAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
@@ -31,14 +37,28 @@ export default async function selectConversations() {
       c.created_by = u.id
     ORDER BY
       c.created_at DESC;`
-  ).map(({ userId, userPseudo, userEmail, userBannedAt, ...conversation }) => {
-    return {
-      ...conversation,
-      createdBy: {
-        id: userId,
-        pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-        bannedAt: userBannedAt,
-      },
-    };
-  });
+  ).map(
+    ({
+      userId,
+      userPseudo,
+      userEmail,
+      userBannedAt,
+      coverUrl,
+      coverWidth,
+      coverHeight,
+      ...conversation
+    }) => {
+      return {
+        ...conversation,
+        coverUrl: coverUrl,
+        coverWidth: coverWidth ? parseInt(coverWidth) : null,
+        coverHeight: coverHeight ? parseInt(coverHeight) : null,
+        createdBy: {
+          id: userId,
+          pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
+          bannedAt: userBannedAt,
+        },
+      };
+    }
+  );
 }

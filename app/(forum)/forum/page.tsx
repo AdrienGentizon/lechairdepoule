@@ -6,6 +6,14 @@ import { ArrowRight, Loader, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import Button, { buttonVariants } from "@/components/Button/Button";
+import Form, {
+  FieldError,
+  FormField,
+  Input,
+  Label,
+} from "@/components/Form/Form";
+import InputFile from "@/components/InputFile/InputFile";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +21,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import getImageResolution from "@/lib/getImageResolution";
 import useConversations from "@/lib/hooks/useConversations";
 import usePostConversation from "@/lib/hooks/usePostConversation";
+import { cn } from "@/lib/utils";
 
 export default function ForumPage() {
   const router = useRouter();
@@ -76,21 +86,64 @@ export default function ForumPage() {
             <DialogHeader className="bg-black p-4 text-white">
               <DialogTitle>Créer un Topic</DialogTitle>
             </DialogHeader>
-            <form
-              onSubmit={(e) => {
+            <Form
+              id="post-conversation"
+              onSubmit={async (e) => {
                 e.preventDefault();
+                setErrors({});
+
+                const file = new FormData(e.currentTarget).get("file");
+
+                const titleEmpty = (newConversation.title?.length ?? 0) <= 0;
+                const descriptionEmpty =
+                  (newConversation.description?.length ?? 0) <= 0;
+
+                if (
+                  !newConversation.title ||
+                  !newConversation.description ||
+                  titleEmpty ||
+                  descriptionEmpty
+                )
+                  return setErrors({
+                    title: titleEmpty ? `Titre obligatoire` : undefined,
+                    description: titleEmpty
+                      ? `Description obligatoire`
+                      : undefined,
+                  });
+
+                let cover:
+                  | { file: File; width: number; height: number }
+                  | undefined = undefined;
+                if (file instanceof File) {
+                  try {
+                    const imageResolution = await getImageResolution(file);
+                    cover = {
+                      file,
+                      width: imageResolution.width,
+                      height: imageResolution.height,
+                    };
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }
+
+                postConversation({
+                  title: newConversation.title,
+                  description: newConversation.description,
+                  cover,
+                });
+                setNewConversation({});
+                setTimeout(() => {
+                  setOpenCreateConversation(false);
+                }, 750);
               }}
-              className="flex flex-col gap-1 bg-white p-2"
+              className="bg-white p-2"
             >
-              <div className="flex flex-col">
-                <label
-                  htmlFor="title"
-                  className="pb-0.5 text-sm font-semibold after:content-['*']"
-                >
+              <FormField className="flex flex-col">
+                <Label htmlFor="title" aria-required>
                   Titre
-                </label>
-                <input
-                  className="rounded-sm border border-black px-2 py-0.5 text-sm font-light"
+                </Label>
+                <Input
                   id="title"
                   name="title"
                   type="text"
@@ -106,16 +159,13 @@ export default function ForumPage() {
                     });
                   }}
                 />
-                <p className="text-red-600">{errors.title}</p>
-              </div>
-              <div className="flex flex-col">
-                <label
-                  htmlFor="description"
-                  className="pb-0.5 text-sm font-semibold after:content-['*']"
-                >
+                <FieldError>{errors.title}</FieldError>
+              </FormField>
+              <FormField>
+                <Label htmlFor="description" aria-required>
                   Description
-                </label>
-                <input
+                </Label>
+                <Input
                   className="rounded-sm border border-black px-2 py-0.5 text-sm font-light"
                   id="description"
                   name="description"
@@ -131,44 +181,25 @@ export default function ForumPage() {
                     });
                   }}
                 />
-              </div>
-            </form>
+              </FormField>
+              <InputFile
+                hidden
+                name="file"
+                label={{
+                  className: cn(buttonVariants({ variant: "secondary" })),
+                }}
+              />
+            </Form>
             <footer className="flex flex-col gap-1 p-2">
-              <button
-                className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+              <Button
+                form="post-conversation"
+                variant="secondary"
+                type="submit"
                 disabled={
                   isPending ||
                   (newConversation.title?.length ?? 0) <= 0 ||
                   (newConversation.description?.length ?? 0) <= 0
                 }
-                onClick={() => {
-                  const titleEmpty = (newConversation.title?.length ?? 0) <= 0;
-                  const descriptionEmpty =
-                    (newConversation.description?.length ?? 0) <= 0;
-
-                  if (
-                    !newConversation.title ||
-                    !newConversation.description ||
-                    titleEmpty ||
-                    descriptionEmpty
-                  )
-                    return setErrors({
-                      title: titleEmpty ? `Titre obligatoire` : undefined,
-                      description: titleEmpty
-                        ? `Description obligatoire`
-                        : undefined,
-                    });
-
-                  postConversation({
-                    title: newConversation.title,
-                    description: newConversation.description,
-                  });
-                  setNewConversation({});
-                  setErrors({});
-                  setTimeout(() => {
-                    setOpenCreateConversation(false);
-                  }, 750);
-                }}
               >
                 <span className="relative">
                   Créer un Topic
@@ -176,16 +207,15 @@ export default function ForumPage() {
                     <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
                   )}
                 </span>
-              </button>
+              </Button>
 
-              <button
-                className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
+              <Button
                 onClick={() => {
                   setOpenCreateConversation(false);
                 }}
               >
                 Fermer
-              </button>
+              </Button>
             </footer>
           </DialogContent>
         </Dialog>

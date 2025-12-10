@@ -16,6 +16,9 @@ CREATE TABLE conversations (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
+    image_url TEXT,
+    image_width INTEGER,
+    image_height INTEGER,
 		created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE

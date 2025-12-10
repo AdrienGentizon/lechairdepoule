@@ -1,3 +1,5 @@
+import { put } from "@vercel/blob";
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -5,7 +7,9 @@ import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
+import { logApiError } from "@/lib/logger";
 import { Conversation } from "@/lib/types";
+import uploadImage from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
   const opertationName = `${req.method} ${req.url}`;
@@ -21,24 +25,30 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
 
+    const formData = await req.formData();
+
     const parsedInputs = z
       .object({
         title: z.string(),
         description: z.string(),
       })
-      .safeParse(await req.json());
+      .safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsedInputs.success) {
+      logApiError(req, parsedInputs.error.message);
       return NextResponse.json(
         { error: "conversation non valide ne sera pas créée" },
         { status: 400 }
       );
     }
 
+    const cover = await uploadImage(formData);
+
     const conversation = await insertConversation({
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       user: { ...user, pseudo: getUserPseudo(user) },
+      cover,
     });
 
     if (!conversation)

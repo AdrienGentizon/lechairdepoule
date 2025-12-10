@@ -12,13 +12,28 @@ export default function usePostConversation() {
     mutationFn: async ({
       title,
       description,
+      cover,
     }: {
       title: string;
       description: string;
+      cover?: {
+        file: File;
+        width: number;
+        height: number;
+      };
     }) => {
+      const body = new FormData();
+      body.set("title", title);
+      body.set("description", description);
+      if (cover) {
+        body.set("coverFile", cover.file);
+        body.set("coverWidth", cover.width.toString());
+        body.set("coverHeight", cover.height.toString());
+      }
+
       const response = await fetch(`/api/conversations`, {
         method: "POST",
-        body: JSON.stringify({ title, description }),
+        body,
       });
 
       if (!response.ok)

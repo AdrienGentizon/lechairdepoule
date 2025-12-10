@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         hostname: "images.ctfassets.net",
         pathname: `/${env().CONTENTFUL_SPACE_ID}/**`,
       },
+      {
+        protocol: "https",
+        hostname: "**.public.blob.vercel-storage.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   async redirects() {
