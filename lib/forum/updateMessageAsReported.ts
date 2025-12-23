@@ -19,6 +19,7 @@ export default async function updateMessageAsReported({
         updatedAt: string | null;
         reportedAt: string | null;
         conversationId: string | null;
+        parentMessageId: string | null;
         userId: string;
         userPseudo: string | null;
         userEmail: string;
@@ -54,6 +55,7 @@ export default async function updateMessageAsReported({
       m.reported_at::text as "reportedAt",
       m.user_id::text as "userId",
       m.conversation_id::text as "conversationId",
+      m.parent_message_id::text as "parentMessageId",
       user_messages.user_pseudo as "userPseudo",
       user_messages.user_email as "userEmail",
       user_messages.user_banned_at as "userBannedAt";`

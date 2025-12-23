@@ -12,6 +12,7 @@ export function getMessageFromRaw(
     id: raw.id.toString(),
     body: raw.body,
     conversationId: raw.conversation_id.toString(),
+    parentMessageId: raw.parent_message_id?.toString() ?? null,
     createdAt: raw.created_at,
     reportedAt: raw.reported_at,
     updatedAt: raw.updated_at,
