@@ -4,10 +4,12 @@ import { getMessageFromRaw } from "./getMessageFromRaw";
 
 export default async function insertMessageIntoConversation({
   conversationId,
+  parentMessageId,
   body,
   user,
 }: {
   conversationId: string;
+  parentMessageId: string | undefined;
   body: string;
   user: User;
 }) {
@@ -25,9 +27,9 @@ export default async function insertMessageIntoConversation({
     }[]
   >`
   INSERT INTO
-	messages (conversation_id, body, user_id, created_at)
+	messages (conversation_id, parent_message_id, body, user_id, created_at)
   VALUES
-    (${conversationId}, ${body}, ${user.id}, ${Date.now()})
+    (${conversationId}, ${parentMessageId ?? null}, ${body}, ${user.id}, ${Date.now()})
   RETURNING
     id::text,
     body,
