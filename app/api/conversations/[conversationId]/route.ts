@@ -81,7 +81,7 @@ export async function POST(
     const parsedInputs = z
       .object({
         body: z.string(),
-        parentMessageId: z.optional(z.string()),
+        parentMessageId: z.nullable(z.string()),
       })
       .safeParse(await req.json());
 

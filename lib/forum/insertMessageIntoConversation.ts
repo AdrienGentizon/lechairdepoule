@@ -9,7 +9,7 @@ export default async function insertMessageIntoConversation({
   user,
 }: {
   conversationId: string;
-  parentMessageId: string | undefined;
+  parentMessageId: string | null;
   body: string;
   user: User;
 }) {
