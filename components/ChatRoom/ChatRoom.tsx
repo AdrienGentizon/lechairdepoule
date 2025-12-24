@@ -4,7 +4,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 
 import { useState } from "react";
 
-import { ArrowLeft, Loader, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, ImageIcon, Loader, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,8 +14,10 @@ import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
 import useDeleteConversation from "@/lib/forum/useDeleteConversation";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
+import getImageResolution from "@/lib/getImageResolution";
 import { Conversation } from "@/lib/types";
 
+import Button from "../Button/Button";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,91 @@ import {
 } from "../ui/dialog";
 import MessagesList from "./MessagesList/MessagesList";
 import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
+
+function UpdateConversationCover({
+  conversation,
+}: {
+  conversation: Conversation;
+}) {
+  const { updateConversation, isPending } = useUpdateConversation();
+  const [errors, setErrors] = useState<{ coverSize?: string }>({});
+  return (
+    <form
+      onChange={async (e) => {
+        e.preventDefault();
+        if (isPending) return;
+
+        const coverFile = new FormData(e.currentTarget).get("coverFile");
+        if (coverFile instanceof File) {
+          if (coverFile.size > 2 * 1024 * 1024) {
+            return setErrors({
+              coverSize: `La taille de l'image sélectionnée dépasse le maximum autorisé de 2Mo.`,
+            });
+          }
+          const imageResolution = await getImageResolution(coverFile);
+          const cover = {
+            file: coverFile,
+            width: imageResolution.width,
+            height: imageResolution.height,
+          };
+          updateConversation({
+            id: conversation.id,
+            title: conversation.title,
+            description: conversation.description ?? "",
+            cover,
+          });
+        }
+      }}
+    >
+      <label
+        htmlFor="coverFile"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-gray-800 hover:text-gray-100"
+      >
+        <ImageIcon className="size-5" />
+        <input
+          id="coverFile"
+          name="coverFile"
+          type="file"
+          hidden
+          accept="image/*"
+        />
+      </label>
+      {errors.coverSize && (
+        <Dialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setErrors((prev) => {
+                return { ...prev, coverSize: undefined };
+              });
+            }
+          }}
+        >
+          <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
+            <DialogHeader className="bg-black p-4 text-white">
+              <DialogTitle>Echec de chargement</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-2 bg-white p-2">
+              <p>{errors.coverSize}</p>
+              <footer className="flex items-center justify-end">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setErrors((prev) => {
+                      return { ...prev, coverSize: undefined };
+                    });
+                  }}
+                >
+                  Fermer
+                </Button>
+              </footer>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </form>
+  );
+}
 
 function DeleteConversationButton({
   conversation,
@@ -67,7 +154,7 @@ function UpdateConversationButton({
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-gray-800 hover:text-gray-100">
         <>
           {isPending ? (
             <Loader className="size-5 animate-spin" />
@@ -191,10 +278,11 @@ export default function ChatRoom({ conversationId }: Props) {
             </p>
           </div>
           {conversation.createdBy.id === me.id && (
-            <>
+            <div className="flex items-center gap-1">
               <UpdateConversationButton conversation={conversation} />
+              <UpdateConversationCover conversation={conversation} />
               <DeleteConversationButton conversation={conversation} />
-            </>
+            </div>
           )}
         </div>
         {conversation.coverUrl &&

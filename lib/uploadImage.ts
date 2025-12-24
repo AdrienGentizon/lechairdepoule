@@ -22,6 +22,7 @@ export default async function uploadImage(formData: FormData) {
       addRandomSuffix: true,
     });
 
+    console.log(`[Operation] uploadImage successful ${blob.url}`);
     return {
       url: blob.url,
       width,

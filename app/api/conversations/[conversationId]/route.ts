@@ -1,3 +1,5 @@
+import { del } from "@vercel/blob";
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -10,6 +12,7 @@ import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
+import uploadImage from "@/lib/uploadImage";
 
 export async function GET(
   req: NextRequest,
@@ -195,14 +198,17 @@ export async function PATCH(
         { status: 401 }
       );
 
+    const formData = await req.formData();
+
     const parsedInputs = z
       .object({
-        title: z.optional(z.string()),
-        description: z.optional(z.string()),
+        title: z.string(),
+        description: z.string(),
       })
-      .safeParse(await req.json());
+      .safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsedInputs.success) {
+      console.error(`[Error] ${opertationName} ${parsedInputs.error.message}`);
       return NextResponse.json(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
@@ -211,10 +217,14 @@ export async function PATCH(
       );
     }
 
+    const cover = await uploadImage(formData);
+
     const conversation = await updateConversationFromId({
       userId: user.id,
       conversationId: params.conversationId,
-      payload: parsedInputs.data,
+      title: parsedInputs.data.title,
+      description: parsedInputs.data.description,
+      cover,
     });
 
     if (!conversation)
@@ -224,13 +234,31 @@ export async function PATCH(
         },
         { status: 404 }
       );
+
+    // TODO delete previous conversation cover
+    if (cover && conversation.previousCoverUrl) {
+      console.log(
+        `[Operation] conversation ${conversation.id} cover has been replaced, its previous cover is going to be deleted`
+      );
+      await del(conversation.previousCoverUrl);
+      console.log(
+        `[Operation] delete blob successful ${conversation.previousCoverUrl}`
+      );
+    }
     return NextResponse.json<{
       id: string;
       title: string;
       description: string;
-    }>(conversation, {
-      status: 200,
-    });
+    }>(
+      {
+        id: conversation.id,
+        title: conversation.title,
+        description: conversation.description,
+      },
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error(
       `[Operation]`,

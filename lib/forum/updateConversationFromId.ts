@@ -1,16 +1,21 @@
 import sql from "../db";
-import { Conversation } from "../types";
-
-type AllowedFields = Partial<Pick<Conversation, "title" | "description">>;
 
 export default async function updateConversationFromId({
   conversationId,
   userId,
-  payload,
+  title,
+  description,
+  cover,
 }: {
   conversationId: string;
   userId: string;
-  payload: Partial<Conversation>;
+  title: string;
+  description: string;
+  cover?: {
+    url: string;
+    width: number;
+    height: number;
+  };
 }) {
   return (
     await sql<
@@ -18,15 +23,29 @@ export default async function updateConversationFromId({
         id: string;
         title: string;
         description: string;
+        coverUrl: string | null;
+        coverWidth: string | null;
+        coverHeight: string | null;
+        previousCoverUrl: string | null;
       }[]
-    >`UPDATE public.conversations
-      SET ${sql(payload, ...(["title", "description"] satisfies (keyof AllowedFields)[]))}
+    >`WITH previous AS (SELECT image_url FROM public.conversations WHERE id = ${conversationId} AND created_by = ${userId})
+    UPDATE public.conversations
+      SET
+        title = ${title},
+        description = ${description},
+        image_url = COALESCE(${cover?.url ?? null}, image_url),
+        image_width = COALESCE(${cover?.width ?? null}, image_width),
+        image_height = COALESCE(${cover?.height ?? null}, image_height)
       WHERE
         id = ${conversationId}
         AND created_by = ${userId}
       RETURNING
         id::text,
         title,
-        description;`
+        description,
+        image_url as "coverUrl",
+        image_width as "coverWidth",
+        image_height as "coverHeight",
+        (SELECT image_url FROM previous) AS "previousCoverUrl";`
   ).at(0);
 }

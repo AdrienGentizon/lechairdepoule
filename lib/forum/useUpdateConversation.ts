@@ -11,15 +11,31 @@ export default function useUpdateConversation() {
   } = useMutation({
     mutationFn: async ({
       id: conversationId,
-      ...payload
+      title,
+      description,
+      cover,
     }: {
       id: string;
-      title?: string;
-      description?: string;
+      title: string;
+      description: string;
+      cover?: {
+        file: File;
+        width: number;
+        height: number;
+      };
     }) => {
+      const body = new FormData();
+      body.set("title", title);
+      body.set("description", description);
+      if (cover) {
+        body.set("coverFile", cover.file);
+        body.set("coverWidth", cover.width.toString());
+        body.set("coverHeight", cover.height.toString());
+      }
+      console.log(body);
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
-        body: JSON.stringify(payload),
+        body,
       });
 
       if (!response.ok) {
