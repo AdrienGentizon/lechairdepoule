@@ -43,7 +43,7 @@ export default function ForumPage() {
 
   return (
     <>
-      <ul className="grid grid-cols-1 overflow-y-scroll">
+      <ul className="grid auto-rows-min grid-cols-1 overflow-y-scroll">
         {conversations.map((conversation) => {
           return (
             <li
