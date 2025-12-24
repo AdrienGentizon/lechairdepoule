@@ -219,7 +219,6 @@ export default function ChatRoom({ conversationId }: Props) {
           Messages
         </h2>
         <MessagesList
-          me={me}
           conversation={conversation}
           lastEmptyLiRef={lastEmptyLiRef}
           scrollToBottom={scrollToBottom}
