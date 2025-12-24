@@ -81,6 +81,7 @@ export async function POST(
     const parsedInputs = z
       .object({
         body: z.string(),
+        parentMessageId: z.nullable(z.string()),
       })
       .safeParse(await req.json());
 
@@ -93,6 +94,7 @@ export async function POST(
 
     const message = await insertMessageIntoConversation({
       conversationId: params.conversationId,
+      parentMessageId: parsedInputs.data.parentMessageId,
       body: parsedInputs.data.body,
       user: {
         ...user,

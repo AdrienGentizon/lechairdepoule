@@ -3,7 +3,7 @@ import { dark } from "@clerk/themes";
 
 import { ReactNode } from "react";
 
-import PusherProvider from "@/components/providers/PusherProvider";
+import PusherProvider from "@/components/providers/PusherProvider/PusherProvider";
 import ForumProvider from "@/contexts/ForumProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 

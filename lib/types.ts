@@ -27,6 +27,7 @@ export type RawMessage = {
   updated_at: string | null;
   reported_at: string | null;
   conversation_id: string;
+  parent_message_id: string | null;
   user_id: string;
   reported_by: string | null;
 };
@@ -38,6 +39,7 @@ export type Message = {
   updatedAt: string | null;
   reportedAt: string | null;
   conversationId: string | null;
+  parentMessageId: string | null;
   user: {
     id: string;
     pseudo: string;
@@ -79,3 +81,9 @@ export type TermsOfService = {
   sys: { id: string };
   cgu: string;
 };
+
+export function isMessageWithConversationId(
+  message: Message
+): message is Message & { conversationId: string } {
+  return message.conversationId !== null;
+}
