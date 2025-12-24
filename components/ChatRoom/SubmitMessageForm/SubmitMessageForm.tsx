@@ -33,9 +33,12 @@ export default function SubmitMessageForm({
           return console.error(parsedInputs.error.message);
         }
 
-        postConversationMessage(parsedInputs.data.body, {
-          onSuccess: () => onSuccess(e),
-        });
+        postConversationMessage(
+          { body: parsedInputs.data.body, parentMessageId: null },
+          {
+            onSuccess: () => onSuccess(e),
+          }
+        );
       }}
     >
       <label htmlFor="body">Message</label>
