@@ -13,8 +13,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
-import useMe from "@/lib/hooks/useMe";
-import useUpdateUserPseudo from "@/lib/hooks/useUpdateUserPseudo";
+import useMe from "@/lib/auth/useMe";
+import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import { User } from "@/lib/types";
 
 type Context = {

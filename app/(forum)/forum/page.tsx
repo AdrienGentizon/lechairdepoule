@@ -21,9 +21,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import useConversations from "@/lib/forum/useConversations";
+import usePostConversation from "@/lib/forum/usePostConversation";
 import getImageResolution from "@/lib/getImageResolution";
-import useConversations from "@/lib/hooks/useConversations";
-import usePostConversation from "@/lib/hooks/usePostConversation";
 import { cn } from "@/lib/utils";
 
 export default function ForumPage() {

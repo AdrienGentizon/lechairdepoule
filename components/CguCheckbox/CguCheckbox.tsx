@@ -1,6 +1,6 @@
 import { InputHTMLAttributes, useState } from "react";
 
-import useCGU from "@/lib/hooks/useCGU";
+import useCGU from "@/lib/misc/useCGU";
 
 import MarkdownRenderer from "../MarkDownRenderer/MarkDownRenderer";
 import {

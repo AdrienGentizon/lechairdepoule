@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useBanUser from "@/lib/hooks/useBanUser";
+import useBanUser from "@/lib/forum/useBanUser";
 import { Message } from "@/lib/types";
 
 type Props = { message: Message };

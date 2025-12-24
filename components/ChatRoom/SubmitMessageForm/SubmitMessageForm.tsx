@@ -3,7 +3,7 @@ import { FormEvent } from "react";
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
-import usePostConversationMessage from "@/lib/hooks/usePostConversationMessage";
+import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 
 type Props = {
   conversationId: string;
