@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ComponentRef, useCallback, useEffect, useRef } from "react";
 
-import { usePusher } from "@/components/providers/PusherProvider";
+import { usePusher } from "@/components/providers/PusherProvider/PusherProvider";
 
 import { CacheKey, Conversation, Message, User } from "../types";
 import { reportedMessageBodyReplacement } from "../wordings";
