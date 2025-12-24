@@ -13,7 +13,6 @@ import Form, {
   Input,
   Label,
 } from "@/components/Form/Form";
-import InputFile from "@/components/InputFile/InputFile";
 import {
   Dialog,
   DialogContent,
@@ -21,10 +20,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import useConversations from "@/lib/forum/useConversations";
+import usePostConversation from "@/lib/forum/usePostConversation";
 import getImageResolution from "@/lib/getImageResolution";
-import useConversations from "@/lib/hooks/useConversations";
-import usePostConversation from "@/lib/hooks/usePostConversation";
-import { cn } from "@/lib/utils";
 
 export default function ForumPage() {
   const router = useRouter();
@@ -43,7 +41,7 @@ export default function ForumPage() {
 
   return (
     <>
-      <ul className="grid grid-cols-1 overflow-y-scroll">
+      <ul className="grid auto-rows-min grid-cols-1 overflow-y-scroll">
         {conversations.map((conversation) => {
           return (
             <li
@@ -182,13 +180,20 @@ export default function ForumPage() {
                   }}
                 />
               </FormField>
-              <InputFile
-                hidden
-                name="file"
-                label={{
-                  className: cn(buttonVariants({ variant: "secondary" })),
-                }}
-              />
+              <FormField>
+                <Label htmlFor="file">Photo de couverture</Label>
+                <label
+                  htmlFor="file"
+                  className={buttonVariants({
+                    variant: "secondary",
+                    className: "py-1 text-sm font-[375]",
+                  })}
+                >
+                  Sélectionner un fichier...
+                </label>
+                <Input id="file" name="file" type="file" hidden />
+                <FieldError>{null}</FieldError>
+              </FormField>
             </Form>
             <footer className="flex flex-col gap-1 p-2">
               <Button

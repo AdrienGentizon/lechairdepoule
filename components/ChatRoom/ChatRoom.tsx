@@ -10,10 +10,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
-import useConversation from "@/lib/hooks/useConversation";
-import useDeleteConversation from "@/lib/hooks/useDeleteConversation";
-import useMe from "@/lib/hooks/useMe";
-import useUpdateConversation from "@/lib/hooks/useUpdateConversation";
+import useMe from "@/lib/auth/useMe";
+import useConversation from "@/lib/forum/useConversation";
+import useDeleteConversation from "@/lib/forum/useDeleteConversation";
+import useUpdateConversation from "@/lib/forum/useUpdateConversation";
 import { Conversation } from "@/lib/types";
 
 import {
@@ -219,7 +219,6 @@ export default function ChatRoom({ conversationId }: Props) {
           Messages
         </h2>
         <MessagesList
-          me={me}
           conversation={conversation}
           lastEmptyLiRef={lastEmptyLiRef}
           scrollToBottom={scrollToBottom}

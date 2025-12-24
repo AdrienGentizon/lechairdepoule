@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Ban, Loader } from "lucide-react";
+import { Loader, Skull } from "lucide-react";
 
 import {
   Dialog,
@@ -9,29 +9,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useReportMessage from "@/lib/hooks/useReportMessage";
+import useBanUser from "@/lib/forum/useBanUser";
 import { Message } from "@/lib/types";
 
 type Props = { message: Message };
 
-export default function ReportMessageButton({ message }: Props) {
-  const [openReport, setOpenReport] = useState(false);
+export default function BanUserButton({ message }: Props) {
+  const [openBan, setOpenBan] = useState(false);
 
-  const { reportMessage, isPending: isPendingReportMessage } =
-    useReportMessage();
+  const { banUser, isPending: isPendingBanUser } = useBanUser();
 
   return (
-    <Dialog open={openReport} onOpenChange={setOpenReport}>
+    <Dialog open={openBan} onOpenChange={setOpenBan}>
       <DialogTrigger
-        disabled={message.reportedAt !== null || message.user.bannedAt !== null}
+        disabled={message.user.bannedAt !== null}
         className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600 disabled:hidden"
       >
-        <Ban className="size-3" />
-        Molo molo
+        <Skull className="size-3" />
+        Bannir
       </DialogTrigger>
       <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
         <DialogHeader className="bg-black p-4 text-white">
-          <DialogTitle>Dénoncer un message</DialogTitle>
+          <DialogTitle>Bannir un utilisateur</DialogTitle>
         </DialogHeader>
         <div className="bg-white p-2">
           <p>
@@ -47,18 +46,18 @@ export default function ReportMessageButton({ message }: Props) {
         <footer className="flex flex-col gap-1 p-2">
           <button
             className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isPendingReportMessage}
+            disabled={isPendingBanUser}
             onClick={() => {
-              reportMessage(message.id, {
+              banUser(message.user.id, {
                 onSuccess: () => {
-                  setOpenReport(false);
+                  setOpenBan(false);
                 },
               });
             }}
           >
             <span className="relative">
-              Dénoncer un message
-              {isPendingReportMessage && (
+              Bannir <strong>{message.user.pseudo}</strong>
+              {isPendingBanUser && (
                 <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
               )}
             </span>
@@ -67,7 +66,7 @@ export default function ReportMessageButton({ message }: Props) {
           <button
             className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
             onClick={() => {
-              setOpenReport(false);
+              setOpenBan(false);
             }}
           >
             Fermer

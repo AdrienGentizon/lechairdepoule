@@ -17,6 +17,7 @@ export default async function selectConversationMessages(
         reportedAt: string | null;
         userId: string;
         conversationId: string | null;
+        parentMessageId: string | null;
         userPseudo: string | null;
         userEmail: string;
         userBannedAt: string | null;
@@ -31,6 +32,7 @@ export default async function selectConversationMessages(
       m.reported_by::text as "reportedBy",
       m.user_id::text as "userId",
       m.conversation_id::text as "conversationId",
+      m.parent_message_id::text as "parentMessageId",
       u.pseudo as "userPseudo",
       u.email as "userEmail",
       u.banned_at::text as "userBannedAt"

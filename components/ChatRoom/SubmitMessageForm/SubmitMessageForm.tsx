@@ -3,7 +3,7 @@ import { FormEvent } from "react";
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
-import usePostConversationMessage from "@/lib/hooks/usePostConversationMessage";
+import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 
 type Props = {
   conversationId: string;
@@ -33,9 +33,12 @@ export default function SubmitMessageForm({
           return console.error(parsedInputs.error.message);
         }
 
-        postConversationMessage(parsedInputs.data.body, {
-          onSuccess: () => onSuccess(e),
-        });
+        postConversationMessage(
+          { body: parsedInputs.data.body, parentMessageId: null },
+          {
+            onSuccess: () => onSuccess(e),
+          }
+        );
       }}
     >
       <label htmlFor="body">Message</label>

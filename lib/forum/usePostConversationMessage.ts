@@ -11,14 +11,17 @@ export default function usePostConversationMessage(conversationId: string) {
     isPending,
   } = useMutation({
     mutationFn: async (
-      body: string,
+      {
+        body,
+        parentMessageId,
+      }: { body: string; parentMessageId: string | null },
       options?: {
         onSuccess: () => void;
       }
     ) => {
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "POST",
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body, parentMessageId }),
       });
 
       if (!response.ok)
