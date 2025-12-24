@@ -12,7 +12,7 @@ export const buttonVariants = cva(
         primary:
           "border border-black bg-white text-black hover:bg-gray-100 disabled:hover:bg-transparent",
         secondary:
-          "border border-black bg-black text-white hover:bg-black/90 disabled:hover:bg-black",
+          "border border-white bg-black text-white hover:bg-black/90 disabled:hover:bg-black",
       },
     },
     defaultVariants: {
