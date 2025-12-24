@@ -81,3 +81,9 @@ export type TermsOfService = {
   sys: { id: string };
   cgu: string;
 };
+
+export function isMessageWithConversationId(
+  message: Message
+): message is Message & { conversationId: string } {
+  return message.conversationId !== null;
+}
