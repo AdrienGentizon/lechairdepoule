@@ -10,6 +10,7 @@ import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversa
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
 import uploadImage from "@/lib/uploadImage";
@@ -18,10 +19,9 @@ export async function GET(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -49,11 +49,7 @@ export async function GET(
       }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -67,10 +63,9 @@ export async function POST(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -115,11 +110,7 @@ export async function POST(
 
     return NextResponse.json<Message>(message, { status: 200 });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -133,10 +124,9 @@ export async function DELETE(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -166,11 +156,7 @@ export async function DELETE(
       }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -184,10 +170,9 @@ export async function PATCH(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -208,7 +193,7 @@ export async function PATCH(
       .safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsedInputs.success) {
-      console.error(`[Error] ${opertationName} ${parsedInputs.error.message}`);
+      logApiError(req, parsedInputs.error.message);
       return NextResponse.json(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
@@ -235,14 +220,16 @@ export async function PATCH(
         { status: 404 }
       );
 
-    // TODO delete previous conversation cover
     if (cover && conversation.previousCoverUrl) {
-      console.log(
-        `[Operation] conversation ${conversation.id} cover has been replaced, its previous cover is going to be deleted`
+      logApiOperation(
+        req,
+        `conversation ${conversation.id} cover has been replaced, its previous cover is going to be deleted`
       );
+
       await del(conversation.previousCoverUrl);
-      console.log(
-        `[Operation] delete blob successful ${conversation.previousCoverUrl}`
+      logApiOperation(
+        req,
+        `delete blob successful ${conversation.previousCoverUrl}`
       );
     }
     return NextResponse.json<{
@@ -260,11 +247,8 @@ export async function PATCH(
       }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
+
     return NextResponse.json(
       {
         error: "server error",

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { fetchEntryGraphQL } from "@/lib/contentful";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import { TermsOfService } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
 
     const response = await fetchEntryGraphQL<TermsOfService>(
       "termsOfService",
@@ -29,11 +29,8 @@ export async function GET(req: NextRequest) {
       status: 200,
     });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
+
     return NextResponse.json(
       {
         error: "server error",

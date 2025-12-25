@@ -5,14 +5,13 @@ import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
-import { logApiError } from "@/lib/logger";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import { Conversation } from "@/lib/types";
 import uploadImage from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -54,11 +53,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json<Conversation>(conversation, { status: 200 });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
+
     return NextResponse.json(
       {
         error: "server error",
@@ -69,9 +65,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -88,11 +83,8 @@ export async function GET(req: NextRequest) {
       status: 200,
     });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
+
     return NextResponse.json(
       {
         error: "server error",
