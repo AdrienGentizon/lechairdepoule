@@ -5,7 +5,6 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
 
 import { ArrowLeft, ImageIcon, Loader, Pencil, Trash2 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -285,18 +284,6 @@ export default function ChatRoom({ conversationId }: Props) {
             </div>
           )}
         </div>
-        {conversation.coverUrl &&
-          conversation.coverWidth &&
-          conversation.coverHeight && (
-            <Image
-              src={conversation.coverUrl}
-              width={conversation.coverWidth}
-              height={conversation.coverHeight}
-              alt=""
-              aria-hidden
-              className=""
-            />
-          )}
       </header>
 
       <section
