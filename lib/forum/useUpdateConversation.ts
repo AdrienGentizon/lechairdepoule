@@ -32,7 +32,6 @@ export default function useUpdateConversation() {
         body.set("coverWidth", cover.width.toString());
         body.set("coverHeight", cover.height.toString());
       }
-      console.log(body);
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
         body,

@@ -63,6 +63,13 @@ export type Conversation = {
   messages: Message[];
 };
 
+export type UserMention = {
+  id: string;
+  messageId: string;
+  createdAt: string;
+  readAt: string | null;
+};
+
 export type CacheKey =
   | "me"
   | `conversation-${string}`

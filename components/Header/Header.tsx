@@ -20,7 +20,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
   return (
     <header
       className={cn(
-        "fixed z-20 w-full bg-black pb-4 sm:max-w-2xl",
+        "fixed z-20 w-full bg-black pb-4 sm:max-w-2xl portrait:max-w-[100dvw]",
         variant === "relative" && "relative"
       )}
     >

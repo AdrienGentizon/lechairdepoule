@@ -3,6 +3,7 @@ import { dark } from "@clerk/themes";
 
 import { ReactNode } from "react";
 
+import UserButton from "@/components/UserButton/UserButton";
 import PusherProvider from "@/components/providers/PusherProvider/PusherProvider";
 import ForumProvider from "@/contexts/ForumProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
@@ -20,7 +21,10 @@ export default async function ForumLayout({
     >
       <PusherProvider>
         <ReactQueryProvider>
-          <ForumProvider>{children}</ForumProvider>
+          <ForumProvider>
+            {children}
+            <UserButton />
+          </ForumProvider>
         </ReactQueryProvider>
       </PusherProvider>
     </ClerkProvider>
