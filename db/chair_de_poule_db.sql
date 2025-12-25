@@ -39,3 +39,16 @@ CREATE TABLE messages (
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
     CONSTRAINT parent_message_fk FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE CASCADE
 );
+
+CREATE TABLE mentions (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL,
+  read_at TIMESTAMPTZ,
+  message_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT message_fk FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+  CONSTRAINT mention_uq UNIQUE(message_id, user_id)
+);
+CREATE INDEX idx_mentions_user_id ON mentions(user_id);
+CREATE INDEX idx_mentions_unread ON mentions(user_id, read_at) WHERE read_at IS NULL;

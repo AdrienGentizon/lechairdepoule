@@ -5,8 +5,15 @@ import { z } from "zod";
 
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
+import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
+import { selectUsersFromId } from "@/lib/auth/selecteUsersFromId";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
+import getMentionedPseudos from "@/lib/forum/getMentionedPseudos";
+import getMentionedUserIds from "@/lib/forum/getMentionedUserIds";
+import insertMentions from "@/lib/forum/insertMentions";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
+import replaceMessageBodyMentionWIthUserId from "@/lib/forum/replaceMessageBodyMentionWIthUserId";
+import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBodyMentionWIthUserName";
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
@@ -42,8 +49,47 @@ export async function GET(
         { status: 404 }
       );
     const messages = await selectConversationMessages(params.conversationId);
+    const mentionedUserIds = messages.reduce((acc: string[], curr) => {
+      const mentionedUserIds = getMentionedUserIds(curr.body);
+      return [
+        ...acc.filter((id) => !mentionedUserIds.includes(id)),
+        ...mentionedUserIds,
+      ];
+    }, []);
+
+    const users = await selectUsersFromId(
+      mentionedUserIds.map((mention) => {
+        return mention.replace("@", "");
+      })
+    );
+    const mentionedUsers = mentionedUserIds.reduce(
+      (acc: { id: string; pseudo: string }[], curr) => {
+        const user = users.find(({ id }) => `@${id}` === curr);
+        if (!user?.pseudo) return acc;
+        return [
+          ...acc.filter(({ id }) => id !== user.id),
+          {
+            id: user.id,
+            pseudo: user.pseudo,
+          },
+        ];
+      },
+      []
+    );
+
     return NextResponse.json<Conversation>(
-      { ...conversation, messages },
+      {
+        ...conversation,
+        messages: messages.map((message) => {
+          return {
+            ...message,
+            body: replaceMessageBodyMentionWIthUserName({
+              mentionedUsers,
+              body: message.body,
+            }),
+          };
+        }),
+      },
       {
         status: 200,
       }
@@ -90,10 +136,24 @@ export async function POST(
       );
     }
 
+    const mentions = getMentionedPseudos(parsedInputs.data.body);
+
+    let mentionedUsers: { id: string; pseudo: string | null }[] = [];
+    if (mentions.length > 0) {
+      mentionedUsers = await selectUsersFromPseudo({
+        pseudos: mentions.map((mention) => {
+          return mention.replace("@", "");
+        }),
+      });
+    }
+
     const message = await insertMessageIntoConversation({
       conversationId: params.conversationId,
       parentMessageId: parsedInputs.data.parentMessageId,
-      body: parsedInputs.data.body,
+      body: replaceMessageBodyMentionWIthUserId({
+        mentionedUsers,
+        body: parsedInputs.data.body,
+      }),
       user: {
         ...user,
         pseudo: getUserPseudo(user),
@@ -102,13 +162,27 @@ export async function POST(
 
     if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
 
+    await insertMentions({
+      messageId: message.id,
+      userIds: mentionedUsers.map(({ id }) => id),
+    });
+
     await pusher.trigger(
       `conversations-${params.conversationId}`,
       "conversation:message:new",
       message
     );
 
-    return NextResponse.json<Message>(message, { status: 200 });
+    return NextResponse.json<Message>(
+      {
+        ...message,
+        body: replaceMessageBodyMentionWIthUserName({
+          mentionedUsers,
+          body: message.body,
+        }),
+      },
+      { status: 200 }
+    );
   } catch (error) {
     logApiError(req, error);
     return NextResponse.json(
