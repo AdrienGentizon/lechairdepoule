@@ -2,7 +2,7 @@ import { RefObject, useEffect } from "react";
 
 import Image from "next/image";
 
-import { Conversation, User } from "@/lib/types";
+import { Conversation } from "@/lib/types";
 
 import MessageItem from "./MessageItem/MessageItem";
 

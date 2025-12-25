@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { CacheKey, Conversation, Message, User } from "../types";
+import { CacheKey, Conversation, User } from "../types";
 
 export default function useUpdateUserPseudo(options?: {
   onSuccess?: () => void;
@@ -37,18 +37,16 @@ export default function useUpdateUserPseudo(options?: {
               ...acc,
               {
                 ...curr,
-                messages: curr.messages.reduce((acc: Message[], curr) => {
-                  return acc.map((message) => {
-                    if (message.user.id !== data.id) return message;
-                    return {
-                      ...message,
-                      user: {
-                        ...message.user,
-                        pseudo: data.pseudo,
-                      },
-                    };
-                  });
-                }, []),
+                messages: curr.messages.map((message) => {
+                  if (message.user.id !== data.id) return message;
+                  return {
+                    ...message,
+                    user: {
+                      ...message.user,
+                      pseudo: data.pseudo,
+                    },
+                  };
+                }),
               },
             ];
           }, []);

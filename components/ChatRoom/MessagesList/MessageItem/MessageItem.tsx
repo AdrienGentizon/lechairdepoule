@@ -41,12 +41,6 @@ export default function MessageItem({
     return true;
   };
 
-  const canShowThread = () => {
-    if (!showThread) return false;
-    if (message.parentMessageId !== null) return false;
-    return true;
-  };
-
   return (
     <>
       <li className="group relative">
