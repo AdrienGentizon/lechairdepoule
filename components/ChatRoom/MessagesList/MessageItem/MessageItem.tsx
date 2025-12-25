@@ -13,6 +13,33 @@ import BanUserButton from "./BanUserButton/BanUserButton";
 import CreateThreadButton from "./CreateThreadButton/CreateThreadButton";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+
+function MessageBodyParser({ message }: { message: Message }) {
+  const parts = message.body.split(URL_REGEX);
+
+  return (
+    <>
+      {parts.map((part, n) => {
+        if (part.match(URL_REGEX)) {
+          return (
+            <a
+              key={`message-${message.id}-link-${n}`}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 underline hover:text-blue-300"
+            >
+              {part}
+            </a>
+          );
+        }
+        return part;
+      })}
+    </>
+  );
+}
+
 export default function MessageItem({
   message,
   threadedMessages,
@@ -74,7 +101,7 @@ export default function MessageItem({
                 "text-neutral-400 line-through"
             )}
           >
-            {message.body}
+            <MessageBodyParser message={message} />
           </p>
           <footer className="flex items-center justify-end gap-2 px-2 pb-2 font-mono text-[0.6rem] font-light">
             {threadedMessages.length > 0 && (
