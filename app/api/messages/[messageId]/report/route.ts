@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import pusher from "@/lib/pusher";
 import { Message } from "@/lib/types";
 
@@ -10,10 +11,9 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ messageId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const { messageId } = await params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const reportedBy = await getUser(req);
 
     if (!reportedBy || reportedBy.bannedAt)
@@ -44,11 +44,7 @@ export async function POST(
       status: 200,
     });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",

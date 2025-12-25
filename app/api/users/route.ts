@@ -3,12 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import selectUsers from "@/lib/auth/selectUsers";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import { User } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -26,11 +26,7 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",

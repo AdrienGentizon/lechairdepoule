@@ -8,7 +8,6 @@ import { logApiError, logApiOperation } from "@/lib/logger";
 import { User } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
     logApiOperation(req);
     const user = await getUser(req);
@@ -40,9 +39,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const opertationName = `${req.method} ${req.url}`;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -85,11 +83,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json<User>(updatedUser, { status: 200 });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",

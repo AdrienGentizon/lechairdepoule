@@ -3,17 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import pusher from "@/lib/pusher";
-import { BroadCastKey, User } from "@/lib/types";
+import { User } from "@/lib/types";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const { userId } = await params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const bannedBy = await getUser(req);
 
     if (!bannedBy || bannedBy.bannedAt || bannedBy.id === userId)
@@ -38,11 +38,7 @@ export async function POST(
       status: 200,
     });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",

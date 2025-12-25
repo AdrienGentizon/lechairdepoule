@@ -1,3 +1,5 @@
+import { del } from "@vercel/blob";
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -8,17 +10,18 @@ import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversa
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
+import { logApiError, logApiOperation } from "@/lib/logger";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
+import uploadImage from "@/lib/uploadImage";
 
 export async function GET(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -46,11 +49,7 @@ export async function GET(
       }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -64,10 +63,9 @@ export async function POST(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -112,11 +110,7 @@ export async function POST(
 
     return NextResponse.json<Message>(message, { status: 200 });
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -130,10 +124,9 @@ export async function DELETE(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -163,11 +156,7 @@ export async function DELETE(
       }
     );
   } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
-    );
+    logApiError(req, error);
     return NextResponse.json(
       {
         error: "server error",
@@ -181,10 +170,9 @@ export async function PATCH(
   req: NextRequest,
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
-  const opertationName = `${req.method} ${req.url}`;
   const params = await ctx.params;
   try {
-    console.log(`[Operation]`, opertationName);
+    logApiOperation(req);
     const user = await getUser(req);
 
     if (!user || user.bannedAt)
@@ -195,14 +183,17 @@ export async function PATCH(
         { status: 401 }
       );
 
+    const formData = await req.formData();
+
     const parsedInputs = z
       .object({
-        title: z.optional(z.string()),
-        description: z.optional(z.string()),
+        title: z.string(),
+        description: z.string(),
       })
-      .safeParse(await req.json());
+      .safeParse(Object.fromEntries(formData.entries()));
 
     if (!parsedInputs.success) {
+      logApiError(req, parsedInputs.error.message);
       return NextResponse.json(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
@@ -211,10 +202,14 @@ export async function PATCH(
       );
     }
 
+    const cover = await uploadImage(formData);
+
     const conversation = await updateConversationFromId({
       userId: user.id,
       conversationId: params.conversationId,
-      payload: parsedInputs.data,
+      title: parsedInputs.data.title,
+      description: parsedInputs.data.description,
+      cover,
     });
 
     if (!conversation)
@@ -224,19 +219,36 @@ export async function PATCH(
         },
         { status: 404 }
       );
+
+    if (cover && conversation.previousCoverUrl) {
+      logApiOperation(
+        req,
+        `conversation ${conversation.id} cover has been replaced, its previous cover is going to be deleted`
+      );
+
+      await del(conversation.previousCoverUrl);
+      logApiOperation(
+        req,
+        `delete blob successful ${conversation.previousCoverUrl}`
+      );
+    }
     return NextResponse.json<{
       id: string;
       title: string;
       description: string;
-    }>(conversation, {
-      status: 200,
-    });
-  } catch (error) {
-    console.error(
-      `[Operation]`,
-      opertationName,
-      (error as Error)?.message ?? error
+    }>(
+      {
+        id: conversation.id,
+        title: conversation.title,
+        description: conversation.description,
+      },
+      {
+        status: 200,
+      }
     );
+  } catch (error) {
+    logApiError(req, error);
+
     return NextResponse.json(
       {
         error: "server error",
