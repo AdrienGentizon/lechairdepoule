@@ -2,7 +2,7 @@
 
 import { DialogTitle } from "@radix-ui/react-dialog";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { ArrowLeft, ImageIcon, Loader, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -295,11 +295,13 @@ export default function ChatRoom({ conversationId }: Props) {
         <h2 className="sr-only" id="messages-section">
           Messages
         </h2>
-        <MessagesList
-          conversation={conversation}
-          lastEmptyLiRef={lastEmptyLiRef}
-          scrollToBottom={scrollToBottom}
-        />
+        <Suspense>
+          <MessagesList
+            conversation={conversation}
+            lastEmptyLiRef={lastEmptyLiRef}
+            scrollToBottom={scrollToBottom}
+          />
+        </Suspense>
       </section>
       <div className="px-1 landscape:px-0">
         <SubmitMessageForm

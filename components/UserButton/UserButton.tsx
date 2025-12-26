@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { UserCircle } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { z } from "zod";
 
 import useMe from "@/lib/auth/useMe";
@@ -23,7 +23,7 @@ import {
 
 export default function UserButton() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+
   const { me } = useMe();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
   const { userMentions } = useUserMentions();
@@ -33,7 +33,7 @@ export default function UserButton() {
 
   useEffect(() => {
     setOpen(false);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -126,6 +126,11 @@ export default function UserButton() {
                   >
                     <Link
                       href={`/forum/${mention.conversationId}?message=${mention.messageId}`}
+                      onClick={() => {
+                        setTimeout(() => {
+                          setOpen(false);
+                        }, 1000);
+                      }}
                     >
                       <header className="font-semibold">
                         {mention.conversationTitle}
