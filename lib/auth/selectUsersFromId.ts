@@ -10,9 +10,8 @@ export async function selectUsersFromId(includes: string[]) {
       createdAt: string;
       bannedAt: string | null;
       deletedAt: string | null;
-      lastConnection: string | null;
     }[]
-  >`SELECT 
+  >`SELECT
       id::text,
       email,
       pseudo,

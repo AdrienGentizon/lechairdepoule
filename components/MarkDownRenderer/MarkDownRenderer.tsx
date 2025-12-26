@@ -2,60 +2,58 @@ import ReactMarkdown from "react-markdown";
 
 import remarkGfm from "remark-gfm";
 
+import { cn } from "@/lib/utils";
+
 interface MarkdownRendererProps {
   content: string;
+  className?: string;
 }
 
-export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export default function MarkdownRenderer({
+  content,
+  className,
+}: MarkdownRendererProps) {
   return (
-    <div className="prose prose-lg max-w-none">
+    <div className={cn("prose prose-lg max-w-none", className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
-            <h1 className="mb-6 text-4xl font-bold text-gray-900">
-              {children}
-            </h1>
+            <h1 className="text-2xl font-bold leading-8">{children}</h1>
           ),
           h2: ({ children }) => (
-            <h2 className="mb-4 mt-8 text-2xl font-semibold text-gray-800">
-              {children}
-            </h2>
+            <h2 className="pt-4 text-xl font-semibold leading-8">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mb-3 mt-6 text-xl font-semibold text-gray-800">
-              {children}
-            </h3>
+            <h3 className="pt-2 text-lg font-semibold leading-6">{children}</h3>
           ),
           p: ({ children }) => (
-            <p className="mb-4 leading-relaxed text-gray-700">{children}</p>
+            <p className="pb-4 pt-2 leading-relaxed">{children}</p>
           ),
           ul: ({ children }) => (
-            <ul className="mb-4 ml-4 list-inside list-disc space-y-2">
+            <ul className="list-inside list-disc space-y-2 pb-4 pt-2">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="mb-4 ml-4 list-inside list-decimal space-y-2">
-              {children}
-            </ol>
+            <ol className="list-inside list-decimal space-y-2">{children}</ol>
           ),
-          li: ({ children }) => <li className="text-gray-700">{children}</li>,
+          li: ({ children }) => <li className="">{children}</li>,
           blockquote: ({ children }) => (
-            <blockquote className="my-4 border-l-4 border-blue-500 bg-gray-50 py-2 pl-4 italic text-gray-600">
+            <blockquote className="border-l-4 border-blue-500 bg-neutral-50 py-2 pl-4 italic">
               {children}
             </blockquote>
           ),
           code: ({ inline, children }: any) => {
             if (inline) {
               return (
-                <code className="rounded bg-gray-100 px-1 py-0.5 font-mono text-sm">
+                <code className="rounded px-1 py-0.5 font-mono text-sm">
                   {children}
                 </code>
               );
             }
             return (
-              <pre className="mb-4 overflow-x-auto rounded-lg bg-gray-100 p-4">
+              <pre className="overflow-x-auto rounded-lg p-4">
                 <code className="font-mono text-sm">{children}</code>
               </pre>
             );

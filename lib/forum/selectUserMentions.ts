@@ -11,12 +11,21 @@ export default async function selectUserMentions({
       messageId: string;
       createdAt: string;
       readAt: string | null;
+      conversationId: string | null;
+      conversationTitle: string | null;
+      excerpt: string;
     }[]
   >`
   SELECT
-    id::text,
-    message_id as "messageId",
-    created_at as "createdAt",
-    read_at as "readAt"
-  FROM mentions WHERE user_id = ${userId}`;
+    mentions.id::text,
+    mentions.message_id as "messageId",
+    mentions.created_at as "createdAt",
+    mentions.read_at as "readAt",
+    messages.conversation_id::text as "conversationId",
+    SUBSTRING(messages.body, 1, 30) as "excerpt",
+    conversations.title as "conversationTitle"
+  FROM messages
+  JOIN mentions ON mentions.message_id = messages.id
+  JOIN conversations ON conversations.id = messages.conversation_id
+  WHERE mentions.user_id = ${userId}`;
 }

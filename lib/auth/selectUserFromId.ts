@@ -11,7 +11,7 @@ export default async function selectUserFromId(id: string) {
         createdAt: string;
         bannedAt: string | null;
         deletedAt: string | null;
-        lastConnection: string | null;
+        tosAcceptedAt: string | null;
       }[]
     >`SELECT
         id::text,
@@ -20,7 +20,8 @@ export default async function selectUserFromId(id: string) {
         role,
         created_at::text as "createdAt",
         banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt"
+        deleted_at::text as "deletedAt",
+        tos_accepted_at::text as "tosAcceptedAt"
       FROM public.users WHERE id=${id}`
   ).at(0);
 }
@@ -42,7 +43,7 @@ export async function selectUserFromAuthId({
         createdAt: string;
         bannedAt: string | null;
         deletedAt: string | null;
-        lastConnection: string | null;
+        tosAcceptedAt: string | null;
       }[]
     >`SELECT
         id::text,
@@ -51,7 +52,8 @@ export async function selectUserFromAuthId({
         role,
         created_at::text as "createdAt",
         banned_at::text as "bannedAt",
-        deleted_at::text as "deletedAt"
+        deleted_at::text as "deletedAt",
+        tos_accepted_at::text as "tosAcceptedAt"
       FROM public.users
       WHERE
         auth_provider=${provider}

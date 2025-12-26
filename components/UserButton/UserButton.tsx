@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { UserCircle } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { z } from "zod";
 
 import useMe from "@/lib/auth/useMe";
@@ -20,12 +22,17 @@ import {
 } from "../ui/dialog";
 
 export default function UserButton() {
+  const pathname = usePathname();
   const { me } = useMe();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
   const { userMentions } = useUserMentions();
 
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<{ pseudo?: string }>({});
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -44,74 +51,103 @@ export default function UserButton() {
           </span>
         </button>
       </DialogTrigger>
-      <DialogContent className="border border-white">
+      <DialogContent className="grid grid-cols-1 grid-rows-[min-content_1fr]">
         <DialogHeader>
           <DialogTitle>Informations personnelles</DialogTitle>
         </DialogHeader>
-        <Form
-          id="update-user"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setErrors({});
-            const parsedInputs = z
-              .object({
-                pseudo: z
-                  .string()
-                  .min(3, { message: "Pseudo trop court (3 char min)" }),
-              })
-              .safeParse(
-                Object.fromEntries(new FormData(e.currentTarget).entries())
-              );
+        <div className="max-h-[90dvh] overflow-y-scroll">
+          <Form
+            id="update-user"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setErrors({});
+              const parsedInputs = z
+                .object({
+                  pseudo: z
+                    .string()
+                    .min(3, { message: "Pseudo trop court (3 char min)" }),
+                })
+                .safeParse(
+                  Object.fromEntries(new FormData(e.currentTarget).entries())
+                );
 
-            if (!parsedInputs.success) {
-              return setErrors({
-                pseudo:
-                  parsedInputs.error.formErrors.fieldErrors.pseudo?.toString(),
-              });
-            }
-
-            updateUserPseudo(
-              { pseudo: parsedInputs.data.pseudo },
-              {
-                onSuccess: () => {
-                  e.currentTarget.reset();
-                },
+              if (!parsedInputs.success) {
+                return setErrors({
+                  pseudo:
+                    parsedInputs.error.formErrors.fieldErrors.pseudo?.toString(),
+                });
               }
-            );
-          }}
-        >
-          <FormField>
-            <Label htmlFor="pseudo">Pseudo</Label>
-            <Input id="pseudo" name="pseudo" defaultValue={me?.pseudo} />
-            <p
-              className="text-red-500"
-              aria-hidden={errors.pseudo === undefined}
-            >
-              {errors.pseudo}
-            </p>
-          </FormField>
-          <Button
-            variant="secondary"
-            className="ml-auto"
-            type="submit"
-            form="update-user"
-            disabled={isPending}
-          >
-            Modifier
-          </Button>
-        </Form>
-        <section aria-labelledby="mentions">
-          <h2 id="mentions" className="text-lg font-semibold">
-            Notifications
-          </h2>
-          <ul>
-            {userMentions.map((mention) => {
-              return (
-                <li className={`mention-${mention.id}`}>{mention.messageId}</li>
+
+              updateUserPseudo(
+                {
+                  pseudo: parsedInputs.data.pseudo,
+                  cgu: me?.tosAcceptedAt !== null,
+                },
+                {
+                  onSuccess: () => {
+                    e.currentTarget.reset();
+                  },
+                }
               );
-            })}
-          </ul>
-        </section>
+            }}
+          >
+            <FormField>
+              <Label htmlFor="pseudo" className="text-lg">
+                Pseudo
+              </Label>
+              <Input id="pseudo" name="pseudo" defaultValue={me?.pseudo} />
+              <p
+                className="text-red-500"
+                aria-hidden={errors.pseudo === undefined}
+              >
+                {errors.pseudo}
+              </p>
+            </FormField>
+            <Button
+              className="ml-auto"
+              type="submit"
+              form="update-user"
+              disabled={isPending}
+            >
+              Modifier
+            </Button>
+          </Form>
+          <section aria-labelledby="mentions">
+            <h2 id="mentions" className="text-lg font-semibold">
+              Notifications
+            </h2>
+            <ul>
+              {userMentions.map((mention) => {
+                console.log(mention, userMentions.length);
+                return (
+                  <li
+                    key={`mention-${mention.id}`}
+                    className="rounded-sm border border-neutral-300 bg-neutral-800 p-2"
+                  >
+                    <Link
+                      href={`/forum/${mention.conversationId}?message=${mention.messageId}`}
+                    >
+                      <header className="font-semibold">
+                        {mention.conversationTitle}
+                      </header>
+                      <p className="pl-2 text-sm font-light">
+                        {mention.excerpt}
+                      </p>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+          <section aria-labelledby="cgu">
+            <h2 id="cgu" className="pb-1 pt-4 text-lg font-semibold">
+              Conditions générales d'utilisation
+            </h2>
+            <Link href={`/forum/cgu`}>
+              <Button className="w-full">Lire les CGU</Button>
+            </Link>
+          </section>
+        </div>
       </DialogContent>
     </Dialog>
   );

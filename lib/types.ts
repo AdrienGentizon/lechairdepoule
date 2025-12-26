@@ -6,7 +6,7 @@ export type RawUser = {
   createdAt: string;
   bannedAt: string | null;
   deletedAt: string | null;
-  lastConnection: string | null;
+  tosAcceptedAt: string | null;
 };
 
 export type User = {
@@ -17,7 +17,7 @@ export type User = {
   createdAt: string;
   bannedAt: string | null;
   deletedAt: string | null;
-  lastConnection: string | null;
+  tosAcceptedAt: string | null;
 };
 
 export type RawMessage = {
@@ -66,6 +66,9 @@ export type Conversation = {
 export type UserMention = {
   id: string;
   messageId: string;
+  conversationId: string | null;
+  conversationTitle: string | null;
+  excerpt: string;
   createdAt: string;
   readAt: string | null;
 };
