@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
+import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
-import { selectUsersFromId } from "@/lib/auth/selecteUsersFromId";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
 import getMentionedPseudos from "@/lib/forum/getMentionedPseudos";
 import getMentionedUserIds from "@/lib/forum/getMentionedUserIds";

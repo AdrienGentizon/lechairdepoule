@@ -186,7 +186,6 @@ export default function MessageItem({
                 </FormField>
                 <div className="flex justify-end gap-2">
                   <Button
-                    variant="secondary"
                     onClick={() => {
                       setShowThread(false);
                     }}
@@ -194,12 +193,7 @@ export default function MessageItem({
                     Fermer
                   </Button>
 
-                  <Button
-                    variant="secondary"
-                    type="submit"
-                    form={formId}
-                    disabled={isPending}
-                  >
+                  <Button type="submit" form={formId} disabled={isPending}>
                     Envoyer
                   </Button>
                 </div>

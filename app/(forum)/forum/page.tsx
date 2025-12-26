@@ -6,7 +6,7 @@ import { ArrowRight, Loader, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import Button, { buttonVariants } from "@/components/Button/Button";
+import Button from "@/components/Button/Button";
 import Form, {
   FieldError,
   FormField,
@@ -71,7 +71,7 @@ export default function ForumPage() {
           );
         })}
       </ul>
-      <div className="group relative flex flex-col border-b border-t border-white">
+      <div className="flex flex-col border-b border-t border-white">
         <Dialog
           open={openCreateConversation}
           onOpenChange={setOpenCreateConversation}
@@ -80,9 +80,9 @@ export default function ForumPage() {
             <Plus className="stroke-1" />
             Créer un Topic
           </DialogTrigger>
-          <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
-            <DialogHeader className="bg-black p-4 text-white">
-              <DialogTitle>Créer un Topic</DialogTitle>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Nouveau Topic</DialogTitle>
             </DialogHeader>
             <Form
               id="post-conversation"
@@ -135,9 +135,8 @@ export default function ForumPage() {
                   setOpenCreateConversation(false);
                 }, 750);
               }}
-              className="bg-white p-2"
             >
-              <FormField className="flex flex-col">
+              <FormField>
                 <Label htmlFor="title" aria-required>
                   Titre
                 </Label>
@@ -164,7 +163,6 @@ export default function ForumPage() {
                   Description
                 </Label>
                 <Input
-                  className="rounded-sm border border-black px-2 py-0.5 text-sm font-light"
                   id="description"
                   name="description"
                   type="text"
@@ -182,24 +180,16 @@ export default function ForumPage() {
               </FormField>
               <FormField>
                 <Label htmlFor="file">Photo de couverture</Label>
-                <label
-                  htmlFor="file"
-                  className={buttonVariants({
-                    variant: "secondary",
-                    className: "py-1 text-sm font-[375]",
-                  })}
-                >
-                  Sélectionner un fichier...
+                <label htmlFor="file">
+                  <Button className="w-full">Sélectionner un fichier...</Button>
                 </label>
                 <Input id="file" name="file" type="file" hidden />
                 <FieldError>{null}</FieldError>
               </FormField>
-            </Form>
-            <footer className="flex flex-col gap-1 p-2">
               <Button
                 form="post-conversation"
-                variant="secondary"
                 type="submit"
+                className="mt-9 w-full"
                 disabled={
                   isPending ||
                   (newConversation.title?.length ?? 0) <= 0 ||
@@ -213,15 +203,7 @@ export default function ForumPage() {
                   )}
                 </span>
               </Button>
-
-              <Button
-                onClick={() => {
-                  setOpenCreateConversation(false);
-                }}
-              >
-                Fermer
-              </Button>
-            </footer>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

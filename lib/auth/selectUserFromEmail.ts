@@ -11,7 +11,6 @@ export default async function selectUserFromEmail(email: string) {
         createdAt: string;
         bannedAt: string | null;
         deletedAt: string | null;
-        lastConnection: string | null;
       }[]
     >`SELECT
         id::text,

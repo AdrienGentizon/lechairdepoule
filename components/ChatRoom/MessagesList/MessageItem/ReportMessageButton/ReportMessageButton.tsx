@@ -24,12 +24,12 @@ export default function ReportMessageButton({ message }: Props) {
     <Dialog open={openReport} onOpenChange={setOpenReport}>
       <DialogTrigger
         disabled={message.reportedAt !== null || message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600 disabled:hidden"
+        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-neutral-600 disabled:hidden"
       >
         <Ban className="size-3" />
         Molo molo
       </DialogTrigger>
-      <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
+      <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-neutral-500 bg-white p-0 text-black landscape:max-w-96">
         <DialogHeader className="bg-black p-4 text-white">
           <DialogTitle>Dénoncer un message</DialogTitle>
         </DialogHeader>
@@ -46,7 +46,7 @@ export default function ReportMessageButton({ message }: Props) {
         </div>
         <footer className="flex flex-col gap-1 p-2">
           <button
-            className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:not:disabled:bg-neutral-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isPendingReportMessage}
             onClick={() => {
               reportMessage(message.id, {
@@ -65,7 +65,7 @@ export default function ReportMessageButton({ message }: Props) {
           </button>
 
           <button
-            className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
+            className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-neutral-100"
             onClick={() => {
               setOpenReport(false);
             }}

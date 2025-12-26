@@ -22,7 +22,7 @@ export default async function updateUserAsBanned({
         createdAt: string;
         bannedAt: string | null;
         deletedAt: string | null;
-        lastConnection: string | null;
+        tosAcceptedAt: string | null;
       }[]
     >`
     UPDATE public.users
@@ -37,6 +37,7 @@ export default async function updateUserAsBanned({
       role,
       created_at::text as "createdAt",
       banned_at::text as "bannedAt",
-      deleted_at::text as "deletedAt";`
+      deleted_at::text as "deletedAt",
+      tos_accepted_at::text as "tosAcceptedAt";`
   ).at(0);
 }

@@ -60,7 +60,7 @@ export function Input({
   return (
     <input
       className={cn(
-        "rounded-sm border border-black px-2 py-0.5 text-sm font-light",
+        "rounded-sm border border-neutral-300 bg-neutral-800 px-2 py-0.5 text-sm font-light text-white outline-none selection:bg-white selection:text-black focus:border-purple-300",
         className
       )}
       {...props}

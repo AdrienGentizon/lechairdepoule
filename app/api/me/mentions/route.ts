@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import getUser from "@/lib/auth/getUser";
+import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBodyMentionWIthUserName";
 import selectUserMentions from "@/lib/forum/selectUserMentions";
 import { logApiError, logApiOperation } from "@/lib/logger";
 import { UserMention } from "@/lib/types";
@@ -12,8 +13,22 @@ export async function GET(req: NextRequest) {
     if (!me)
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+    const mentions = await selectUserMentions({ userId: me.id });
     return NextResponse.json<UserMention[]>(
-      await selectUserMentions({ userId: me.id }),
+      mentions.map((mention) => {
+        return {
+          ...mention,
+          excerpt: replaceMessageBodyMentionWIthUserName({
+            mentionedUsers: [
+              {
+                id: me.id,
+                pseudo: me.pseudo,
+              },
+            ],
+            body: mention.excerpt,
+          }),
+        };
+      }),
       {
         status: 200,
       }

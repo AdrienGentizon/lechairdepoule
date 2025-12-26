@@ -12,7 +12,7 @@ export default function useUpdateUserPseudo(options?: {
     error,
     isPending,
   } = useMutation({
-    mutationFn: async (inputs: { pseudo: string }) => {
+    mutationFn: async (inputs: { pseudo: string; cgu: boolean }) => {
       const response = await fetch(`/api/me`, {
         method: "PATCH",
         body: JSON.stringify(inputs),

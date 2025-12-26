@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
-import updateUserPseudo from "@/lib/auth/updateUserPseudo";
+import updateUser from "@/lib/auth/updateUser";
 import { logApiError, logApiOperation } from "@/lib/logger";
 import { User } from "@/lib/types";
 
@@ -56,6 +56,7 @@ export async function PATCH(req: NextRequest) {
         pseudo: z
           .string()
           .min(3, { message: "Pseudo trop court (3 char min)" }),
+        cgu: z.boolean({ message: "Vous devez accepter les CGU" }),
       })
       .safeParse(await req.json());
 
@@ -68,9 +69,10 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updatedUser = await updateUserPseudo({
+    const updatedUser = await updateUser({
       userId: user.id,
       pseudo: parsedInputs.data.pseudo,
+      cgu: parsedInputs.data.cgu,
     });
 
     if (!updatedUser)
