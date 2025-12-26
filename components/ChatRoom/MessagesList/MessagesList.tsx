@@ -1,7 +1,9 @@
 import { RefObject, useEffect } from "react";
 
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
+import useUserMentions from "@/lib/forum/useUserMentions";
 import { Conversation } from "@/lib/types";
 
 import MessageItem from "./MessageItem/MessageItem";
@@ -17,9 +19,17 @@ export default function MessagesList({
   lastEmptyLiRef,
   scrollToBottom,
 }: Props) {
+  const messageId = useSearchParams().get("messageId")?.toString();
+  const { userMentions } = useUserMentions();
+
   useEffect(() => {
     scrollToBottom();
   }, [scrollToBottom]);
+
+  useEffect(() => {
+    if (!messageId) return;
+    window.location.hash = messageId;
+  }, [messageId]);
 
   return (
     <ul className="flex min-h-[calc(100dvh-400px)] flex-col gap-2 rounded-sm py-2">
@@ -40,14 +50,26 @@ export default function MessagesList({
       {conversation.messages
         .filter(({ parentMessageId }) => parentMessageId === null)
         .map((message) => {
-          const threadedMessages = conversation.messages.filter(
-            ({ parentMessageId }) => parentMessageId === message.id
-          );
+          const threadedMessages = conversation.messages
+            .filter(({ parentMessageId }) => parentMessageId === message.id)
+            .map((message) => {
+              return {
+                ...message,
+                hasMention:
+                  userMentions.find(
+                    ({ messageId }) => messageId === message.id
+                  ) !== undefined,
+              };
+            });
+          const hasMention =
+            userMentions.find(({ messageId }) => messageId === message.id) !==
+            undefined;
           return (
             <MessageItem
               key={`main-conversation-message-${message.id}`}
               message={message}
               threadedMessages={threadedMessages}
+              hasMention={hasMention}
             />
           );
         })}

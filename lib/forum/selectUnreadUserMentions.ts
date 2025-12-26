@@ -1,6 +1,6 @@
 import sql from "../db";
 
-export default async function selectUserMentions({
+export default async function selectUnreadUserMentions({
   userId,
 }: {
   userId: string;
@@ -18,7 +18,7 @@ export default async function selectUserMentions({
   >`
   SELECT
     mentions.id::text,
-    mentions.message_id as "messageId",
+    mentions.message_id::text as "messageId",
     mentions.created_at as "createdAt",
     mentions.read_at as "readAt",
     messages.conversation_id::text as "conversationId",
@@ -27,5 +27,5 @@ export default async function selectUserMentions({
   FROM messages
   JOIN mentions ON mentions.message_id = messages.id
   JOIN conversations ON conversations.id = messages.conversation_id
-  WHERE mentions.user_id = ${userId}`;
+  WHERE mentions.user_id = ${userId} AND read_at IS NULL`;
 }

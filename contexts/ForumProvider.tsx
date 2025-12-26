@@ -40,7 +40,6 @@ export function useForumContext() {
 export default function ForumProvider({ children }: { children: ReactNode }) {
   const { me } = useMe();
   const { updateUserPseudo, isPending, error } = useUpdateUserPseudo();
-  console.log(me);
   const [errors, setErrors] = useState<{ pseudo?: string; cgu?: string }>({});
 
   return (

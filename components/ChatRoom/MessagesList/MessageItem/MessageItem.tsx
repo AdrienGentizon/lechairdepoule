@@ -1,4 +1,11 @@
-import { useId, useState } from "react";
+import {
+  ComponentRef,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 
 import { z } from "zod";
 
@@ -6,12 +13,44 @@ import Button from "@/components/Button/Button";
 import { FormField, Label } from "@/components/Form/Form";
 import useMe from "@/lib/auth/useMe";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
+import useUpdateUserMentions from "@/lib/forum/useUpdateUserMentions";
 import { Message, isMessageWithConversationId } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import BanUserButton from "./BanUserButton/BanUserButton";
 import CreateThreadButton from "./CreateThreadButton/CreateThreadButton";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
+
+function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
+  const { updateUserMentions, isPending } = useUpdateUserMentions();
+  const ref = useRef<ComponentRef<"div">>(null);
+
+  const markAsRead = useCallback(() => {
+    if (isPending) return;
+    updateUserMentions([messageId]);
+  }, [messageId, isPending]);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const abortController = new AbortController();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          markAsRead();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(ref.current);
+
+    return () => {
+      abortController.abort();
+    };
+  }, []);
+  return <div ref={ref} />;
+}
 
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
 
@@ -43,9 +82,11 @@ function MessageBodyParser({ message }: { message: Message }) {
 export default function MessageItem({
   message,
   threadedMessages,
+  hasMention,
 }: {
   message: Message;
-  threadedMessages: Message[];
+  threadedMessages: (Message & { hasMention: boolean })[];
+  hasMention: boolean;
 }) {
   const { me } = useMe();
   const { postConversationMessage, isPending } = usePostConversationMessage(
@@ -70,7 +111,7 @@ export default function MessageItem({
 
   return (
     <>
-      <li className="group relative">
+      <li id={message.id} className="group relative portrait:pb-6">
         <div className="flex items-center gap-2">
           <div className="flex w-full text-xs font-medium">
             <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
@@ -121,6 +162,7 @@ export default function MessageItem({
               {new Date(message.createdAt).toLocaleTimeString()}
             </time>
           </footer>
+          {hasMention && <MarkAsReadWhenInView messageId={message.id} />}
         </div>
         {!showThread &&
           isMessageWithConversationId(message) &&
@@ -141,6 +183,7 @@ export default function MessageItem({
                   key={`message-${message.id}-thread-${threadedMessage.id}`}
                   message={threadedMessage}
                   threadedMessages={[]}
+                  hasMention={threadedMessage.hasMention}
                 />
               );
             })}

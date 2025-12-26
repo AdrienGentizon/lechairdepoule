@@ -23,6 +23,7 @@ import {
 
 export default function UserButton() {
   const pathname = usePathname();
+
   const { me } = useMe();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
   const { userMentions } = useUserMentions();
@@ -118,7 +119,6 @@ export default function UserButton() {
             </h2>
             <ul>
               {userMentions.map((mention) => {
-                console.log(mention, userMentions.length);
                 return (
                   <li
                     key={`mention-${mention.id}`}
@@ -126,6 +126,11 @@ export default function UserButton() {
                   >
                     <Link
                       href={`/forum/${mention.conversationId}?message=${mention.messageId}`}
+                      onClick={() => {
+                        setTimeout(() => {
+                          setOpen(false);
+                        }, 1000);
+                      }}
                     >
                       <header className="font-semibold">
                         {mention.conversationTitle}
