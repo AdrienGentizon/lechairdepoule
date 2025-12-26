@@ -23,7 +23,7 @@ export default function BanUserButton({ message }: Props) {
     <Dialog open={openBan} onOpenChange={setOpenBan}>
       <DialogTrigger
         disabled={message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-gray-600 disabled:hidden"
+        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-neutral-600 disabled:hidden"
       >
         <Skull className="size-3" />
         Bannir
@@ -45,7 +45,7 @@ export default function BanUserButton({ message }: Props) {
         </div>
         <footer className="flex flex-col gap-1 p-2">
           <button
-            className="hover:not:disabled:bg-gray-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:not:disabled:bg-neutral-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isPendingBanUser}
             onClick={() => {
               banUser(message.user.id, {
@@ -64,7 +64,7 @@ export default function BanUserButton({ message }: Props) {
           </button>
 
           <button
-            className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-gray-100"
+            className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-neutral-100"
             onClick={() => {
               setOpenBan(false);
             }}
