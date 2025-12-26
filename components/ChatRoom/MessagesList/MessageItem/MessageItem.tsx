@@ -70,7 +70,7 @@ export default function MessageItem({
 
   return (
     <>
-      <li className="group relative">
+      <li className="group relative portrait:pb-6">
         <div className="flex items-center gap-2">
           <div className="flex w-full text-xs font-medium">
             <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
