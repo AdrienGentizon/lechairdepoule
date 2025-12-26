@@ -118,7 +118,6 @@ export default function UserButton() {
             </h2>
             <ul>
               {userMentions.map((mention) => {
-                console.log(mention, userMentions.length);
                 return (
                   <li
                     key={`mention-${mention.id}`}
