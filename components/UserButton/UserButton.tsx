@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { UserCircle } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { z } from "zod";
 
 import useMe from "@/lib/auth/useMe";
@@ -23,6 +23,7 @@ import {
 
 export default function UserButton() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { me } = useMe();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
   const { userMentions } = useUserMentions();
@@ -32,7 +33,7 @@ export default function UserButton() {
 
   useEffect(() => {
     setOpen(false);
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -45,7 +45,8 @@ export default function MessageItem({
   threadedMessages,
 }: {
   message: Message;
-  threadedMessages: Message[];
+  threadedMessages: (Message & { hasMention: boolean })[];
+  hasMention: boolean;
 }) {
   const { me } = useMe();
   const { postConversationMessage, isPending } = usePostConversationMessage(
@@ -70,7 +71,7 @@ export default function MessageItem({
 
   return (
     <>
-      <li className="group relative portrait:pb-6">
+      <li id={message.id} className="group relative portrait:pb-6">
         <div className="flex items-center gap-2">
           <div className="flex w-full text-xs font-medium">
             <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
