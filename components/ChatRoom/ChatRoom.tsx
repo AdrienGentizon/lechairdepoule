@@ -17,6 +17,7 @@ import getImageResolution from "@/lib/getImageResolution";
 import { Conversation } from "@/lib/types";
 
 import Button from "../Button/Button";
+import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,7 @@ function UpdateConversationCover({
   const { updateConversation, isPending } = useUpdateConversation();
   const [errors, setErrors] = useState<{ coverSize?: string }>({});
   return (
-    <form
+    <Form
       onChange={async (e) => {
         e.preventDefault();
         if (isPending) return;
@@ -63,7 +64,7 @@ function UpdateConversationCover({
     >
       <label
         htmlFor="coverFile"
-        className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-gray-800 hover:text-gray-100"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100"
       >
         <ImageIcon className="size-5" />
         <input
@@ -93,7 +94,6 @@ function UpdateConversationCover({
               <p>{errors.coverSize}</p>
               <footer className="flex items-center justify-end">
                 <Button
-                  variant="secondary"
                   onClick={() => {
                     setErrors((prev) => {
                       return { ...prev, coverSize: undefined };
@@ -107,7 +107,7 @@ function UpdateConversationCover({
           </DialogContent>
         </Dialog>
       )}
-    </form>
+    </Form>
   );
 }
 
@@ -124,7 +124,7 @@ function DeleteConversationButton({
   });
   return (
     <button
-      className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-gray-800 hover:text-gray-100"
+      className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100"
       disabled={isPending}
       onClick={() => {
         deleteConversation(conversation.id);
@@ -153,7 +153,7 @@ function UpdateConversationButton({
 
   return (
     <Dialog>
-      <DialogTrigger className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-gray-800 hover:text-gray-100">
+      <DialogTrigger className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
         <>
           {isPending ? (
             <Loader className="size-5 animate-spin" />
@@ -167,7 +167,7 @@ function UpdateConversationButton({
         <DialogHeader>
           <DialogTitle>Modifier la conversation</DialogTitle>
         </DialogHeader>
-        <form
+        <Form
           onSubmit={(e) => {
             e.preventDefault();
             setErrors({});
@@ -205,32 +205,34 @@ function UpdateConversationButton({
             });
           }}
         >
-          <div>
-            <label htmlFor="title">Titre</label>
-            <input
+          <FormField>
+            <Label htmlFor="title">Titre</Label>
+            <Input
               id="title"
               name="title"
               defaultValue={conversation.title ?? ""}
               type="text"
             />
-            <p className="text-sm text-red-500">
+            <FieldError className="text-sm text-red-500">
               {errors.title ?? <>&nbsp;</>}
-            </p>
-          </div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <input
+            </FieldError>
+          </FormField>
+          <FormField>
+            <Label htmlFor="description">Description</Label>
+            <Input
               id="description"
               name="description"
               defaultValue={conversation.description ?? ""}
               type="text"
             />
-            <p className="text-sm text-red-500">
+            <FieldError className="text-sm text-red-500">
               {errors.description ?? <>&nbsp;</>}
-            </p>
-          </div>
-          <button type="submit">Modifier</button>
-        </form>
+            </FieldError>
+          </FormField>
+          <Button className="ml-auto" type="submit">
+            Modifier
+          </Button>
+        </Form>
       </DialogContent>
     </Dialog>
   );
