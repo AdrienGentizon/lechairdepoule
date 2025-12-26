@@ -1,41 +1,20 @@
 import { ButtonHTMLAttributes } from "react";
 
-import { type VariantProps, cva } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
 
-export const buttonVariants = cva(
-  "flex cursor-pointer items-center justify-center gap-2 rounded-sm px-8 py-0.5 font-semibold disabled:cursor-not-allowed disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        primary:
-          "border border-black bg-white text-black hover:bg-gray-100 disabled:hover:bg-transparent",
-        secondary:
-          "border border-white bg-black text-white hover:bg-black/90 disabled:hover:bg-black",
-      },
-    },
-    defaultVariants: {
-      variant: "primary",
-    },
-  }
-);
-
-type Props = VariantProps<typeof buttonVariants>;
-
 export default function Button({
-  variant,
   className,
   children,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & Props) {
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       className={cn(
-        buttonVariants({
-          variant,
-          className,
-        })
+        "flex w-max cursor-pointer items-center justify-center gap-2 px-8 py-0.5 text-sm font-semibold disabled:cursor-not-allowed",
+        "rounded-sm border border-white bg-neutral-800 text-white transition-colors",
+        "hover:border-purple-300 hover:bg-neutral-950",
+        "disabled:hover:border-neutral-300 disabled:hover:bg-neutral-800",
+        className
       )}
       {...props}
     >
