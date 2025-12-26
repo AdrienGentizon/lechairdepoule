@@ -176,12 +176,12 @@ function UpdateConversationButton({
                 title: z.optional(
                   z
                     .string()
-                    .min(3, { message: "titre trop court (3 char min)" })
+                    .min(3, { message: "Titre trop court (3 char min)" })
                 ),
                 description: z.optional(
                   z
                     .string()
-                    .min(3, { message: "titre trop court (3 char min)" })
+                    .min(3, { message: "Description trop courte (3 char min)" })
                 ),
               })
               .safeParse(
