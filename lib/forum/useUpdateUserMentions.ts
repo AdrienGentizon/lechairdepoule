@@ -32,7 +32,6 @@ export default function useUpdateUserMentions() {
             const mutatedMention = maybeReadMentions.find(
               (mention) => mention.id === curr.id
             );
-            console.log(mutatedMention);
             if (!mutatedMention || mutatedMention.readAt === null)
               return [...acc, curr];
 

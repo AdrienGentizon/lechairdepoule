@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
-    pseudo TEXT,
+    pseudo TEXT UNIQUE,
     created_at TIMESTAMPTZ,
     banned_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
@@ -53,3 +53,7 @@ CREATE TABLE mentions (
 );
 CREATE INDEX idx_mentions_user_id ON mentions(user_id);
 CREATE INDEX idx_mentions_unread ON mentions(user_id, read_at) WHERE read_at IS NULL;
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- CREATE INDEX trgm_idx_gist ON users USING GIST (pseudo gist_trgm_ops);
+-- SET pg_trgm.similarity_threshold = 0.3;

@@ -1,9 +1,6 @@
-import { unstable_cache } from "next/cache";
-
 import sql from "../db";
-import { CacheKey } from "../types";
 
-export async function selectUsers() {
+export default async function selectUsersByPseudo(search: string) {
   return await sql<
     {
       id: string;
@@ -24,11 +21,6 @@ export async function selectUsers() {
       banned_at::text as "bannedAt",
       deleted_at::text as "deletedAt",
       tos_accepted_at::text as "tosAcceptedAt"
-    FROM public.users;`;
+    FROM public.users
+    WHERE LOWER(pseudo) = ${search.toLowerCase()};`;
 }
-
-const selectUsersCached = unstable_cache(async () => {
-  return selectUsers();
-}, ["users" satisfies CacheKey]);
-
-export default selectUsersCached;
