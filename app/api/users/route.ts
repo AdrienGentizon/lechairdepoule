@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
-import selectUsers from "@/lib/auth/selectUsers";
+import selectSimilarUsersByPseudo from "@/lib/auth/selectSimilarUsersByPseudo";
 import { logApiError, logApiOperation } from "@/lib/logger";
 import { User } from "@/lib/types";
 
@@ -19,8 +19,17 @@ export async function GET(req: NextRequest) {
         { status: 401 }
       );
 
-    return NextResponse.json<User[]>(
-      (await selectUsers()).map((user) => {
+    const search = req.nextUrl.searchParams.get("search")?.toString();
+    if (!search)
+      return NextResponse.json(
+        {
+          error: "search parameter is required",
+        },
+        { status: 400 }
+      );
+
+    return NextResponse.json<(User & { similarity: number })[]>(
+      (await selectSimilarUsersByPseudo(search)).map((user) => {
         return { ...user, pseudo: getUserPseudo(user) };
       }),
       { status: 200 }

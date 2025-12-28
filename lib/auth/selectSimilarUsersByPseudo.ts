@@ -1,9 +1,6 @@
-import { unstable_cache } from "next/cache";
-
 import sql from "../db";
-import { CacheKey } from "../types";
 
-export async function selectUsers() {
+export default async function selectSimilarUsersByPseudo(search: string) {
   return await sql<
     {
       id: string;
@@ -14,6 +11,7 @@ export async function selectUsers() {
       bannedAt: string | null;
       deletedAt: string | null;
       tosAcceptedAt: string | null;
+      similarity: number;
     }[]
   >`SELECT
       id::text,
@@ -23,12 +21,8 @@ export async function selectUsers() {
       created_at::text as "createdAt",
       banned_at::text as "bannedAt",
       deleted_at::text as "deletedAt",
-      tos_accepted_at::text as "tosAcceptedAt"
-    FROM public.users;`;
+      tos_accepted_at::text as "tosAcceptedAt",
+      SIMILARITY(pseudo, ${search}) as "similarity"
+    FROM public.users
+    WHERE pseudo % ${search};`;
 }
-
-const selectUsersCached = unstable_cache(async () => {
-  return selectUsers();
-}, ["users" satisfies CacheKey]);
-
-export default selectUsersCached;
