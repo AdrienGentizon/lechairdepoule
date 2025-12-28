@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
-    pseudo TEXT,
+    pseudo TEXT UNIQUE,
     created_at TIMESTAMPTZ,
     banned_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
