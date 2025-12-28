@@ -15,6 +15,7 @@ overrides:
   js-yaml@>=4.0.0 <4.1.1: '>=4.1.1'
   glob@>=10.2.0 <10.5.0: '>=10.5.0'
   mdast-util-to-hast@>=13.0.0 <13.2.1: '>=13.2.1'
+  '@babel/runtime@<7.26.10': '>=7.26.10'
 
 importers:
 
@@ -50,6 +51,9 @@ importers:
       '@vercel/blob':
         specifier: ^2.0.0
         version: 2.0.0
+      '@webscopeio/react-textarea-autocomplete':
+        specifier: ^4.9.2
+        version: 4.9.2(prop-types@15.8.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -123,6 +127,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.0.3(@types/react@19.0.7)
+      '@types/webscopeio__react-textarea-autocomplete':
+        specifier: ^4.7.5
+        version: 4.7.5
       eslint:
         specifier: ^9
         version: 9.18.0(jiti@1.21.7)
@@ -984,6 +991,9 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
+  '@types/webscopeio__react-textarea-autocomplete@4.7.5':
+    resolution: {integrity: sha512-B9YZ5KrKRcNNsh2v7tyc/tZ1rrPoyWoaXQvvfcG9pX85w9jy2HLnPPT7Kfms5TgzR3RGQ5TIvXQvmsizxdohyQ==}
+
   '@typescript-eslint/eslint-plugin@8.20.0':
     resolution: {integrity: sha512-naduuphVw5StFfqp4Gq4WhIBE2gN1GEmMUExpJYknZJdRnc+2gDzB8Z3+5+/Kv33hPQRDGzQO/0opHE72lZZ6A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1066,6 +1076,13 @@ packages:
 
   '@vercel/stega@0.1.2':
     resolution: {integrity: sha512-P7mafQXjkrsoyTRppnt0N21udKS9wUmLXHRyP9saLXLHw32j/FgUJ3FscSWgvSqRs4cj7wKZtwqJEvWJ2jbGmA==}
+
+  '@webscopeio/react-textarea-autocomplete@4.9.2':
+    resolution: {integrity: sha512-9l5lbyA709d5HHvI/COflSnblBJeYGxB2/0ghP3m3YViLzXRMzJwaXqnqz6oA96y7QdR3pQWYtVmkUKA0AUVAA==}
+    peerDependencies:
+      prop-types: ^15.0.0
+      react: ^16.0.0 || ^17 || ^18
+      react-dom: ^16.0.0 || ^17 || ^18
 
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
@@ -1296,6 +1313,9 @@ packages:
 
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
+  custom-event@1.0.1:
+    resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==}
 
   damerau-levenshtein@1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
@@ -2814,6 +2834,9 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
+  textarea-caret@3.0.2:
+    resolution: {integrity: sha512-gRzeti2YS4did7UJnPQ47wrjD+vp+CJIe9zbsu0bJ987d8QVLvLNG9757rqiQTIy4hGIeFauTTJt5Xkn51UkXg==}
+
   thenify-all@1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
     engines: {node: '>=0.8'}
@@ -3746,6 +3769,10 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
+  '@types/webscopeio__react-textarea-autocomplete@4.7.5':
+    dependencies:
+      '@types/react': 19.0.7
+
   '@typescript-eslint/eslint-plugin@8.20.0(@typescript-eslint/parser@8.20.0(eslint@9.18.0(jiti@1.21.7))(typescript@5.7.3))(eslint@9.18.0(jiti@1.21.7))(typescript@5.7.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.1
@@ -3839,6 +3866,14 @@ snapshots:
       undici: 5.29.0
 
   '@vercel/stega@0.1.2': {}
+
+  '@webscopeio/react-textarea-autocomplete@4.9.2(prop-types@15.8.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      custom-event: 1.0.1
+      prop-types: 15.8.1
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      textarea-caret: 3.0.2
 
   abbrev@2.0.0: {}
 
@@ -4098,6 +4133,8 @@ snapshots:
   cssesc@3.0.0: {}
 
   csstype@3.1.3: {}
+
+  custom-event@1.0.1: {}
 
   damerau-levenshtein@1.0.8: {}
 
@@ -6035,6 +6072,8 @@ snapshots:
       - ts-node
 
   tapable@2.2.1: {}
+
+  textarea-caret@3.0.2: {}
 
   thenify-all@1.6.0:
     dependencies:

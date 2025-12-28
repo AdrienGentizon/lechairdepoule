@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 
+import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
+
 type Props = {
   conversationId: string;
   onSuccess: (e: FormEvent<HTMLFormElement>) => void;
@@ -42,12 +44,12 @@ export default function SubmitMessageForm({
       }}
     >
       <label htmlFor="body">Message</label>
-      <textarea
+      <MessageAugementedTextarea
         id="body"
         name="body"
-        className="min-h-20 rounded-sm px-4 py-2 font-courier text-black"
+        className="min-h-20 w-full rounded-sm px-4 py-2 font-courier text-black"
         required
-      ></textarea>
+      />
       {error && <p className="text-red-500">{error.message}</p>}
       <button
         className="flex items-center justify-center rounded-sm border border-white px-8 py-0.5 font-semibold hover:bg-white/25 disabled:opacity-50"
