@@ -116,7 +116,7 @@ export default function RandomBackground({ assets }: Props) {
         if (!e.detail?.scrollHeight) return;
         setMaxheight(e.detail.scrollHeight);
       },
-      abortController
+      { signal: abortController.signal }
     );
 
     return () => {

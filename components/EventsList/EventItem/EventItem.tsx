@@ -30,7 +30,7 @@ export default function EventItem({ event }: Props) {
         (e: CustomEventInit<{ eventId: string }>) => {
           if (e.detail?.eventId !== event.sys.id) setOpen(false);
         },
-        abortController
+        { signal: abortController.signal }
       );
     }
 
