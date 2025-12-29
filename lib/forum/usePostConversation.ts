@@ -23,10 +23,7 @@ export default function usePostConversation() {
       body.set("title", title);
       body.set("description", description);
       if (cover) {
-        const resizedImage = await resizeImage(cover, {
-          maxWidth: 400,
-          maxHeight: 400,
-        });
+        const resizedImage = await resizeImage(cover);
         body.set("coverFile", resizedImage.file);
         body.set("coverWidth", resizedImage.width.toString());
         body.set("coverHeight", resizedImage.height.toString());

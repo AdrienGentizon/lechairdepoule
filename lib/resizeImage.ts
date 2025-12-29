@@ -17,12 +17,14 @@ async function createImageFromFile(file: File): Promise<HTMLImageElement> {
   });
 }
 
+const OPTIONS = {
+  maxWidth: 568,
+  maxHeight: 568,
+  quality: 0.9,
+};
+
 export async function resizeImage(
-  file: File,
-  options: {
-    maxWidth: number;
-    maxHeight: number;
-  }
+  file: File
 ): Promise<{ file: File; width: number; height: number }> {
   const img = await createImageFromFile(file);
 
@@ -33,13 +35,13 @@ export async function resizeImage(
         height: img.height,
       };
 
-      if (img.width > options.maxWidth) {
-        resizedResolution.height = (options.maxHeight / img.width) * img.height;
-        resizedResolution.width = options.maxWidth;
+      if (img.width > OPTIONS.maxWidth) {
+        resizedResolution.height = (OPTIONS.maxHeight / img.width) * img.height;
+        resizedResolution.width = OPTIONS.maxWidth;
       }
-      if (img.height > options.maxHeight) {
-        resizedResolution.width = (options.maxWidth / img.height) * img.width;
-        resizedResolution.height = options.maxHeight;
+      if (img.height > OPTIONS.maxHeight) {
+        resizedResolution.width = (OPTIONS.maxWidth / img.height) * img.width;
+        resizedResolution.height = OPTIONS.maxHeight;
       }
 
       const canvas = document.createElement("canvas");
@@ -65,7 +67,7 @@ export async function resizeImage(
           });
         },
         file.type,
-        0.8
+        OPTIONS.quality
       );
     } catch (error) {
       console.error(error);

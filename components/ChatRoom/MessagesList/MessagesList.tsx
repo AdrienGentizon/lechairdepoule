@@ -36,14 +36,14 @@ export default function MessagesList({
       {conversation.coverUrl &&
         conversation.coverWidth &&
         conversation.coverHeight && (
-          <li>
+          <li className="flex flex-col items-center justify-center">
             <Image
               src={conversation.coverUrl}
               width={conversation.coverWidth}
               height={conversation.coverHeight}
               alt=""
               aria-hidden
-              className=""
+              className="object-cover"
             />
           </li>
         )}
