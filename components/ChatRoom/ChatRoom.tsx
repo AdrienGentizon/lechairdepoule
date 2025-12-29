@@ -13,7 +13,6 @@ import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
 import useDeleteConversation from "@/lib/forum/useDeleteConversation";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
-import getImageResolution from "@/lib/getImageResolution";
 import { Conversation } from "@/lib/types";
 
 import Button from "../Button/Button";
@@ -42,22 +41,11 @@ function UpdateConversationCover({
 
         const coverFile = new FormData(e.currentTarget).get("coverFile");
         if (coverFile instanceof File) {
-          if (coverFile.size > 2 * 1024 * 1024) {
-            return setErrors({
-              coverSize: `La taille de l'image sélectionnée dépasse le maximum autorisé de 2Mo.`,
-            });
-          }
-          const imageResolution = await getImageResolution(coverFile);
-          const cover = {
-            file: coverFile,
-            width: imageResolution.width,
-            height: imageResolution.height,
-          };
           updateConversation({
             id: conversation.id,
             title: conversation.title,
             description: conversation.description ?? "",
-            cover,
+            cover: coverFile,
           });
         }
       }}

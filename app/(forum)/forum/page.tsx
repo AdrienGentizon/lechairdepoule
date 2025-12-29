@@ -6,7 +6,7 @@ import { ArrowRight, Loader, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import Button from "@/components/Button/Button";
+import Button, { buttonClassName } from "@/components/Button/Button";
 import Form, {
   FieldError,
   FormField,
@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/dialog";
 import useConversations from "@/lib/forum/useConversations";
 import usePostConversation from "@/lib/forum/usePostConversation";
-import getImageResolution from "@/lib/getImageResolution";
 
 export default function ForumPage() {
   const router = useRouter();
@@ -109,26 +108,10 @@ export default function ForumPage() {
                       : undefined,
                   });
 
-                let cover:
-                  | { file: File; width: number; height: number }
-                  | undefined = undefined;
-                if (file instanceof File) {
-                  try {
-                    const imageResolution = await getImageResolution(file);
-                    cover = {
-                      file,
-                      width: imageResolution.width,
-                      height: imageResolution.height,
-                    };
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }
-
                 postConversation({
                   title: newConversation.title,
                   description: newConversation.description,
-                  cover,
+                  cover: file instanceof File ? file : undefined,
                 });
                 setNewConversation({});
                 setTimeout(() => {
@@ -180,10 +163,16 @@ export default function ForumPage() {
               </FormField>
               <FormField>
                 <Label htmlFor="file">Photo de couverture</Label>
-                <label htmlFor="file">
-                  <Button className="w-full">Sélectionner un fichier...</Button>
+                <label htmlFor="file" className={buttonClassName("w-full")}>
+                  Sélectionner un fichier...
                 </label>
-                <Input id="file" name="file" type="file" hidden />
+                <Input
+                  id="file"
+                  name="file"
+                  type="file"
+                  accept="image/*"
+                  hidden
+                />
                 <FieldError>{null}</FieldError>
               </FormField>
               <Button

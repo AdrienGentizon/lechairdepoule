@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { resizeImage } from "../resizeImage";
 import { CacheKey, Conversation } from "../types";
 
 export default function useUpdateConversation() {
@@ -18,19 +19,19 @@ export default function useUpdateConversation() {
       id: string;
       title: string;
       description: string;
-      cover?: {
-        file: File;
-        width: number;
-        height: number;
-      };
+      cover?: File;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
       if (cover) {
-        body.set("coverFile", cover.file);
-        body.set("coverWidth", cover.width.toString());
-        body.set("coverHeight", cover.height.toString());
+        const resizedImage = await resizeImage(cover, {
+          maxWidth: 400,
+          maxHeight: 400,
+        });
+        body.set("coverFile", resizedImage.file);
+        body.set("coverWidth", resizedImage.width.toString());
+        body.set("coverHeight", resizedImage.height.toString());
       }
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
