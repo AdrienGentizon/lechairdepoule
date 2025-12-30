@@ -9,7 +9,6 @@ import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
 import getMentionedPseudos from "@/lib/forum/getMentionedPseudos";
-import getMentionedUserIds from "@/lib/forum/getMentionedUserIds";
 import insertMentions from "@/lib/forum/insertMentions";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
 import replaceMessageBodyMentionWIthUserId from "@/lib/forum/replaceMessageBodyMentionWIthUserId";
@@ -50,7 +49,7 @@ export async function GET(
       );
     const messages = await selectConversationMessages(params.conversationId);
     const mentionedUserIds = messages.reduce((acc: string[], curr) => {
-      const mentionedUserIds = getMentionedUserIds(curr.body);
+      const mentionedUserIds = getMentionedPseudos(curr.body);
       return [
         ...acc.filter((id) => !mentionedUserIds.includes(id)),
         ...mentionedUserIds,
