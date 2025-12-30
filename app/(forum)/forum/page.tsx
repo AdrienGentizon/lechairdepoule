@@ -33,6 +33,7 @@ export default function ForumPage() {
     title?: string;
     description?: string;
   }>({});
+  const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
   const [openCreateConversation, setOpenCreateConversation] = useState(false);
 
   const { conversations, isLoading } = useConversations();
@@ -85,6 +86,18 @@ export default function ForumPage() {
             </DialogHeader>
             <Form
               id="post-conversation"
+              onChange={(e) => {
+                const file = new FormData(e.currentTarget).get("file");
+                if (!(file instanceof File)) return;
+                if (file.size === 0) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  if (typeof e.target?.result === "string")
+                    setPreviewSrc(e.target.result);
+                };
+                reader.readAsDataURL(file);
+              }}
               onSubmit={async (e) => {
                 e.preventDefault();
                 setErrors({});
@@ -173,6 +186,12 @@ export default function ForumPage() {
                   accept="image/*"
                   hidden
                 />
+                {previewSrc && (
+                  <img
+                    src={previewSrc}
+                    className="max-h-96 object-contain py-2"
+                  />
+                )}
                 <FieldError>{null}</FieldError>
               </FormField>
               <Button
