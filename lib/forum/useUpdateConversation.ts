@@ -3,7 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resizeImage } from "../resizeImage";
 import { CacheKey, Conversation } from "../types";
 
-export default function useUpdateConversation() {
+export default function useUpdateConversation(options?: {
+  onSuccess?: () => void;
+}) {
   const queryClient = useQueryClient();
   const {
     mutate: updateConversation,
@@ -26,10 +28,13 @@ export default function useUpdateConversation() {
       body.set("description", description);
       if (cover) {
         const resizedImage = await resizeImage(cover);
-        body.set("coverFile", resizedImage.file);
-        body.set("coverWidth", resizedImage.width.toString());
-        body.set("coverHeight", resizedImage.height.toString());
+        if (resizedImage) {
+          body.set("coverFile", resizedImage.file);
+          body.set("coverWidth", resizedImage.width.toString());
+          body.set("coverHeight", resizedImage.height.toString());
+        }
       }
+
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
         body,
@@ -72,6 +77,8 @@ export default function useUpdateConversation() {
           };
         }
       );
+
+      options?.onSuccess?.();
     },
   });
 

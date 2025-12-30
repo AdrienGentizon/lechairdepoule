@@ -1,230 +1,17 @@
 "use client";
 
-import { DialogTitle } from "@radix-ui/react-dialog";
+import { Suspense } from "react";
 
-import { Suspense, useState } from "react";
-
-import { ArrowLeft, ImageIcon, Loader, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
 
 import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
-import useDeleteConversation from "@/lib/forum/useDeleteConversation";
-import useUpdateConversation from "@/lib/forum/useUpdateConversation";
-import { Conversation } from "@/lib/types";
 
-import Button from "../Button/Button";
-import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "../ui/dialog";
+import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import MessagesList from "./MessagesList/MessagesList";
 import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
-
-function UpdateConversationCover({
-  conversation,
-}: {
-  conversation: Conversation;
-}) {
-  const { updateConversation, isPending } = useUpdateConversation();
-  const [errors, setErrors] = useState<{ coverSize?: string }>({});
-  return (
-    <Form
-      onChange={async (e) => {
-        e.preventDefault();
-        if (isPending) return;
-
-        const coverFile = new FormData(e.currentTarget).get("coverFile");
-        if (coverFile instanceof File) {
-          updateConversation({
-            id: conversation.id,
-            title: conversation.title,
-            description: conversation.description ?? "",
-            cover: coverFile,
-          });
-        }
-      }}
-    >
-      <label
-        htmlFor="coverFile"
-        className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100"
-      >
-        <ImageIcon className="size-5" />
-        <input
-          id="coverFile"
-          name="coverFile"
-          type="file"
-          hidden
-          accept="image/*"
-        />
-      </label>
-      {errors.coverSize && (
-        <Dialog
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) {
-              setErrors((prev) => {
-                return { ...prev, coverSize: undefined };
-              });
-            }
-          }}
-        >
-          <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
-            <DialogHeader className="bg-black p-4 text-white">
-              <DialogTitle>Echec de chargement</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-2 bg-white p-2">
-              <p>{errors.coverSize}</p>
-              <footer className="flex items-center justify-end">
-                <Button
-                  onClick={() => {
-                    setErrors((prev) => {
-                      return { ...prev, coverSize: undefined };
-                    });
-                  }}
-                >
-                  Fermer
-                </Button>
-              </footer>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </Form>
-  );
-}
-
-function DeleteConversationButton({
-  conversation,
-}: {
-  conversation: Conversation;
-}) {
-  const router = useRouter();
-  const { deleteConversation, isPending } = useDeleteConversation({
-    onSuccess: () => {
-      router.push("/forum");
-    },
-  });
-  return (
-    <button
-      className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100"
-      disabled={isPending}
-      onClick={() => {
-        deleteConversation(conversation.id);
-      }}
-    >
-      {isPending ? (
-        <Loader className="size-5 animate-spin" />
-      ) : (
-        <Trash2 className="size-5" />
-      )}
-      <span className="sr-only">Supprimer</span>
-    </button>
-  );
-}
-
-function UpdateConversationButton({
-  conversation,
-}: {
-  conversation: Conversation;
-}) {
-  const { updateConversation, isPending } = useUpdateConversation();
-  const [errors, setErrors] = useState<{
-    title?: string;
-    description?: string;
-  }>({});
-
-  return (
-    <Dialog>
-      <DialogTrigger className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
-        <>
-          {isPending ? (
-            <Loader className="size-5 animate-spin" />
-          ) : (
-            <Pencil className="size-5" />
-          )}
-          <span className="sr-only">Modifier</span>
-        </>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Modifier la conversation</DialogTitle>
-        </DialogHeader>
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setErrors({});
-            const parsedInputs = z
-              .object({
-                title: z.optional(
-                  z
-                    .string()
-                    .min(3, { message: "Titre trop court (3 char min)" })
-                ),
-                description: z.optional(
-                  z
-                    .string()
-                    .min(3, { message: "Description trop courte (3 char min)" })
-                ),
-              })
-              .safeParse(
-                Object.fromEntries(new FormData(e.currentTarget).entries())
-              );
-
-            if (!parsedInputs.success) {
-              return setErrors({
-                title:
-                  parsedInputs.error.formErrors.fieldErrors.title?.toString(),
-                description:
-                  parsedInputs.error.formErrors.fieldErrors.description?.toString(),
-              });
-            }
-
-            updateConversation({
-              id: conversation.id,
-              title: parsedInputs.data.title ?? conversation.title,
-              description:
-                parsedInputs.data.description ?? conversation.description ?? "",
-            });
-          }}
-        >
-          <FormField>
-            <Label htmlFor="title">Titre</Label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={conversation.title ?? ""}
-              type="text"
-            />
-            <FieldError className="text-sm text-red-500">
-              {errors.title ?? <>&nbsp;</>}
-            </FieldError>
-          </FormField>
-          <FormField>
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              name="description"
-              defaultValue={conversation.description ?? ""}
-              type="text"
-            />
-            <FieldError className="text-sm text-red-500">
-              {errors.description ?? <>&nbsp;</>}
-            </FieldError>
-          </FormField>
-          <Button className="ml-auto" type="submit">
-            Modifier
-          </Button>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
+import UpdateConversationButton from "./UpdateConversationButton/UpdateConversationButton";
 
 type Props = {
   conversationId: string;
@@ -269,7 +56,6 @@ export default function ChatRoom({ conversationId }: Props) {
           {conversation.createdBy.id === me.id && (
             <div className="flex items-center gap-1">
               <UpdateConversationButton conversation={conversation} />
-              <UpdateConversationCover conversation={conversation} />
               <DeleteConversationButton conversation={conversation} />
             </div>
           )}

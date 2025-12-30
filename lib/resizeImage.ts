@@ -1,5 +1,9 @@
-async function createImageFromFile(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
+async function createImageFromFile(
+  file: File
+): Promise<HTMLImageElement | undefined> {
+  return new Promise((resolve) => {
+    if (file.size === 0) resolve(undefined);
+
     const img = new Image();
     const src = URL.createObjectURL(file);
 
@@ -8,9 +12,9 @@ async function createImageFromFile(file: File): Promise<HTMLImageElement> {
       resolve(img);
     };
 
-    img.onerror = (error) => {
+    img.onerror = () => {
       URL.revokeObjectURL(src);
-      reject(error.toString());
+      resolve(undefined);
     };
 
     img.src = src;
@@ -25,8 +29,9 @@ const OPTIONS = {
 
 export async function resizeImage(
   file: File
-): Promise<{ file: File; width: number; height: number }> {
+): Promise<{ file: File; width: number; height: number } | undefined> {
   const img = await createImageFromFile(file);
+  if (!img) return;
 
   return new Promise((resolve) => {
     try {
@@ -71,7 +76,7 @@ export async function resizeImage(
       );
     } catch (error) {
       console.error(error);
-      resolve({ file, width: img.width, height: img.height });
+      resolve(undefined);
     }
   });
 }

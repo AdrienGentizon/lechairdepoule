@@ -12,6 +12,7 @@ export default async function uploadImage(formData: FormData) {
   try {
     const file = formData.get("coverFile");
     if (!(file instanceof File)) return;
+    if (file.size === 0) return;
 
     if (!file.type.startsWith("image/")) {
       console.warn(

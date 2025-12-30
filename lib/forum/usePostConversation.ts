@@ -24,9 +24,11 @@ export default function usePostConversation() {
       body.set("description", description);
       if (cover) {
         const resizedImage = await resizeImage(cover);
-        body.set("coverFile", resizedImage.file);
-        body.set("coverWidth", resizedImage.width.toString());
-        body.set("coverHeight", resizedImage.height.toString());
+        if (resizedImage) {
+          body.set("coverFile", resizedImage.file);
+          body.set("coverWidth", resizedImage.width.toString());
+          body.set("coverHeight", resizedImage.height.toString());
+        }
       }
 
       const response = await fetch(`/api/conversations`, {

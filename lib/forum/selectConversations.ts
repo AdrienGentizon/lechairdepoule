@@ -35,6 +35,7 @@ export default async function selectConversations() {
       public.users u
     WHERE
       c.created_by = u.id
+      AND c.deleted_at IS NULL
     ORDER BY
       c.created_at DESC;`
   ).map(

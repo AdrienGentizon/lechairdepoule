@@ -34,7 +34,8 @@ export default async function selectConversationFromId(conversationId: string) {
         public.users u
       WHERE
         c.id = ${conversationId}
-        AND c.created_by = u.id;`
+        AND c.created_by = u.id
+        AND c.deleted_at IS NULL;`
   )
     .map(
       ({

@@ -22,6 +22,7 @@ CREATE TABLE conversations (
     image_height INTEGER,
 		created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 

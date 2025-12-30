@@ -12,7 +12,8 @@ export default async function deleteConversationFromId({
       {
         id: string;
       }[]
-    >`DELETE FROM public.conversations
+    >`UPDATE public.conversations
+      SET deleted_at = ${Date.now()}
       WHERE
         id = ${conversationId}
         AND created_by = ${userId}
