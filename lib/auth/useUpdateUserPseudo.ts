@@ -29,30 +29,6 @@ export default function useUpdateUserPseudo(options?: {
         return data;
       });
 
-      queryClient.setQueryData(
-        ["conversations" satisfies CacheKey],
-        (olds: Conversation[] = []) => {
-          return olds.reduce((acc: Conversation[], curr) => {
-            return [
-              ...acc,
-              {
-                ...curr,
-                messages: curr.messages.map((message) => {
-                  if (message.user.id !== data.id) return message;
-                  return {
-                    ...message,
-                    user: {
-                      ...message.user,
-                      pseudo: data.pseudo,
-                    },
-                  };
-                }),
-              },
-            ];
-          }, []);
-        }
-      );
-
       options?.onSuccess?.();
     },
   });

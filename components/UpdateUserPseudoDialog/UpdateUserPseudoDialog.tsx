@@ -19,6 +19,7 @@ export default function UpdateUserPseudoDialog() {
   const { me } = useMe();
   const { updateUserPseudo, isPending, error } = useUpdateUserPseudo();
   const [pseudo, setPseudo] = useState("");
+  const [cguAccepted, setCguAccepted] = useState(false);
   const { similarUsers, isLoading: isLoadingSimilarUsersByPseudo } =
     useSearchSimilarUsersByPseudo(pseudo, {
       exactMatch: true,
@@ -55,13 +56,13 @@ export default function UpdateUserPseudoDialog() {
                   pseudo: z
                     .string()
                     .min(3, { message: "Pseudo trop court (3 char min)" }),
-                  cgu: z.literal("on", {
+                  cgu: z.literal(true, {
                     message: "Vous devez accepter les CGU",
                   }),
                 })
                 .safeParse({
                   pseudo,
-                  cgu: new FormData(e.currentTarget).get("cgu")?.toString(),
+                  cgu: cguAccepted,
                 });
 
               if (!parsedInputs.success) {
@@ -80,7 +81,7 @@ export default function UpdateUserPseudoDialog() {
 
               updateUserPseudo({
                 pseudo: parsedInputs.data.pseudo,
-                cgu: parsedInputs.data.cgu === "on",
+                cgu: parsedInputs.data.cgu,
               });
             }}
           >
@@ -91,7 +92,6 @@ export default function UpdateUserPseudoDialog() {
               <Input
                 id="pseudo"
                 name="pseudo"
-                defaultValue={me.pseudo}
                 value={pseudo}
                 onChange={(e) => {
                   setPseudo(e.target.value);
@@ -104,12 +104,22 @@ export default function UpdateUserPseudoDialog() {
                   : (errors.pseudo ?? error?.message ?? <>&nbsp;</>)}
               </FieldError>
             </FormField>
-            <CguCheckbox name="cgu" aria-invalid={errors.cgu !== undefined} />
+            <CguCheckbox
+              name="cgu"
+              checked={cguAccepted}
+              onChange={(e) => {
+                setCguAccepted(e.target.checked);
+              }}
+              aria-invalid={!cguAccepted}
+            />
             <Button
               className="w-full"
               type="submit"
               disabled={
-                isPending || isLoadingSimilarUsersByPseudo || pseudoAlreadyTaken
+                isPending ||
+                isLoadingSimilarUsersByPseudo ||
+                pseudoAlreadyTaken ||
+                !cguAccepted
               }
             >
               Créer mon pseudo
