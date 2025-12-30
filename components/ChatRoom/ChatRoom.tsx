@@ -80,9 +80,8 @@ export default function ChatRoom({ conversationId }: Props) {
       <div className="px-1 landscape:px-0">
         <SubmitMessageForm
           conversationId={conversation.id}
-          onSuccess={(e) => {
+          onSuccess={() => {
             scrollToBottom();
-            (e.target as HTMLFormElement).reset();
           }}
         />
       </div>

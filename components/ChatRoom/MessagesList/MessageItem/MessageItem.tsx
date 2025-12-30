@@ -1,22 +1,11 @@
-import {
-  ComponentRef,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { z } from "zod";
-
-import Button from "@/components/Button/Button";
-import { FormField, Label } from "@/components/Form/Form";
 import useMe from "@/lib/auth/useMe";
-import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 import useUpdateUserMentions from "@/lib/forum/useUpdateUserMentions";
 import { Message, isMessageWithConversationId } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
 import BanUserButton from "./BanUserButton/BanUserButton";
 import CreateThreadButton from "./CreateThreadButton/CreateThreadButton";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
@@ -89,12 +78,6 @@ export default function MessageItem({
   hasMention: boolean;
 }) {
   const { me } = useMe();
-  const { postConversationMessage, isPending } = usePostConversationMessage(
-    message.conversationId ?? "-1"
-  );
-
-  const formId = useId();
-  const texareaId = useId();
 
   const [showThread, setShowThread] = useState(false);
 
@@ -149,7 +132,7 @@ export default function MessageItem({
               <p className="cursor-pointer underline">
                 <button
                   onClick={() => {
-                    setShowThread(true);
+                    setShowThread((prev) => !prev);
                   }}
                 >
                   {showThread ? "cacher" : "voir"} {threadedMessages.length}{" "}
@@ -188,59 +171,12 @@ export default function MessageItem({
               );
             })}
             <li>
-              <form
-                id={formId}
-                className="flex flex-col gap-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!e.currentTarget.checkValidity()) return;
-                  const parsedInputs = z
-                    .object({ body: z.string() })
-                    .safeParse(
-                      Object.fromEntries(
-                        new FormData(e.currentTarget).entries()
-                      )
-                    );
-
-                  if (!parsedInputs.success) {
-                    return console.error(parsedInputs.error.message);
-                  }
-
-                  postConversationMessage(
-                    {
-                      body: parsedInputs.data.body,
-                      parentMessageId: message.id,
-                    },
-                    {
-                      onSuccess: () => {
-                        e.currentTarget.reset();
-                      },
-                    }
-                  );
-                }}
-              >
-                <FormField>
-                  <Label htmlFor={texareaId}>Message</Label>
-                  <textarea
-                    id={texareaId}
-                    name="body"
-                    className="min-h-20 rounded-sm px-4 py-2 font-courier text-black"
-                  />
-                </FormField>
-                <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={() => {
-                      setShowThread(false);
-                    }}
-                  >
-                    Fermer
-                  </Button>
-
-                  <Button type="submit" form={formId} disabled={isPending}>
-                    Envoyer
-                  </Button>
-                </div>
-              </form>
+              {message.conversationId && (
+                <SubmitMessageForm
+                  conversationId={message.conversationId}
+                  messageId={message.id}
+                />
+              )}
             </li>
           </ul>
         </li>

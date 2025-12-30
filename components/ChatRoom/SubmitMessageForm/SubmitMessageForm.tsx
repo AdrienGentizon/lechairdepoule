@@ -1,21 +1,25 @@
-import { FormEvent } from "react";
+import { useState } from "react";
 
 import { Loader } from "lucide-react";
 import { z } from "zod";
 
+import Button from "@/components/Button/Button";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 
 import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
 
 type Props = {
   conversationId: string;
-  onSuccess: (e: FormEvent<HTMLFormElement>) => void;
+  messageId?: string;
+  onSuccess?: () => void;
 };
 
 export default function SubmitMessageForm({
   conversationId,
+  messageId,
   onSuccess,
 }: Props) {
+  const [body, setBody] = useState("");
   const { postConversationMessage, error, isPending } =
     usePostConversationMessage(conversationId);
 
@@ -25,20 +29,19 @@ export default function SubmitMessageForm({
       onSubmit={(e) => {
         e.preventDefault();
         if (!e.currentTarget.checkValidity()) return;
-        const parsedInputs = z
-          .object({ body: z.string() })
-          .safeParse(
-            Object.fromEntries(new FormData(e.currentTarget).entries())
-          );
+        const parsedInputs = z.object({ body: z.string() }).safeParse({ body });
 
         if (!parsedInputs.success) {
           return console.error(parsedInputs.error.message);
         }
 
         postConversationMessage(
-          { body: parsedInputs.data.body, parentMessageId: null },
+          { body: parsedInputs.data.body, parentMessageId: messageId ?? null },
           {
-            onSuccess: () => onSuccess(e),
+            onSuccess: () => {
+              onSuccess?.();
+              setBody("");
+            },
           }
         );
       }}
@@ -48,21 +51,21 @@ export default function SubmitMessageForm({
         id="body"
         name="body"
         className="min-h-20 w-full rounded-sm px-4 py-2 font-courier text-black"
+        value={body}
+        onChange={(e) => {
+          setBody(e.target.value);
+        }}
         required
       />
       {error && <p className="text-red-500">{error.message}</p>}
-      <button
-        className="flex items-center justify-center rounded-sm border border-white px-8 py-0.5 font-semibold hover:bg-white/25 disabled:opacity-50"
-        type="submit"
-        disabled={isPending}
-      >
+      <Button className="ml-auto" type="submit" disabled={isPending}>
         Envoyer
         {isPending && (
           <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
             <Loader className="animate-spin" />
           </div>
         )}
-      </button>
+      </Button>
     </form>
   );
 }
