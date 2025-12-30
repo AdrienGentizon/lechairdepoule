@@ -28,7 +28,10 @@ export default async function uploadImage(formData: FormData) {
 
     const width = getValidDimension(formData.get("coverWidth"));
     const height = getValidDimension(formData.get("coverHeight"));
-    if (!width || !height) return;
+    if (!width || !height) {
+      console.warn(`[Warning] uploadImage: cannot determine width/height`);
+      return;
+    }
 
     const blob = await put(file.name, file, {
       access: "public",
