@@ -44,12 +44,14 @@ export default function UserButton() {
             className="sr-only"
             aria-live="polite"
           >{`Mes notifications - ${userMentions.length} non lues`}</span>
-          <span
-            className="absolute -right-0.5 -top-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
-            aria-hidden
-          >
-            {userMentions.length}
-          </span>
+          {userMentions.length > 0 && (
+            <span
+              className="absolute -right-0.5 -top-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
+              aria-hidden
+            >
+              {userMentions.length}
+            </span>
+          )}
         </button>
       </DialogTrigger>
       <DialogContent className="grid grid-cols-1 grid-rows-[min-content_1fr]">
