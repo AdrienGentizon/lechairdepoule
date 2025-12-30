@@ -44,11 +44,9 @@ export default function useUpdateConversation(options?: {
         throw new Error((await response.json())?.error ?? "erreur inconnue");
       }
 
-      return response.json() as Promise<{
-        id: string;
-        title: string;
-        description: string;
-      }>;
+      return response.json() as Promise<
+        Omit<Conversation, "messages" | "createdAt" | "createdBy">
+      >;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
@@ -62,6 +60,9 @@ export default function useUpdateConversation(options?: {
                 ...curr,
                 title: data.title,
                 description: data.description,
+                coverUrl: data.coverUrl,
+                coverWidth: data.coverWidth,
+                coverHeight: data.coverHeight,
               },
             ];
           }, []);
@@ -74,6 +75,9 @@ export default function useUpdateConversation(options?: {
             ...old,
             title: data.title,
             description: data.description,
+            coverUrl: data.coverUrl,
+            coverWidth: data.coverWidth,
+            coverHeight: data.coverHeight,
           };
         }
       );

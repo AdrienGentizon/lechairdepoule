@@ -306,20 +306,11 @@ export async function PATCH(
         `delete blob successful ${conversation.previousCoverUrl}`
       );
     }
-    return NextResponse.json<{
-      id: string;
-      title: string;
-      description: string;
-    }>(
-      {
-        id: conversation.id,
-        title: conversation.title,
-        description: conversation.description,
-      },
-      {
-        status: 200,
-      }
-    );
+    return NextResponse.json<
+      Omit<Conversation, "messages" | "createdAt" | "createdBy">
+    >(conversation, {
+      status: 200,
+    });
   } catch (error) {
     logApiError(req, error);
 

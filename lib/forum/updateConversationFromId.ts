@@ -24,8 +24,8 @@ export default async function updateConversationFromId({
         title: string;
         description: string;
         coverUrl: string | null;
-        coverWidth: string | null;
-        coverHeight: string | null;
+        coverWidth: number | null;
+        coverHeight: number | null;
         previousCoverUrl: string | null;
       }[]
     >`WITH previous AS (SELECT image_url FROM public.conversations WHERE id = ${conversationId} AND created_by = ${userId})
@@ -44,8 +44,8 @@ export default async function updateConversationFromId({
         title,
         description,
         image_url as "coverUrl",
-        image_width as "coverWidth",
-        image_height as "coverHeight",
+        image_width::integer as "coverWidth",
+        image_height::integer as "coverHeight",
         (SELECT image_url FROM previous) AS "previousCoverUrl";`
   ).at(0);
 }
