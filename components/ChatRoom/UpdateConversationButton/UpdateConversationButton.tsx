@@ -25,6 +25,7 @@ export default function UpdateConversationButton({
 }: {
   conversation: Conversation;
 }) {
+  const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const { updateConversation, isPending } = useUpdateConversation({
     onSuccess: () => {
@@ -47,6 +48,18 @@ export default function UpdateConversationButton({
           <DialogTitle>Modifier la conversation</DialogTitle>
         </DialogHeader>
         <Form
+          onChange={(e) => {
+            const file = new FormData(e.currentTarget).get("file");
+            if (!(file instanceof File)) return;
+            if (file.size === 0) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              if (typeof e.target?.result === "string")
+                setPreviewSrc(e.target.result);
+            };
+            reader.readAsDataURL(file);
+          }}
           onSubmit={(e) => {
             e.preventDefault();
             setErrors({});
@@ -117,6 +130,9 @@ export default function UpdateConversationButton({
               Sélectionner un fichier...
             </label>
             <Input id="file" name="file" type="file" accept="image/*" hidden />
+            {previewSrc && (
+              <img src={previewSrc} className="max-h-96 object-contain py-2" />
+            )}
             <FieldError>{null}</FieldError>
           </FormField>
           <Button className="ml-auto" type="submit" disabled={isPending}>
