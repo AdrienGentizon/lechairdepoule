@@ -26,7 +26,23 @@ export function FieldError({
 }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-red-600", className)}
+      className={cn("min-h-4 text-red-600", className)}
+      aria-disabled={!children}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
+
+export function FieldHelper({
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn("min-h-4 text-neutral-100", className)}
       aria-disabled={!children}
       {...props}
     >
