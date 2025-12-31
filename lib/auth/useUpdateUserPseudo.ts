@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { CacheKey, Conversation, User } from "../types";
+import { CacheKey, User } from "../types";
 
 export default function useUpdateUserPseudo(options?: {
   onSuccess?: () => void;
