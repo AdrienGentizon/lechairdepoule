@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { Loader, Skull } from "lucide-react";
+import { Skull } from "lucide-react";
 
+import Loader from "@/components/Loader/Loader";
 import {
   Dialog,
   DialogContent,
@@ -57,9 +58,7 @@ export default function BanUserButton({ message }: Props) {
           >
             <span className="relative">
               Bannir <strong>{message.user.pseudo}</strong>
-              {isPendingBanUser && (
-                <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
-              )}
+              {isPendingBanUser && <Loader />}
             </span>
           </button>
 

@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { Loader } from "lucide-react";
 import { z } from "zod";
 
 import Button from "@/components/Button/Button";
+import Loader from "@/components/Loader/Loader";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 
 import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
@@ -60,11 +60,7 @@ export default function SubmitMessageForm({
       {error && <p className="text-red-500">{error.message}</p>}
       <Button className="ml-auto" type="submit" disabled={isPending}>
         Envoyer
-        {isPending && (
-          <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
-            <Loader className="animate-spin" />
-          </div>
-        )}
+        {isPending && <Loader position="relative" />}
       </Button>
     </form>
   );

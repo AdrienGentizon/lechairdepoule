@@ -2,12 +2,13 @@
 
 import { Suspense } from "react";
 
-import { ArrowLeft, Loader } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
 
+import Loader from "../Loader/Loader";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import MessagesList from "./MessagesList/MessagesList";
 import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
@@ -22,12 +23,7 @@ export default function ChatRoom({ conversationId }: Props) {
   const { conversation, isLoading, lastEmptyLiRef, scrollToBottom } =
     useConversation(conversationId);
 
-  if (isLoading)
-    return (
-      <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
-        <Loader className="animate-spin" />
-      </div>
-    );
+  if (isLoading) return <Loader />;
 
   if (!conversation || !me)
     return (
@@ -86,11 +82,7 @@ export default function ChatRoom({ conversationId }: Props) {
         />
       </div>
 
-      {isLoading && (
-        <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
-          <Loader className="animate-spin" />
-        </div>
-      )}
+      {isLoading && <Loader />}
     </div>
   );
 }

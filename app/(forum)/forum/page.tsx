@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ArrowRight, Loader, Plus } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,6 +13,7 @@ import Form, {
   Input,
   Label,
 } from "@/components/Form/Form";
+import Loader from "@/components/Loader/Loader";
 import {
   Dialog,
   DialogContent,
@@ -206,20 +207,14 @@ export default function ForumPage() {
               >
                 <span className="relative">
                   Créer un Topic
-                  {isPending && (
-                    <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
-                  )}
+                  {isPending && <Loader />}
                 </span>
               </Button>
             </Form>
           </DialogContent>
         </Dialog>
       </div>
-      {isLoading && (
-        <div className="fixed left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2">
-          <Loader className="animate-spin" />
-        </div>
-      )}
+      {isLoading && <Loader />}
     </>
   );
 }

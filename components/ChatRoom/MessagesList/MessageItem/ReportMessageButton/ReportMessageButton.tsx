@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import { Ban, Loader } from "lucide-react";
+import { Ban } from "lucide-react";
 
+import Loader from "@/components/Loader/Loader";
 import {
   Dialog,
   DialogContent,
@@ -58,9 +59,7 @@ export default function ReportMessageButton({ message }: Props) {
           >
             <span className="relative">
               Dénoncer un message
-              {isPendingReportMessage && (
-                <Loader className="absolute left-0 top-1/2 -ml-5 -mt-2 size-4 animate-spin" />
-              )}
+              {isPendingReportMessage && <Loader position="relative" />}
             </span>
           </button>
 
