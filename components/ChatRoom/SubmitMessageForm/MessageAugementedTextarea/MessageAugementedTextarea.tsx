@@ -2,7 +2,7 @@
 
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 
-import { TextareaHTMLAttributes, useState } from "react";
+import { TextareaHTMLAttributes } from "react";
 
 import useSearchSimilarUsersByPseudo from "@/lib/auth/useSearchSimilarUsersByPseudo";
 import useDebounce from "@/lib/misc/useDebounce";
@@ -19,9 +19,8 @@ const Item = ({ entity }: { entity: MentionUser }) => (
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export default function MessageAugementedTextarea(props: Props) {
-  const [search, setSearch] = useState("");
-  const { similarUsers } = useSearchSimilarUsersByPseudo(search);
-  const debounceSearch = useDebounce(setSearch, 500);
+  const { similarUsers, updateSearch } = useSearchSimilarUsersByPseudo();
+  const debounceSearch = useDebounce(updateSearch, 500);
   const dataProvider = (token: string): MentionUser[] => {
     debounceSearch(token);
     return (similarUsers || []).map(({ id, pseudo }) => ({ id, pseudo }));

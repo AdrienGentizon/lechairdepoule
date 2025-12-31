@@ -17,16 +17,25 @@ import { DialogHeader } from "../ui/dialog";
 
 export default function UpdateUserPseudoDialog() {
   const { me } = useMe();
-  const { updateUserPseudo, isPending, error } = useUpdateUserPseudo();
+  const {
+    updateUserPseudo,
+    isPending,
+    error: errorUpdatePseudo,
+  } = useUpdateUserPseudo();
   const [pseudo, setPseudo] = useState("");
   const [cguAccepted, setCguAccepted] = useState(false);
-  const { similarUsers, isLoading: isLoadingSimilarUsersByPseudo } =
-    useSearchSimilarUsersByPseudo(pseudo, {
-      exactMatch: true,
-    });
+  const {
+    updateSearch,
+    hasExactMatch,
+    isLoading: isSearching,
+  } = useSearchSimilarUsersByPseudo({
+    exactMatch: true,
+  });
   const [errors, setErrors] = useState<{ pseudo?: string; cgu?: string }>({});
 
-  const pseudoAlreadyTaken = similarUsers.length > 0;
+  const pseudoError = hasExactMatch
+    ? "Pseudo déjà utilisé, veuillez en choisir un autre"
+    : (errors.pseudo ?? errorUpdatePseudo?.message);
 
   if (!me || me.pseudo !== getUserPseudo({ email: me.email, pseudo: null }))
     return null;
@@ -49,6 +58,8 @@ export default function UpdateUserPseudoDialog() {
             }}
             onSubmit={(e) => {
               e.preventDefault();
+              if (isPending || isSearching) return;
+
               setErrors({});
 
               const parsedInputs = z
@@ -73,9 +84,12 @@ export default function UpdateUserPseudoDialog() {
                 });
               }
 
-              if (pseudoAlreadyTaken) {
-                setErrors((prev) => {
-                  return { ...prev, pseudo: "Ce pseudo est déjà utilisé" };
+              if (hasExactMatch) {
+                return setErrors((prev) => {
+                  return {
+                    ...prev,
+                    pseudo: "Pseudo déjà utilisé, veuillez en choisir un autre",
+                  };
                 });
               }
 
@@ -93,16 +107,15 @@ export default function UpdateUserPseudoDialog() {
                 id="pseudo"
                 name="pseudo"
                 value={pseudo}
+                autoComplete="off"
                 onChange={(e) => {
                   setPseudo(e.target.value);
+                  updateSearch(e.target.value);
                 }}
                 required
               />
-              <FieldError>
-                {pseudoAlreadyTaken
-                  ? `Ce pseudo est déjà utilisé`
-                  : (errors.pseudo ?? error?.message ?? <>&nbsp;</>)}
-              </FieldError>
+
+              <FieldError>{pseudoError}</FieldError>
             </FormField>
             <CguCheckbox
               name="cgu"
@@ -115,12 +128,7 @@ export default function UpdateUserPseudoDialog() {
             <Button
               className="w-full"
               type="submit"
-              disabled={
-                isPending ||
-                isLoadingSimilarUsersByPseudo ||
-                pseudoAlreadyTaken ||
-                !cguAccepted
-              }
+              disabled={isPending || isSearching || !cguAccepted}
             >
               Créer mon pseudo
             </Button>

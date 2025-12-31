@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { useEffect, useState } from "react";
+
+import useDebounce from "../misc/useDebounce";
 import { User } from "../types";
 
-export default function useSearchSimilarUsersByPseudo(
-  search: string,
-  options?: { exactMatch?: boolean }
-) {
+export default function useSearchSimilarUsersByPseudo(options?: {
+  exactMatch?: boolean;
+}) {
+  const [search, setSearch] = useState("");
+  const [hasExactMatch, setHasExactMatch] = useState(false);
+  const debouncedSearch = useDebounce(setSearch, 300);
+
   const {
     data: similarUsers = [],
     error,
@@ -26,8 +32,15 @@ export default function useSearchSimilarUsersByPseudo(
     },
   });
 
+  useEffect(() => {
+    if (!options?.exactMatch) return;
+    setHasExactMatch(similarUsers.length > 0);
+  }, [options, similarUsers]);
+
   return {
+    updateSearch: debouncedSearch,
     similarUsers,
+    hasExactMatch,
     error,
     isLoading,
   };
