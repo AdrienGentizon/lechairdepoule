@@ -72,8 +72,7 @@ export default async function getEvents() {
         }
       }
     }
-  }`,
-        60 * 60
+  }`
       )
     )?.data?.eventCollection.items ?? []
   )
