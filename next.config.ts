@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-import env from "./lib/env";
-
 const flaggedRedirections = [
   {
     enabled: !(process.env["NEXT_PUBLIC_SHOW_STORE"] === "true"),
@@ -16,11 +14,6 @@ const flaggedRedirections = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.ctfassets.net",
-        pathname: `/${env().CONTENTFUL_SPACE_ID}/**`,
-      },
       {
         protocol: "https",
         hostname: "**.public.blob.vercel-storage.com",

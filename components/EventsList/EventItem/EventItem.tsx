@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 
-import Image from "next/image";
+import ContentfulImage from "@/components/ContentfulImage";
 
 import ChairDePoule from "@/components/png/ChairDePoule";
 import PeinePerdue from "@/components/png/PeinePerdue";
@@ -130,7 +130,7 @@ export default function EventItem({ event }: Props) {
             </h4>
 
             {event.picture && (
-              <Image
+              <ContentfulImage
                 className="mx-auto h-min rounded"
                 alt=""
                 src={event.picture.url}
