@@ -132,7 +132,7 @@ export default function RandomBackground({ assets }: Props) {
       style={{
         maxHeight: maxHeight + 2 * -WINDOW_PADDING,
       }}
-      className="absolute left-[-112px] right-[-112px] top-[-112px] -z-10 hidden overflow-hidden sm:block"
+      className="absolute inset-0 -z-10 hidden overflow-hidden sm:block"
     >
       {cells.map((rows, n) => {
         return (
@@ -161,7 +161,9 @@ export default function RandomBackground({ assets }: Props) {
                       src={cell.png.url}
                       width={cell.png.width}
                       height={cell.png.height}
-                      alt="drawings"
+                      alt=""
+                      aria-hidden
+                      sizes="(max-width: 640px) 0px, 100px"
                     />
                   )}
                 </li>

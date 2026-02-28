@@ -11,7 +11,7 @@ import LogoSite from "../png/LogoSite";
 function Title() {
   return (
     <Link href={`/`}>
-      <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
+      <LogoSite />
     </Link>
   );
 }
@@ -25,7 +25,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
       )}
     >
       <Link href={`/`}>
-        <LogoSite className="mx-auto w-1/2 pb-2 pt-4" />
+        <LogoSite />
       </Link>
       <nav>
         <ul className="flex items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
@@ -34,7 +34,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <Image
                 src={AgendaPNG}
                 alt="Agenda"
-                className="h-6 object-contain landscape:h-10"
+                className="h-6 w-auto object-contain landscape:h-10"
                 role="button"
               />
               <span className="sr-only">Agenda</span>
@@ -45,7 +45,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <Image
                 src={ContactPNG}
                 alt="Contact"
-                className="h-6 object-contain landscape:h-10"
+                className="h-6 w-auto object-contain landscape:h-10"
                 role="button"
               />
               <span className="sr-only">Contact</span>
@@ -57,7 +57,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
                 <Image
                   src={ForumPNG}
                   alt="Forum"
-                  className="h-6 object-contain landscape:h-10"
+                  className="h-6 w-auto object-contain landscape:h-10"
                   role="button"
                 />
                 <span className="sr-only">Forum</span>

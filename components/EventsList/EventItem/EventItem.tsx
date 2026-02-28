@@ -136,6 +136,7 @@ export default function EventItem({ event }: Props) {
                 src={event.picture.url}
                 width={event.picture.width}
                 height={event.picture.height}
+                sizes="(max-width: 640px) 100dvw, 600px"
               />
             )}
           </div>
