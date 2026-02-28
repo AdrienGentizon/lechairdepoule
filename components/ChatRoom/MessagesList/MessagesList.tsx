@@ -44,6 +44,7 @@ export default function MessagesList({
               alt=""
               aria-hidden
               className="object-cover"
+              sizes="(max-width: 640px) 100dvw, 600px"
             />
           </li>
         )}
