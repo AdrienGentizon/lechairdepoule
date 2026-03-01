@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
-import { logApiError, logApiOperation } from "@/lib/logger";
+import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { Message } from "@/lib/types";
 
@@ -12,27 +13,28 @@ export async function POST(
   { params }: { params: Promise<{ messageId: string }> }
 ) {
   const { messageId } = await params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const reportedBy = await getUser(req);
+    logger.append({ reportedBy: getLoggableUser(reportedBy) });
 
-    if (!reportedBy || reportedBy.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!reportedBy || reportedBy.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
-    const reportedMessage = await updateMessageAsReported({
+    const values = {
       reportedBy: { ...reportedBy, pseudo: getUserPseudo(reportedBy) },
       messageId,
-    });
+    };
+    const reportedMessage = await updateMessageAsReported(values);
 
-    if (!reportedMessage)
+    if (!reportedMessage) {
+      logger.append({ values });
       throw new Error(
         `user (${reportedBy.id}) cannot report message (${messageId})`
       );
+    }
 
     await pusher.trigger(
       `conversations-${reportedMessage.conversationId}`,
@@ -40,16 +42,11 @@ export async function POST(
       reportedMessage
     );
 
-    return NextResponse.json<Message>(reportedMessage, {
-      status: 200,
-    });
+    logger.append({ reportedMessage });
+    logger.flush();
+    return NextResponse.json<Message>(reportedMessage, { status: 200 });
   } catch (error) {
-    logApiError(req, error);
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }

@@ -3,11 +3,13 @@ import { del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
+import getLoggableMessage from "@/lib/forum/getLoggableMessage";
 import getMentionedPseudos from "@/lib/forum/getMentionedPseudos";
 import insertMentions from "@/lib/forum/insertMentions";
 import insertMessageIntoConversation from "@/lib/forum/insertMessageIntoConversation";
@@ -16,7 +18,7 @@ import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBod
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
-import { logApiError, logApiOperation } from "@/lib/logger";
+import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
 import uploadImage from "@/lib/uploadImage";
@@ -26,27 +28,23 @@ export async function GET(
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const params = await ctx.params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
+    logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.withError(new Error("unauthorized")).flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
     const conversation = await selectConversationFromId(params.conversationId);
 
-    if (!conversation)
-      return NextResponse.json(
-        {
-          error: "not found",
-        },
-        { status: 404 }
-      );
+    if (!conversation) {
+      logger.withError("not found").flush();
+      return NextResponse.json({ error: "not found" }, { status: 404 });
+    }
+
     const messages = await selectConversationMessages(params.conversationId);
     const mentionedUserIds = messages.reduce((acc: string[], curr) => {
       const mentionedUserIds = getMentionedPseudos(curr.body);
@@ -57,9 +55,7 @@ export async function GET(
     }, []);
 
     const users = await selectUsersFromId(
-      mentionedUserIds.map((mention) => {
-        return mention.replace("@", "");
-      })
+      mentionedUserIds.map((mention) => mention.replace("@", ""))
     );
     const mentionedUsers = mentionedUserIds.reduce(
       (acc: { id: string; pseudo: string }[], curr) => {
@@ -67,40 +63,29 @@ export async function GET(
         if (!user?.pseudo) return acc;
         return [
           ...acc.filter(({ id }) => id !== user.id),
-          {
-            id: user.id,
-            pseudo: user.pseudo,
-          },
+          { id: user.id, pseudo: user.pseudo },
         ];
       },
       []
     );
 
+    logger.flush();
     return NextResponse.json<Conversation>(
       {
         ...conversation,
-        messages: messages.map((message) => {
-          return {
-            ...message,
-            body: replaceMessageBodyMentionWIthUserName({
-              mentionedUsers,
-              body: message.body,
-            }),
-          };
-        }),
+        messages: messages.map((message) => ({
+          ...message,
+          body: replaceMessageBodyMentionWIthUserName({
+            mentionedUsers,
+            body: message.body,
+          }),
+        })),
       },
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
-    logApiError(req, error);
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }
 
@@ -109,26 +94,27 @@ export async function POST(
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const params = await ctx.params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
+    logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
+    const payload = await req.json();
     const parsedInputs = z
       .object({
         body: z.string(),
         parentMessageId: z.nullable(z.string()),
       })
-      .safeParse(await req.json());
+      .safeParse(payload);
 
     if (!parsedInputs.success) {
+      logger.append({ payload });
+      logger.withError(parsedInputs.error).flush();
       return NextResponse.json(
         { error: "message non valide ne sera pas posté" },
         { status: 400 }
@@ -140,56 +126,53 @@ export async function POST(
     let mentionedUsers: { id: string; pseudo: string | null }[] = [];
     if (mentions.length > 0) {
       mentionedUsers = await selectUsersFromPseudo({
-        pseudos: mentions.map((mention) => {
-          return mention.replace("@", "");
-        }),
+        pseudos: mentions.map((mention) => mention.replace("@", "")),
       });
     }
 
-    const message = await insertMessageIntoConversation({
+    const values = {
       conversationId: params.conversationId,
       parentMessageId: parsedInputs.data.parentMessageId,
       body: replaceMessageBodyMentionWIthUserId({
         mentionedUsers,
         body: parsedInputs.data.body,
       }),
-      user: {
-        ...user,
-        pseudo: getUserPseudo(user),
-      },
-    });
+      user: { ...user, pseudo: getUserPseudo(user) },
+    };
+    const insertedMessage = await insertMessageIntoConversation(values);
 
-    if (!message) throw new Error(`cannot insert message ${parsedInputs.data}`);
+    if (!insertedMessage) {
+      logger.append({ values });
+      throw new Error(`cannot insert message`);
+    }
+    logger.append(getLoggableMessage(insertedMessage));
 
     await insertMentions({
-      messageId: message.id,
+      messageId: insertedMessage.id,
       userIds: mentionedUsers.map(({ id }) => id),
     });
 
     await pusher.trigger(
       `conversations-${params.conversationId}`,
       "conversation:message:new",
-      message
+      insertedMessage
     );
 
+    logger.append({ insertedMessage: getLoggableMessage(insertedMessage) });
+    logger.flush();
     return NextResponse.json<Message>(
       {
-        ...message,
+        ...insertedMessage,
         body: replaceMessageBodyMentionWIthUserName({
           mentionedUsers,
-          body: message.body,
+          body: insertedMessage.body,
         }),
       },
       { status: 200 }
     );
   } catch (error) {
-    logApiError(req, error);
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }
 
@@ -198,44 +181,34 @@ export async function DELETE(
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const params = await ctx.params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
+    logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
     const conversation = await deleteConversationFromId({
       userId: user.id,
       conversationId: params.conversationId,
     });
 
-    if (!conversation)
-      return NextResponse.json(
-        {
-          error: "not found",
-        },
-        { status: 404 }
-      );
+    if (!conversation) {
+      logger.withError("not found").flush();
+      return NextResponse.json({ error: "not found" }, { status: 404 });
+    }
+
+    logger.flush();
     return NextResponse.json<{ conversationId: string }>(
       { conversationId: conversation.id },
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
-    logApiError(req, error);
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }
 
@@ -244,29 +217,29 @@ export async function PATCH(
   ctx: { params: Promise<{ conversationId: string }> }
 ) {
   const params = await ctx.params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
+    logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
     const formData = await req.formData();
+    const payload = Object.fromEntries(formData.entries());
 
     const parsedInputs = z
       .object({
         title: z.string(),
         description: z.string(),
       })
-      .safeParse(Object.fromEntries(formData.entries()));
+      .safeParse(payload);
 
     if (!parsedInputs.success) {
-      logApiError(req, parsedInputs.error.message);
+      logger.append({ payload });
+      logger.withError(parsedInputs.error).flush();
       return NextResponse.json(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
@@ -277,47 +250,35 @@ export async function PATCH(
 
     const cover = await uploadImage(formData);
 
-    const conversation = await updateConversationFromId({
+    const values = {
       userId: user.id,
       conversationId: params.conversationId,
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       cover,
-    });
+    };
+    const updatedConversation = await updateConversationFromId(values);
 
-    if (!conversation)
+    if (!updatedConversation) {
+      logger.append({ values });
+      logger.withError("cannot update conversation").flush();
       return NextResponse.json(
-        {
-          error: "not found",
-        },
-        { status: 404 }
-      );
-
-    if (cover && conversation.previousCoverUrl) {
-      logApiOperation(
-        req,
-        `conversation ${conversation.id} cover has been replaced, its previous cover is going to be deleted`
-      );
-
-      await del(conversation.previousCoverUrl);
-      logApiOperation(
-        req,
-        `delete blob successful ${conversation.previousCoverUrl}`
+        { error: "cannot update conversation" },
+        { status: 500 }
       );
     }
+
+    if (cover && updatedConversation.previousCoverUrl) {
+      await del(updatedConversation.previousCoverUrl);
+    }
+
+    logger.append({ updatedConversation });
+    logger.flush();
     return NextResponse.json<
       Omit<Conversation, "messages" | "createdAt" | "createdBy">
-    >(conversation, {
-      status: 200,
-    });
+    >(updatedConversation, { status: 200 });
   } catch (error) {
-    logApiError(req, error);
-
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { fetchEntryGraphQL } from "@/lib/contentful";
-import { logApiError, logApiOperation } from "@/lib/logger";
+import { getRequestLogger } from "@/lib/getRequestLogger";
 import { TermsOfService } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
-
     const response = await fetchEntryGraphQL<TermsOfService>(
       "termsOfService",
       `query {
@@ -20,22 +19,17 @@ export async function GET(req: NextRequest) {
     }`
     );
 
-    if (!response?.data)
-      return NextResponse.json(null, {
-        status: 404,
-      });
+    if (!response?.data) {
+      logger.withError(new Error("not found")).flush();
+      return NextResponse.json(null, { status: 404 });
+    }
 
+    logger.flush();
     return NextResponse.json<TermsOfService>(response?.data?.termsOfService, {
       status: 200,
     });
   } catch (error) {
-    logApiError(req, error);
-
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }

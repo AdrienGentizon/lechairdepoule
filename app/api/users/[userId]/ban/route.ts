@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
-import { logApiError, logApiOperation } from "@/lib/logger";
+import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { User } from "@/lib/types";
 
@@ -12,38 +13,36 @@ export async function POST(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const bannedBy = await getUser(req);
+    logger.append({ bannedBy: getLoggableUser(bannedBy) });
 
-    if (!bannedBy || bannedBy.bannedAt || bannedBy.id === userId)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!bannedBy || bannedBy.bannedAt || bannedBy.id === userId) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
-    const bannedUser = await updateUserAsBanned({
+    const values = {
       bannedBy: { ...bannedBy, pseudo: getUserPseudo(bannedBy) },
       userId,
-    });
+    };
+    const bannedUser = await updateUserAsBanned(values);
 
-    if (!bannedUser)
+    if (!bannedUser) {
+      logger.append({ values });
       throw new Error(`user (${bannedBy.id}) cannot ban user (${userId})`);
+    }
 
+    logger.append({
+      bannedUser: getLoggableUser(bannedUser),
+    });
     await pusher.trigger(`users`, `user:ban`, bannedUser);
 
-    return NextResponse.json<User>(bannedUser, {
-      status: 200,
-    });
+    logger.flush();
+    return NextResponse.json<User>(bannedUser, { status: 200 });
   } catch (error) {
-    logApiError(req, error);
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }

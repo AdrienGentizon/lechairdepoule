@@ -1,38 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
-import { logApiError, logApiOperation } from "@/lib/logger";
+import { getRequestLogger } from "@/lib/getRequestLogger";
 import { Conversation } from "@/lib/types";
 import uploadImage from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.append(getLoggableUser(user));
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
     const formData = await req.formData();
+    const payload = Object.fromEntries(formData.entries());
 
     const parsedInputs = z
       .object({
         title: z.string(),
         description: z.string(),
       })
-      .safeParse(Object.fromEntries(formData.entries()));
+      .safeParse(payload);
 
     if (!parsedInputs.success) {
-      logApiError(req, parsedInputs.error.message);
+      logger.append({ payload });
+      logger.withError(parsedInputs.error).flush();
       return NextResponse.json(
         { error: "conversation non valide ne sera pas créée" },
         { status: 400 }
@@ -41,55 +42,46 @@ export async function POST(req: NextRequest) {
 
     const cover = await uploadImage(formData);
 
-    const conversation = await insertConversation({
+    const insertedConversation = await insertConversation({
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       user: { ...user, pseudo: getUserPseudo(user) },
       cover,
     });
 
-    if (!conversation)
+    if (!insertedConversation)
       throw new Error(`cannot insert conversation ${parsedInputs.data}`);
 
-    return NextResponse.json<Conversation>(conversation, { status: 200 });
+    logger.append({ insertedConversation });
+    logger.flush();
+    return NextResponse.json<Conversation>(insertedConversation, {
+      status: 200,
+    });
   } catch (error) {
-    logApiError(req, error);
-
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }
 
 export async function GET(req: NextRequest) {
+  const logger = getRequestLogger(req);
   try {
-    logApiOperation(req);
     const user = await getUser(req);
+    logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt)
-      return NextResponse.json(
-        {
-          error: "unauthorized",
-        },
-        { status: 401 }
-      );
+    if (!user || user.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
 
     const conversations = await selectConversations();
 
+    logger.flush();
     return NextResponse.json<Omit<Conversation, "messages">[]>(conversations, {
       status: 200,
     });
   } catch (error) {
-    logApiError(req, error);
-
-    return NextResponse.json(
-      {
-        error: "server error",
-      },
-      { status: 500 }
-    );
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "server error" }, { status: 500 });
   }
 }

@@ -5,10 +5,11 @@ import { cache } from "react";
 import { NextRequest } from "next/server";
 
 import clerk from "../clerk";
-import { logApiError } from "../logger";
+import { getRequestLogger } from "../getRequestLogger";
 import { selectUserFromAuthId } from "./selectUserFromId";
 
 const getUserCached = cache(async (req: NextRequest) => {
+  const logger = getRequestLogger(req);
   try {
     const { isAuthenticated, toAuth } = await clerk.authenticateRequest(req, {
       authorizedParties: [
@@ -18,12 +19,12 @@ const getUserCached = cache(async (req: NextRequest) => {
       ],
     });
     if (!isAuthenticated) {
-      logApiError(req, `user not authenticated`);
+      logger.withError("user not authenticated").flush();
       return;
     }
     const token = toAuth();
     if (!token?.userId) {
-      logApiError(req, `user token undefined`);
+      logger.withError("user token undefined").flush();
       return;
     }
 
@@ -32,11 +33,11 @@ const getUserCached = cache(async (req: NextRequest) => {
       userId: token.userId,
     });
     if (!user) {
-      logApiError(req, `user not found: ${token.userId}`);
+      logger.withError(`user not found: ${token.userId}`).flush();
     }
     return user;
   } catch (error) {
-    logApiError(req, error);
+    logger.withError(error).flush();
     return;
   }
 });
