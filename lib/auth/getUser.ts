@@ -11,13 +11,16 @@ import { selectUserFromAuthId } from "./selectUserFromId";
 const getUserCached = cache(async (req: NextRequest) => {
   const logger = getRequestLogger(req);
   try {
-    const { isAuthenticated, toAuth } = await clerk.authenticateRequest(req, {
-      authorizedParties: [
-        "http://localhost:3000",
-        "https://dev.lechairdepoule.fr",
-        "https://lechairdepoule.fr",
-      ],
-    });
+    const { isAuthenticated, toAuth, message } =
+      await clerk.authenticateRequest(req, {
+        authorizedParties: [
+          "http://localhost:3000",
+          "https://dev.lechairdepoule.fr",
+          "https://lechairdepoule.fr",
+          "https://www.lechairdepoule.fr",
+        ],
+      });
+    if (message) logger.append(message);
     if (!isAuthenticated) {
       logger.withError("user not authenticated").flush();
       return;
