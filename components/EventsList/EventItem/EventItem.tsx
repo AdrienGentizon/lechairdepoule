@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 
 import ContentfulImage from "@/components/ContentfulImage";
-
 import ChairDePoule from "@/components/png/ChairDePoule";
 import PeinePerdue from "@/components/png/PeinePerdue";
 import { cn } from "@/lib/utils";
@@ -48,10 +47,10 @@ export default function EventItem({ event }: Props) {
         );
       }}
       value={event.sys.id}
-      className="relative flex w-full flex-col gap-2 overflow-hidden border-b border-white p-2 first:border-t"
+      className="relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden border-b border-white p-2 first:border-t"
     >
       <button
-        className="relative z-10 p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
+        className="relative z-10 cursor-pointer p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
         onClick={() => {
           if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
             window.dispatchEvent(
@@ -111,7 +110,7 @@ export default function EventItem({ event }: Props) {
         {event.atPeinePerdue && (
           <div
             className={cn(
-              "absolute right-0 top-1/2 z-50 origin-center -translate-y-1/2 rotate-12 scale-90 opacity-100 transition-opacity"
+              "absolute top-1/2 right-0 z-50 origin-center -translate-y-1/2 scale-90 rotate-12 opacity-100 transition-opacity"
             )}
           >
             <PeinePerdue className="size-20" />
@@ -121,7 +120,7 @@ export default function EventItem({ event }: Props) {
       {open && (
         <div>
           <div className="relative">
-            <h4 className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">
+            <h4 className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 rotate-45 bg-black px-32 pt-40 text-center text-lg font-light uppercase">
               {event.atPeinePerdue ? (
                 <PeinePerdue className="size-28" />
               ) : (
@@ -140,7 +139,7 @@ export default function EventItem({ event }: Props) {
               />
             )}
           </div>
-          <div className="flex flex-col gap-2 py-4 text-justify font-mono font-light leading-5">
+          <div className="flex flex-col gap-2 py-4 text-justify font-mono leading-5 font-light">
             <Markdown>{event.message}</Markdown>
           </div>
         </div>

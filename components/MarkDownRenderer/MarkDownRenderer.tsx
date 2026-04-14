@@ -19,19 +19,19 @@ export default function MarkdownRenderer({
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
-            <h1 className="text-2xl font-bold leading-8">{children}</h1>
+            <h1 className="text-2xl leading-8 font-bold">{children}</h1>
           ),
           h2: ({ children }) => (
-            <h2 className="pt-4 text-xl font-semibold leading-8">{children}</h2>
+            <h2 className="pt-4 text-xl leading-8 font-semibold">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 className="pt-2 text-lg font-semibold leading-6">{children}</h3>
+            <h3 className="pt-2 text-lg leading-6 font-semibold">{children}</h3>
           ),
           p: ({ children }) => (
-            <p className="pb-4 pt-2 leading-relaxed">{children}</p>
+            <p className="pt-2 pb-4 leading-relaxed">{children}</p>
           ),
           ul: ({ children }) => (
-            <ul className="list-inside list-disc space-y-2 pb-4 pt-2">
+            <ul className="list-inside list-disc space-y-2 pt-2 pb-4">
               {children}
             </ul>
           ),
@@ -44,18 +44,19 @@ export default function MarkdownRenderer({
               {children}
             </blockquote>
           ),
-          code: ({ inline, children }: any) => {
-            if (inline) {
+          code: ({ className, children }) => {
+            const isBlock = className?.startsWith("language-");
+            if (isBlock) {
               return (
-                <code className="rounded px-1 py-0.5 font-mono text-sm">
-                  {children}
-                </code>
+                <pre className="overflow-x-auto rounded-lg p-4">
+                  <code className="font-mono text-sm">{children}</code>
+                </pre>
               );
             }
             return (
-              <pre className="overflow-x-auto rounded-lg p-4">
-                <code className="font-mono text-sm">{children}</code>
-              </pre>
+              <code className="rounded px-1 py-0.5 font-mono text-sm">
+                {children}
+              </code>
             );
           },
           a: ({ href, children }) => (

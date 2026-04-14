@@ -40,13 +40,14 @@ function UserButton({ me }: { me: User }) {
   const [errors, setErrors] = useState<{ pseudo?: string }>({});
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="absolute right-[50%] top-4 z-20 origin-center translate-x-80 scale-[1.5] hover:scale-[1.525] portrait:right-[0.75rem] portrait:top-[0.75rem] portrait:translate-x-0 portrait:scale-[1.25]">
+        <button className="absolute top-4 right-[50%] z-20 origin-center translate-x-80 scale-[1.5] hover:scale-[1.525] portrait:top-[0.75rem] portrait:right-[0.75rem] portrait:translate-x-0 portrait:scale-[1.25]">
           <UserCircle className="stroke-white stroke-1" aria-hidden />
           <span
             className="sr-only"
@@ -54,7 +55,7 @@ function UserButton({ me }: { me: User }) {
           >{`Mes notifications - ${userMentions.length} non lues`}</span>
           {userMentions.length > 0 && (
             <span
-              className="absolute -right-0.5 -top-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
+              className="absolute -top-0.5 -right-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
               aria-hidden
             >
               {userMentions.length}
@@ -182,8 +183,8 @@ function UserButton({ me }: { me: User }) {
             </section>
           )}
           <section aria-labelledby="cgu">
-            <h2 id="cgu" className="pb-1 pt-4 text-lg font-semibold">
-              Conditions générales d'utilisation
+            <h2 id="cgu" className="pt-4 pb-1 text-lg font-semibold">
+              {`Conditions générales d'utilisation`}
             </h2>
             <Link href={`/forum/cgu`}>
               <Button className="w-full">Lire les CGU</Button>

@@ -10,15 +10,13 @@ export default function usePostConversationMessage(conversationId: string) {
     error,
     isPending,
   } = useMutation({
-    mutationFn: async (
-      {
-        body,
-        parentMessageId,
-      }: { body: string; parentMessageId: string | null },
-      options?: {
-        onSuccess: () => void;
-      }
-    ) => {
+    mutationFn: async ({
+      body,
+      parentMessageId,
+    }: {
+      body: string;
+      parentMessageId: string | null;
+    }) => {
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "POST",
         body: JSON.stringify({ body, parentMessageId }),
@@ -27,7 +25,6 @@ export default function usePostConversationMessage(conversationId: string) {
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      options?.onSuccess();
       return response.json() as Promise<Message>;
     },
     onSuccess: (data) => {

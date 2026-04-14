@@ -13,14 +13,11 @@ import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
 function Header({ me, message }: { me: User; message: Message }) {
   const canReportMessage = (message: Message) => {
-    return true;
     if (message.user.id === me?.id) return false;
     return true;
   };
 
   const canBanMessageUser = (message: Message) => {
-    return true;
-
     if (me?.role !== "admin") return false;
     if (message.user.id === me?.id) return false;
     return true;
@@ -67,7 +64,7 @@ function ReplyInThreadButton({ message }: { message: Message }) {
             setShowTextarea(true);
           }}
         >
-          Réagir
+          Répondre
         </Button>
       )}
       {showTextarea && (
@@ -75,6 +72,8 @@ function ReplyInThreadButton({ message }: { message: Message }) {
           conversationId={message.conversationId}
           messageId={message.id}
           variant="dark"
+          autoFocus
+          buttonLabel={`Répondre`}
           onSuccess={() => {
             setShowTextarea(false);
           }}
@@ -94,7 +93,7 @@ function Thread({
   if (threadedMessages.length === 0) return null;
 
   return (
-    <ul className="flex flex-col gap-2 rounded-sm pl-12 pt-6">
+    <ul className="flex flex-col gap-2 rounded-sm pt-6 pl-12">
       {threadedMessages.map((threadedMessage) => {
         return (
           <MessageItem
@@ -116,7 +115,7 @@ function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
   const markAsRead = useCallback(() => {
     if (isPending) return;
     updateUserMentions([messageId]);
-  }, [messageId, isPending]);
+  }, [isPending, updateUserMentions, messageId]);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -136,7 +135,7 @@ function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
     return () => {
       abortController.abort();
     };
-  }, []);
+  }, [markAsRead]);
   return <div ref={ref} />;
 }
 
@@ -187,7 +186,7 @@ export default function MessageItem({
         <div className="rounded-b-sm border border-white p-2">
           <p
             className={cn(
-              "pl-2 font-courier",
+              "font-courier pl-2",
               (message.reportedAt !== null || message.user.bannedAt !== null) &&
                 "text-neutral-400 line-through"
             )}

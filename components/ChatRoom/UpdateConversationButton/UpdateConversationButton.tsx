@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Loader, Pencil } from "lucide-react";
+import Image from "next/image";
 import { z } from "zod";
 
 import Button, { buttonClassName } from "@/components/Button/Button";
@@ -26,6 +27,7 @@ export default function UpdateConversationButton({
   conversation: Conversation;
 }) {
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
+  const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const { updateConversation, isPending } = useUpdateConversation({
     onSuccess: () => {
@@ -49,10 +51,15 @@ export default function UpdateConversationButton({
         </DialogHeader>
         <Form
           onChange={(e) => {
-            const file = new FormData(e.currentTarget).get("file");
-            if (!(file instanceof File)) return;
-            if (file.size === 0) return;
+            if (
+              !(e.target instanceof HTMLInputElement) ||
+              e.target.type !== "file"
+            )
+              return;
+            const file = e.target.files?.[0];
+            if (!file || file.size === 0) return;
 
+            setCoverFile(file);
             const reader = new FileReader();
             reader.onload = function (e) {
               if (typeof e.target?.result === "string")
@@ -63,7 +70,6 @@ export default function UpdateConversationButton({
           onSubmit={(e) => {
             e.preventDefault();
             setErrors({});
-            const file = new FormData(e.currentTarget).get("file");
 
             const parsedInputs = z
               .object({
@@ -91,13 +97,24 @@ export default function UpdateConversationButton({
               });
             }
 
-            updateConversation({
-              id: conversation.id,
-              title: parsedInputs.data.title ?? conversation.title,
-              description:
-                parsedInputs.data.description ?? conversation.description ?? "",
-              cover: file instanceof File ? file : undefined,
-            });
+            updateConversation(
+              {
+                id: conversation.id,
+                title: parsedInputs.data.title ?? conversation.title,
+                description:
+                  parsedInputs.data.description ??
+                  conversation.description ??
+                  "",
+                cover: coverFile,
+              },
+              {
+                onSuccess: () => {
+                  e.target.reset();
+                  setPreviewSrc(undefined);
+                  setCoverFile(undefined);
+                },
+              }
+            );
           }}
         >
           <FormField>
@@ -131,7 +148,16 @@ export default function UpdateConversationButton({
             </label>
             <Input id="file" name="file" type="file" accept="image/*" hidden />
             {previewSrc && (
-              <img src={previewSrc} className="max-h-96 object-contain py-2" />
+              <Image
+                alt=""
+                aria-hidden
+                src={previewSrc}
+                width={0}
+                height={0}
+                sizes="(max-width: 640px) 390px, 512px"
+                className="max-h-96 w-full object-contain py-2"
+                style={{ height: "auto" }}
+              />
             )}
             <FieldError>{null}</FieldError>
           </FormField>
@@ -140,7 +166,7 @@ export default function UpdateConversationButton({
           </Button>
         </Form>
         {isPending && (
-          <Loader className="absolute inset-0 left-1/2 top-1/2 z-50 -ml-3 animate-spin stroke-2" />
+          <Loader className="absolute inset-0 top-1/2 left-1/2 z-50 -ml-3 animate-spin stroke-2" />
         )}
       </DialogContent>
     </Dialog>

@@ -1,39 +1,20 @@
 "use client";
 
-import { ReactNode, createContext, useContext, useEffect } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import Pusher from "pusher-js";
 
 type Context = {
-  pusher: Pusher;
+  pusher: Pusher | null;
 };
 
 const PusherContext = createContext<Context | null>(null);
-
-let pusher: Pusher | null = null;
-
-function getPusher() {
-  if (pusher) return pusher;
-  const env = {
-    key: process.env.NEXT_PUBLIC_PUSHER_KEY,
-    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-  };
-
-  if (!env.key || !env.cluster)
-    throw new Error(
-      `NEXT_PUBLIC_PUSHER_KEY and NEXT_PUBLIC_PUSHER_CLUSTER required`
-    );
-  pusher = new Pusher(env.key, {
-    cluster: env.cluster,
-  });
-
-  return pusher;
-}
-
-function disconnect() {
-  pusher?.disconnect();
-  pusher = null;
-}
 
 export function usePusher() {
   const context = useContext(PusherContext);
@@ -43,36 +24,48 @@ export function usePusher() {
 }
 
 export default function PusherProvider({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    const abortController = new AbortController();
+  const [pusher, setPusher] = useState<Pusher | null>(null);
 
-    document.addEventListener(
-      "visibilitychange",
-      () => {
-        if (document.hidden) {
-          disconnect();
-        } else {
-          getPusher();
-        }
-      },
-      { signal: abortController.signal }
-    );
-    window.addEventListener(
-      "beforeunload",
-      () => {
-        disconnect();
-      },
-      { signal: abortController.signal }
-    );
+  useEffect(() => {
+    const env = {
+      key: process.env.NEXT_PUBLIC_PUSHER_KEY,
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+    };
+
+    if (!env.key || !env.cluster)
+      throw new Error(
+        `NEXT_PUBLIC_PUSHER_KEY and NEXT_PUBLIC_PUSHER_CLUSTER required`
+      );
+
+    const instance = new Pusher(env.key, { cluster: env.cluster });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPusher(instance);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        instance.disconnect();
+      } else {
+        instance.connect();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      instance.disconnect();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      disconnect();
-      abortController.abort();
+      instance.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      setPusher(null);
     };
   }, []);
 
   return (
-    <PusherContext.Provider value={{ pusher: getPusher() }}>
+    <PusherContext.Provider value={{ pusher }}>
       {children}
     </PusherContext.Provider>
   );

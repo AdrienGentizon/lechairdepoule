@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
     }
 
-    revalidateTag("eventCollection" as CollectionTag);
-    revalidateTag("itemCollection" as CollectionTag);
+    revalidateTag("eventCollection" as CollectionTag, {});
+    revalidateTag("itemCollection" as CollectionTag, {});
 
     logger.flush();
     return NextResponse.json({ revalidated: true, now: Date.now() });

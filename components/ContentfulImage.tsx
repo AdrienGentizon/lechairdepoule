@@ -8,6 +8,6 @@ function contentfulLoader({ src, width, quality }: ImageLoaderProps) {
   return url.toString();
 }
 
-export default function ContentfulImage(props: ImageProps) {
-  return <Image loader={contentfulLoader} {...props} />;
+export default function ContentfulImage({ alt, ...props }: ImageProps) {
+  return <Image loader={contentfulLoader} alt={alt} {...props} />;
 }

@@ -10,12 +10,7 @@ export default function useBanUser() {
     error,
     isPending,
   } = useMutation({
-    mutationFn: async (
-      userId: string,
-      options?: {
-        onSuccess: () => void;
-      }
-    ) => {
+    mutationFn: async (userId: string) => {
       const response = await fetch(`/api/users/${userId}/ban`, {
         method: "POST",
       });
@@ -23,7 +18,6 @@ export default function useBanUser() {
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      options?.onSuccess();
       return response.json() as Promise<User>;
     },
     onSuccess: (data) => {

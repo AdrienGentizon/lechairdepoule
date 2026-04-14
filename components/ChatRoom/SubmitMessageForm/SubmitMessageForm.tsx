@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 import { z } from "zod";
 
@@ -13,6 +13,8 @@ type Props = {
   conversationId: string;
   messageId?: string;
   variant?: "dark";
+  autoFocus?: boolean;
+  buttonLabel: ReactNode;
   onSuccess?: () => void;
 };
 
@@ -20,6 +22,8 @@ export default function SubmitMessageForm({
   conversationId,
   messageId,
   variant,
+  autoFocus,
+  buttonLabel,
   onSuccess,
 }: Props) {
   const [body, setBody] = useState("");
@@ -56,10 +60,11 @@ export default function SubmitMessageForm({
         id="body"
         name="body"
         className={cn(
-          "min-h-20 w-full rounded-sm border border-foreground px-4 py-2 font-courier text-black",
+          "border-foreground bg-foreground font-courier min-h-20 w-full rounded-sm border px-4 py-2 text-black",
           variant === "dark" &&
-            "border border-foreground bg-background text-foreground"
+            "border-foreground bg-background text-foreground border"
         )}
+        autoFocus={autoFocus}
         value={body}
         onChange={(e) => {
           setBody(e.target.value);
@@ -68,7 +73,7 @@ export default function SubmitMessageForm({
       />
       {error && <p className="text-red-500">{error.message}</p>}
       <Button className="ml-auto" type="submit" disabled={isPending}>
-        Envoyer
+        {buttonLabel}
         {isPending && <Loader position="relative" />}
       </Button>
     </form>

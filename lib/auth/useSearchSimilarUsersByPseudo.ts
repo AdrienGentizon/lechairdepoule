@@ -34,6 +34,7 @@ export default function useSearchSimilarUsersByPseudo(options?: {
 
   useEffect(() => {
     if (!options?.exactMatch) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasExactMatch(similarUsers.length > 0);
   }, [options, similarUsers]);
 

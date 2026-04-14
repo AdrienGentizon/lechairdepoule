@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Loader, Plus } from "lucide-react";
+import Image from "next/image";
 
 import usePostConversation from "@/lib/forum/usePostConversation";
 
@@ -136,7 +137,16 @@ export default function CreateTopicButton() {
             </label>
             <Input id="file" name="file" type="file" accept="image/*" hidden />
             {previewSrc && (
-              <img src={previewSrc} className="max-h-96 object-contain py-2" />
+              <Image
+                alt=""
+                aria-hidden
+                src={previewSrc}
+                width={0}
+                height={0}
+                sizes="(max-width: 640px) 390px, 512px"
+                className="max-h-96 w-full object-contain py-2"
+                style={{ height: "auto" }}
+              />
             )}
             <FieldError>{null}</FieldError>
           </FormField>

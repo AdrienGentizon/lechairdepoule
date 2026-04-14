@@ -73,9 +73,11 @@ export default function ChatRoom({ conversationId }: Props) {
           />
         </Suspense>
       </section>
-      <div className="px-1 landscape:px-0">
+      <div className="relative px-1 landscape:px-0">
+        <div className="absolute h-8 w-full -translate-y-full bg-gradient-to-b from-transparent to-background" />
         <SubmitMessageForm
           conversationId={conversation.id}
+          buttonLabel={`Envoyer`}
           onSuccess={() => {
             scrollToBottom();
           }}

@@ -56,7 +56,7 @@ export default function useConversation(conversationId: string) {
       );
       if (message.parentMessageId === null) scrollToBottom();
     },
-    [queryClient]
+    [conversationId, queryClient, scrollToBottom]
   );
 
   const onReportedMessage = useCallback(
@@ -73,9 +73,9 @@ export default function useConversation(conversationId: string) {
           };
         }
       );
-      scrollToBottom;
+      scrollToBottom();
     },
-    [queryClient]
+    [conversationId, queryClient, scrollToBottom]
   );
 
   const onBannedUser = useCallback(
@@ -109,10 +109,11 @@ export default function useConversation(conversationId: string) {
       }
       scrollToBottom();
     },
-    [queryClient, conversations]
+    [scrollToBottom, conversations, queryClient]
   );
 
   useEffect(() => {
+    if (!pusher) return;
     const conversationChannel = pusher.subscribe(
       `conversations-${conversationId}`
     );
@@ -140,7 +141,7 @@ export default function useConversation(conversationId: string) {
       pusher.unsubscribe(`conversations-${conversationId}`);
       pusher.unsubscribe(`users`);
     };
-  }, []);
+  }, [conversationId, onBannedUser, onNewMessage, onReportedMessage, pusher]);
 
   return {
     conversation: conversation && {

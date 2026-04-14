@@ -8,12 +8,7 @@ export default function useReportMessage() {
     error,
     isPending,
   } = useMutation({
-    mutationFn: async (
-      messageId: string,
-      options?: {
-        onSuccess: () => void;
-      }
-    ) => {
+    mutationFn: async (messageId: string) => {
       const response = await fetch(`/api/messages/${messageId}/report`, {
         method: "POST",
       });
@@ -21,7 +16,6 @@ export default function useReportMessage() {
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      options?.onSuccess();
       return response.json() as Promise<Message>;
     },
   });

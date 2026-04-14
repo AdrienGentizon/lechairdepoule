@@ -32,8 +32,8 @@ export default async function TermsOfServicePage() {
 
   return (
     <section aria-labelledby="cgu">
-      <h2 id="cgu" className="pb-1 pt-4 text-lg font-semibold">
-        Conditions générales d'utilisation
+      <h2 id="cgu" className="pt-4 pb-1 text-lg font-semibold">
+        {`Conditions générales d'utilisation`}
       </h2>
       <MarkdownRenderer content={cgu} className="p-2" />
     </section>

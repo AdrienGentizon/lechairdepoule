@@ -42,7 +42,7 @@ export default function DeleteConversationButton({
           <p>
             Vous êtes sur le point de supprimer la conversation{" "}
             <strong className="uppercase">{conversation.title}</strong> ainsi
-            que tous les messages qu'elle contient.
+            que tous les messages qu&apos;elle contient.
           </p>
           <p>Voulez-vous poursuivre ?</p>
         </div>
@@ -56,7 +56,7 @@ export default function DeleteConversationButton({
           </Button>
           <Button
             disabled={isPending}
-            className="border-red-500 bg-red-900 bg-opacity-50 text-red-500 hover:border-red-500 hover:bg-red-900 hover:bg-opacity-30 hover:text-red-600"
+            className="bg-opacity-50 hover:bg-opacity-30 border-red-500 bg-red-900 text-red-500 hover:border-red-500 hover:bg-red-900 hover:text-red-600"
             onClick={() => {
               deleteConversation(conversation.id);
             }}

@@ -29,7 +29,7 @@ export default function CguCheckbox({
               props["aria-invalid"] === true && "text-red-500"
             )}
           >
-            J'accepte les Conditions Générales d'Utilisation
+            J&apos;accepte les Conditions Générales d&apos;Utilisation
           </DialogTrigger>
           <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-3xl">
             <DialogHeader className="bg-black p-4 text-white">
@@ -53,7 +53,7 @@ export default function CguCheckbox({
       </div>
       <p className="text-sm font-light text-neutral-300">
         En cochant cette case, vous reconnaissez avoir lu et accepté les
-        Conditions Générales d'Utilisation (CGU).
+        Conditions Générales d&apos;Utilisation (CGU).
       </p>
     </div>
   );

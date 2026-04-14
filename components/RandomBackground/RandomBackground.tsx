@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import ContentfulImage from "@/components/ContentfulImage";
 import { usePathname } from "next/navigation";
+
+import ContentfulImage from "@/components/ContentfulImage";
 
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
@@ -108,6 +109,7 @@ export default function RandomBackground({ assets }: Props) {
 
   useEffect(() => {
     const abortController = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCells(makeCells(document.body.scrollHeight, assets));
     setMaxheight(document.body.scrollHeight);
     window.addEventListener(

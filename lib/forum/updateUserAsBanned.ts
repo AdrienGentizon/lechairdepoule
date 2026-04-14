@@ -10,7 +10,7 @@ export default async function updateUserAsBanned({
   userId: string;
   bannedBy: User;
 }) {
-  revalidateTag("users" satisfies CacheKey);
+  revalidateTag("users" satisfies CacheKey, {});
 
   return (
     await sql<

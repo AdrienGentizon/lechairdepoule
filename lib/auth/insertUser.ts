@@ -10,7 +10,7 @@ export default async function insertUser({
   email: string;
   auth: { provider: "clerk"; userId: string };
 }) {
-  revalidateTag("users" satisfies CacheKey);
+  revalidateTag("users" satisfies CacheKey, {});
   return (
     await sql<
       {
