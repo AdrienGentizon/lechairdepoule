@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { Message } from "../types";
+import { CacheKey, Message } from "../types";
 
 export default function useReportMessage() {
+  const queryClient = useQueryClient();
+
   const {
     mutate: reportMessage,
     error,
@@ -17,6 +19,14 @@ export default function useReportMessage() {
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
       return response.json() as Promise<Message>;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        ["reported-messages" satisfies CacheKey],
+        (olds: Message[] = []) => {
+          return [...olds.filter(({ id }) => id !== data.id), data];
+        }
+      );
     },
   });
 

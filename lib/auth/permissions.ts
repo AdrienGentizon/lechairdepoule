@@ -35,3 +35,8 @@ export const canCreateConversation = (user: Omit<User, "pseudo">): boolean => {
   if (user.bannedAt) return false;
   return true;
 };
+
+export const canListReportedMessages = (user: Omit<User, "pseudo">): boolean => {
+  if (user.role !== "admin") return false;
+  return true;
+};

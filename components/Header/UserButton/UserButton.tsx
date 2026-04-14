@@ -13,9 +13,9 @@ import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import useUserMentions from "@/lib/forum/useUserMentions";
 import { User } from "@/lib/types";
 
-import Button from "../Button/Button";
-import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
-import Loader from "../Loader/Loader";
+import Button from "../../Button/Button";
+import Form, { FieldError, FormField, Input, Label } from "../../Form/Form";
+import Loader from "../../Loader/Loader";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 
 function UserButton({ me }: { me: User }) {
   const pathname = usePathname();
@@ -48,7 +48,7 @@ function UserButton({ me }: { me: User }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="absolute top-4 right-[50%] z-20 origin-center translate-x-80 scale-[1.5] hover:scale-[1.525] portrait:top-[0.75rem] portrait:right-[0.75rem] portrait:translate-x-0 portrait:scale-[1.25]">
+        <button className="origin-center scale-[1.5] hover:scale-[1.525] portrait:scale-[1.25]">
           <UserCircle className="stroke-white stroke-1" aria-hidden />
           <span
             className="sr-only"

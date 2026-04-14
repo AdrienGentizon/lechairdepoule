@@ -3,7 +3,9 @@ import { dark } from "@clerk/themes";
 
 import { ReactNode } from "react";
 
-import UserButton from "@/components/UserButton/UserButton";
+import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
+import AdminButton from "@/components/Header/AdminButton";
+import UserButton from "@/components/Header/UserButton/UserButton";
 import ForumProvider from "@/contexts/ForumProvider";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
@@ -23,7 +25,10 @@ export default async function ForumLayout({
         <ReactQueryProvider>
           <ForumProvider>
             {children}
-            <UserButton />
+            <AbsoluteButtonGroup>
+              <AdminButton />
+              <UserButton />
+            </AbsoluteButtonGroup>
           </ForumProvider>
         </ReactQueryProvider>
       </PusherProvider>

@@ -45,7 +45,7 @@ export default async function RootLayout({
       >
         <Header />
         <main className="no-scrollbar relative grid min-h-full w-full grid-cols-1 grid-rows-1 portrait:max-w-[100dvw] [&>*:first-child]:pt-32 sm:[&>*:first-child]:pt-44">
-          <div className="mx-auto grid w-full max-w-2xl grid-cols-1 grid-rows-1 overflow-y-scroll bg-black">
+          <div className="relative mx-auto grid w-full max-w-2xl grid-cols-1 grid-rows-1 overflow-y-scroll bg-black">
             {children}
           </div>
           <RandomBackground assets={assets} />
