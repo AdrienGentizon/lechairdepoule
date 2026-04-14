@@ -23,6 +23,7 @@ const mono = Courier_Prime({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://lechairdepoule.fr"),
   title: "Le Chair de poule",
   description: "Le site web du bar Le Chair de Poule et du Peine perdue aussi",
 };
