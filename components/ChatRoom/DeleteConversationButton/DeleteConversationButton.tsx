@@ -7,6 +7,7 @@ import Button from "@/components/Button/Button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -38,6 +39,9 @@ export default function DeleteConversationButton({
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogDescription className="sr-only">
+          Confirmation avant la suppression définitive de la conversation et de tous ses messages
+        </DialogDescription>
         <div className="flex flex-col gap-2 leading-5">
           <p>
             Vous êtes sur le point de supprimer la conversation{" "}

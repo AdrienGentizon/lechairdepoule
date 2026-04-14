@@ -12,8 +12,13 @@ import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import Button from "../Button/Button";
 import CguCheckbox from "../CguCheckbox/CguCheckbox";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
-import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
-import { DialogHeader } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 export default function UpdateUserPseudoDialog() {
   const { me } = useMe();
@@ -45,6 +50,9 @@ export default function UpdateUserPseudoDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Modification du pseudo</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulaire pour choisir votre pseudo d&apos;affichage
+          </DialogDescription>
         </DialogHeader>
         <div>
           <p className="font-light">

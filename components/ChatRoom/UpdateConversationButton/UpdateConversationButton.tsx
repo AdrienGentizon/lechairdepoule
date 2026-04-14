@@ -11,10 +11,11 @@ import Form, {
   Input,
   Label,
 } from "@/components/Form/Form";
-import { DialogHeader } from "@/components/ui/dialog";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -48,6 +49,9 @@ export default function UpdateConversationButton({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Modifier la conversation</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulaire pour modifier le titre de la conversation
+          </DialogDescription>
         </DialogHeader>
         <Form
           onChange={(e) => {

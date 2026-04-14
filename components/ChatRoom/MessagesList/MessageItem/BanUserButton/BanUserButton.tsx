@@ -6,6 +6,7 @@ import Loader from "@/components/Loader/Loader";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -32,6 +33,9 @@ export default function BanUserButton({ message }: Props) {
       <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
         <DialogHeader className="bg-black p-4 text-white">
           <DialogTitle>Bannir un utilisateur</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulaire pour bannir un utilisateur de la plateforme
+          </DialogDescription>
         </DialogHeader>
         <div className="bg-white p-2">
           <p>

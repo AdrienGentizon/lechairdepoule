@@ -7,6 +7,7 @@ import MarkdownRenderer from "../MarkDownRenderer/MarkDownRenderer";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -34,6 +35,9 @@ export default function CguCheckbox({
           <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-3xl">
             <DialogHeader className="bg-black p-4 text-white">
               <DialogTitle>Conditions Générales d&apos;Utilisation</DialogTitle>
+              <DialogDescription className="sr-only">
+                Lecture des conditions générales d&apos;utilisation du service
+              </DialogDescription>
             </DialogHeader>
             <div className="overflow-y-scroll bg-white p-2">
               <MarkdownRenderer content={cgu?.cgu ?? ""} />

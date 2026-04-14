@@ -19,6 +19,7 @@ import Loader from "../Loader/Loader";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -66,6 +67,9 @@ function UserButton({ me }: { me: User }) {
       <DialogContent className="grid grid-cols-1 grid-rows-[min-content_1fr]">
         <DialogHeader>
           <DialogTitle>Informations personnelles</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulaire de modification de vos informations personnelles
+          </DialogDescription>
         </DialogHeader>
         <div className="max-h-[90dvh] overflow-y-scroll">
           <Form

@@ -10,6 +10,7 @@ import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -41,6 +42,9 @@ export default function CreateTopicButton() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Nouveau Topic</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulaire pour créer un nouveau topic dans le forum
+          </DialogDescription>
         </DialogHeader>
         <Form
           id="post-conversation"
