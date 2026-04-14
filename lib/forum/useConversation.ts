@@ -9,7 +9,7 @@ import { reportedMessageBodyReplacement } from "../wordings";
 import useConversations from "./useConversations";
 
 export default function useConversation(conversationId: string) {
-  const { pusher } = usePusher();
+  const pusher = usePusher()?.pusher;
   const { conversations } = useConversations();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
 
