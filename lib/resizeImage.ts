@@ -24,7 +24,8 @@ async function createImageFromFile(
 const OPTIONS = {
   maxWidth: 568,
   maxHeight: 568,
-  quality: 0.9,
+  quality: 0.75,
+  format: "image/webp",
 };
 
 export async function resizeImage(
@@ -71,7 +72,7 @@ export async function resizeImage(
             height: Math.floor(resizedResolution.height),
           });
         },
-        file.type,
+        OPTIONS.format,
         OPTIONS.quality
       );
     } catch (error) {
