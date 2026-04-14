@@ -6,6 +6,7 @@ import { z } from "zod";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
+import { canDeleteConversation, canPostMessage, canUpdateConversation } from "@/lib/auth/permissions";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
@@ -99,7 +100,7 @@ export async function POST(
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
+    if (!user || !canPostMessage(user)) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
@@ -186,7 +187,7 @@ export async function DELETE(
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
+    if (!user || !canDeleteConversation(user)) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
@@ -222,7 +223,7 @@ export async function PATCH(
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
+    if (!user || !canUpdateConversation(user)) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }

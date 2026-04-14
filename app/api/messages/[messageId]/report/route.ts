@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
+import { canReportMessage } from "@/lib/auth/permissions";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -18,7 +19,7 @@ export async function POST(
     const reportedBy = await getUser(req);
     logger.append({ reportedBy: getLoggableUser(reportedBy) });
 
-    if (!reportedBy || reportedBy.bannedAt) {
+    if (!reportedBy || !canReportMessage(reportedBy)) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }

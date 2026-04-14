@@ -4,6 +4,7 @@ import { z } from "zod";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
+import { canCreateConversation } from "@/lib/auth/permissions";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getUser(req);
 
-    if (!user || user.bannedAt) {
+    if (!user || !canCreateConversation(user)) {
       logger.append(getLoggableUser(user));
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
