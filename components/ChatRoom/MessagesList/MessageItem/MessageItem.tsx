@@ -1,14 +1,113 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
+import Button from "@/components/Button/Button";
 import useMe from "@/lib/auth/useMe";
 import useUpdateUserMentions from "@/lib/forum/useUpdateUserMentions";
-import { Message, isMessageWithConversationId } from "@/lib/types";
+import { getMessageMetadataAsString } from "@/lib/forum/utils";
+import { Message, User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
 import BanUserButton from "./BanUserButton/BanUserButton";
-import CreateThreadButton from "./CreateThreadButton/CreateThreadButton";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
+
+function Header({ me, message }: { me: User; message: Message }) {
+  const canReportMessage = (message: Message) => {
+    return true;
+    if (message.user.id === me?.id) return false;
+    return true;
+  };
+
+  const canBanMessageUser = (message: Message) => {
+    return true;
+
+    if (me?.role !== "admin") return false;
+    if (message.user.id === me?.id) return false;
+    return true;
+  };
+
+  return (
+    <header className="flex items-center gap-2">
+      <div className="flex w-full text-xs font-medium">
+        <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
+          <h3
+            className={cn("text-sm", message.user.bannedAt && "line-through")}
+          >
+            {message.user.pseudo}{" "}
+            <time
+              dateTime={new Date(message.createdAt).toLocaleString()}
+              className="pl-2 font-mono text-xs text-gray-500"
+            >
+              {getMessageMetadataAsString(message)}
+            </time>
+          </h3>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          {canReportMessage(message) && (
+            <ReportMessageButton message={message} />
+          )}
+          {canBanMessageUser(message) && <BanUserButton message={message} />}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function ReplyInThreadButton({ message }: { message: Message }) {
+  const [showTextarea, setShowTextarea] = useState(false);
+  if (!message.conversationId) return null;
+  return (
+    <div className={cn("pt-2", showTextarea && "pl-12")}>
+      {!showTextarea && (
+        <Button
+          type="button"
+          className="ml-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowTextarea(true);
+          }}
+        >
+          Réagir
+        </Button>
+      )}
+      {showTextarea && (
+        <SubmitMessageForm
+          conversationId={message.conversationId}
+          messageId={message.id}
+          variant="dark"
+          onSuccess={() => {
+            setShowTextarea(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function Thread({
+  message,
+  threadedMessages,
+}: {
+  message: Message;
+  threadedMessages: (Message & { hasMention: boolean })[];
+}) {
+  if (threadedMessages.length === 0) return null;
+
+  return (
+    <ul className="flex flex-col gap-2 rounded-sm pl-12 pt-6">
+      {threadedMessages.map((threadedMessage) => {
+        return (
+          <MessageItem
+            key={`message-${message.id}-thread-${threadedMessage.id}`}
+            message={threadedMessage}
+            threadedMessages={[]}
+            hasMention={threadedMessage.hasMention}
+          />
+        );
+      })}
+    </ul>
+  );
+}
 
 function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
   const { updateUserMentions, isPending } = useUpdateUserMentions();
@@ -79,108 +178,29 @@ export default function MessageItem({
 }) {
   const { me } = useMe();
 
-  const [showThread, setShowThread] = useState(false);
-
-  const canReportMessage = (message: Message) => {
-    if (message.user.id === me?.id) return false;
-    return true;
-  };
-
-  const canBanMessageUser = (message: Message) => {
-    if (me?.role !== "admin") return false;
-    if (message.user.id === me?.id) return false;
-    return true;
-  };
+  if (!me) return null;
 
   return (
     <>
-      <li id={message.id} className="group relative portrait:pb-6">
-        <div className="flex items-center gap-2">
-          <div className="flex w-full text-xs font-medium">
-            <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
-              <h3
-                className={cn(
-                  "text-sm",
-                  message.user.bannedAt && "line-through"
-                )}
-              >
-                {message.user.pseudo}
-              </h3>
-            </div>
-            <div className="ml-auto flex items-center gap-1 group-hover:flex landscape:hidden">
-              {canReportMessage(message) && (
-                <ReportMessageButton message={message} />
-              )}
-              {canBanMessageUser(message) && (
-                <BanUserButton message={message} />
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="rounded-b-sm border border-white">
+      <li id={message.id} className="relative portrait:pb-6">
+        <Header me={me} message={message} />
+        <div className="rounded-b-sm border border-white p-2">
           <p
             className={cn(
-              "px-4 py-2 font-courier",
+              "pl-2 font-courier",
               (message.reportedAt !== null || message.user.bannedAt !== null) &&
                 "text-neutral-400 line-through"
             )}
           >
             <MessageBodyParser message={message} />
           </p>
-          <footer className="flex items-center justify-end gap-2 px-2 pb-2 font-mono text-[0.6rem] font-light">
-            {threadedMessages.length > 0 && (
-              <p className="cursor-pointer underline">
-                <button
-                  onClick={() => {
-                    setShowThread((prev) => !prev);
-                  }}
-                >
-                  {showThread ? "cacher" : "voir"} {threadedMessages.length}{" "}
-                  réponse(s)
-                </button>
-              </p>
-            )}
-            <time dateTime={new Date(message.createdAt).toLocaleString()}>
-              {new Date(message.createdAt).toLocaleDateString()}{" "}
-              {new Date(message.createdAt).toLocaleTimeString()}
-            </time>
-          </footer>
           {hasMention && <MarkAsReadWhenInView messageId={message.id} />}
-        </div>
-        {!showThread &&
-          isMessageWithConversationId(message) &&
-          message.parentMessageId === null && (
-            <CreateThreadButton
-              onClick={() => {
-                setShowThread(true);
-              }}
-            />
+          <Thread message={message} threadedMessages={threadedMessages} />
+          {message.parentMessageId === null && (
+            <ReplyInThreadButton message={message} />
           )}
+        </div>
       </li>
-      {showThread && (
-        <li className="ml-auto w-full max-w-[calc(100%-4rem)] pb-4">
-          <ul className="flex flex-col gap-2 rounded-sm border border-white p-2">
-            {threadedMessages.map((threadedMessage) => {
-              return (
-                <MessageItem
-                  key={`message-${message.id}-thread-${threadedMessage.id}`}
-                  message={threadedMessage}
-                  threadedMessages={[]}
-                  hasMention={threadedMessage.hasMention}
-                />
-              );
-            })}
-            <li>
-              {message.conversationId && (
-                <SubmitMessageForm
-                  conversationId={message.conversationId}
-                  messageId={message.id}
-                />
-              )}
-            </li>
-          </ul>
-        </li>
-      )}
     </>
   );
 }

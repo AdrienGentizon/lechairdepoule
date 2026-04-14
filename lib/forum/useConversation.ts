@@ -13,12 +13,12 @@ export default function useConversation(conversationId: string) {
   const { conversations } = useConversations();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     if (!lastEmptyLiRef.current) return;
     setTimeout(() => {
       lastEmptyLiRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 250);
-  };
+  }, []);
 
   const queryClient = useQueryClient();
   const {
@@ -54,7 +54,7 @@ export default function useConversation(conversationId: string) {
           };
         }
       );
-      scrollToBottom();
+      if (message.parentMessageId === null) scrollToBottom();
     },
     [queryClient]
   );

@@ -5,18 +5,21 @@ import { z } from "zod";
 import Button from "@/components/Button/Button";
 import Loader from "@/components/Loader/Loader";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
+import { cn } from "@/lib/utils";
 
 import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
 
 type Props = {
   conversationId: string;
   messageId?: string;
+  variant?: "dark";
   onSuccess?: () => void;
 };
 
 export default function SubmitMessageForm({
   conversationId,
   messageId,
+  variant,
   onSuccess,
 }: Props) {
   const [body, setBody] = useState("");
@@ -25,7 +28,7 @@ export default function SubmitMessageForm({
 
   return (
     <form
-      className="flex flex-col gap-2 rounded-sm border border-white bg-black p-2 sm:max-w-2xl"
+      className="flex flex-col gap-1 sm:max-w-2xl"
       onSubmit={(e) => {
         e.preventDefault();
         if (!e.currentTarget.checkValidity()) return;
@@ -46,11 +49,17 @@ export default function SubmitMessageForm({
         );
       }}
     >
-      <label htmlFor="body">Message</label>
+      <label htmlFor="body" className="sr-only">
+        Message
+      </label>
       <MessageAugementedTextarea
         id="body"
         name="body"
-        className="min-h-20 w-full rounded-sm px-4 py-2 font-courier text-black"
+        className={cn(
+          "min-h-20 w-full rounded-sm border border-foreground px-4 py-2 font-courier text-black",
+          variant === "dark" &&
+            "border border-foreground bg-background text-foreground"
+        )}
         value={body}
         onChange={(e) => {
           setBody(e.target.value);

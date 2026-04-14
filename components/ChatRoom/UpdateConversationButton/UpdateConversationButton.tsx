@@ -136,7 +136,7 @@ export default function UpdateConversationButton({
             <FieldError>{null}</FieldError>
           </FormField>
           <Button className="ml-auto" type="submit" disabled={isPending}>
-            Modifier
+            Sauver
           </Button>
         </Form>
         {isPending && (

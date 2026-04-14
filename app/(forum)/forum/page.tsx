@@ -1,218 +1,56 @@
 "use client";
 
-import { useState } from "react";
-
-import { ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-import Button, { buttonClassName } from "@/components/Button/Button";
-import Form, {
-  FieldError,
-  FormField,
-  Input,
-  Label,
-} from "@/components/Form/Form";
+import CreateTopicButton from "@/components/CreateTopicButton/CreateTopicButton";
 import Loader from "@/components/Loader/Loader";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import useConversations from "@/lib/forum/useConversations";
-import usePostConversation from "@/lib/forum/usePostConversation";
+import { getConversationMetadataAsString } from "@/lib/forum/utils";
+import { Conversation } from "@/lib/types";
+
+function TopicItem({
+  conversation,
+}: {
+  conversation: Omit<Conversation, "messages">;
+}) {
+  return (
+    <li
+      className="relative flex h-min flex-col border-b border-white px-4 py-2 first:border-t"
+      role="link"
+      aria-labelledby={`forum-${conversation.id}`}
+    >
+      <Link href={`/forum/${conversation.id}`}>
+        <h2 id={`forum-${conversation.id}`} className="font-semibold uppercase">
+          {conversation.title}
+        </h2>
+        <p className="font-light">{conversation.description}</p>
+        <footer className="flex pt-2">
+          <h3 className="ml-auto text-sm">
+            {getConversationMetadataAsString(conversation)}
+          </h3>
+        </footer>
+      </Link>
+    </li>
+  );
+}
 
 export default function ForumPage() {
-  const router = useRouter();
-  const [newConversation, setNewConversation] = useState<{
-    title?: string;
-    description?: string;
-  }>({});
-  const [errors, setErrors] = useState<{
-    title?: string;
-    description?: string;
-  }>({});
-  const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
-  const [openCreateConversation, setOpenCreateConversation] = useState(false);
-
   const { conversations, isLoading } = useConversations();
-  const { postConversation, isPending } = usePostConversation();
 
   return (
     <>
       <ul className="grid auto-rows-min grid-cols-1 overflow-y-scroll">
         {conversations.map((conversation) => {
           return (
-            <li
+            <TopicItem
               key={`forum-${conversation.id}`}
-              className="group relative flex h-min flex-col border-b border-white p-4 first:border-t"
-              onClick={() => {
-                router.push(`/forum/${conversation.id}`);
-              }}
-              role="link"
-              aria-labelledby={`forum-${conversation.id}`}
-            >
-              <Link href={`/forum/${conversation.id}`}>
-                <h2
-                  id={`forum-${conversation.id}`}
-                  className="font-semibold uppercase"
-                >
-                  {conversation.title}
-                </h2>
-                <p className="pl-2 text-sm font-light">
-                  {conversation.description}
-                </p>
-                <button className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center font-thin uppercase group-hover:flex">
-                  Rejoindre <ArrowRight />
-                </button>
-              </Link>
-            </li>
+              conversation={conversation}
+            />
           );
         })}
       </ul>
       <div className="flex flex-col border-b border-t border-white">
-        <Dialog
-          open={openCreateConversation}
-          onOpenChange={setOpenCreateConversation}
-        >
-          <DialogTrigger className="flex w-full items-center justify-center gap-2 px-4 py-6 font-light uppercase">
-            <Plus className="stroke-1" />
-            Créer un Topic
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Nouveau Topic</DialogTitle>
-            </DialogHeader>
-            <Form
-              id="post-conversation"
-              onChange={(e) => {
-                const file = new FormData(e.currentTarget).get("file");
-                if (!(file instanceof File)) return;
-                if (file.size === 0) return;
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                  if (typeof e.target?.result === "string")
-                    setPreviewSrc(e.target.result);
-                };
-                reader.readAsDataURL(file);
-              }}
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setErrors({});
-
-                const file = new FormData(e.currentTarget).get("file");
-
-                const titleEmpty = (newConversation.title?.length ?? 0) <= 0;
-                const descriptionEmpty =
-                  (newConversation.description?.length ?? 0) <= 0;
-
-                if (
-                  !newConversation.title ||
-                  !newConversation.description ||
-                  titleEmpty ||
-                  descriptionEmpty
-                )
-                  return setErrors({
-                    title: titleEmpty ? `Titre obligatoire` : undefined,
-                    description: titleEmpty
-                      ? `Description obligatoire`
-                      : undefined,
-                  });
-
-                postConversation({
-                  title: newConversation.title,
-                  description: newConversation.description,
-                  cover: file instanceof File ? file : undefined,
-                });
-                setNewConversation({});
-                setTimeout(() => {
-                  setOpenCreateConversation(false);
-                }, 750);
-              }}
-            >
-              <FormField>
-                <Label htmlFor="title" aria-required>
-                  Titre
-                </Label>
-                <Input
-                  id="title"
-                  name="title"
-                  type="text"
-                  required
-                  autoFocus
-                  value={newConversation?.title ?? ""}
-                  onChange={(e) => {
-                    setNewConversation((prev) => {
-                      return {
-                        ...prev,
-                        title: e.target.value,
-                      };
-                    });
-                  }}
-                />
-                <FieldError>{errors.title}</FieldError>
-              </FormField>
-              <FormField>
-                <Label htmlFor="description" aria-required>
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  name="description"
-                  type="text"
-                  required
-                  value={newConversation?.description ?? ""}
-                  onChange={(e) => {
-                    setNewConversation((prev) => {
-                      return {
-                        ...prev,
-                        description: e.target.value,
-                      };
-                    });
-                  }}
-                />
-              </FormField>
-              <FormField>
-                <Label htmlFor="file">Photo de couverture</Label>
-                <label htmlFor="file" className={buttonClassName("w-full")}>
-                  Sélectionner un fichier...
-                </label>
-                <Input
-                  id="file"
-                  name="file"
-                  type="file"
-                  accept="image/*"
-                  hidden
-                />
-                {previewSrc && (
-                  <img
-                    src={previewSrc}
-                    className="max-h-96 object-contain py-2"
-                  />
-                )}
-                <FieldError>{null}</FieldError>
-              </FormField>
-              <Button
-                form="post-conversation"
-                type="submit"
-                className="mt-9 w-full"
-                disabled={
-                  isPending ||
-                  (newConversation.title?.length ?? 0) <= 0 ||
-                  (newConversation.description?.length ?? 0) <= 0
-                }
-              >
-                <span className="relative">
-                  Créer un Topic
-                  {isPending && <Loader />}
-                </span>
-              </Button>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <CreateTopicButton />
       </div>
       {isLoading && <Loader />}
     </>

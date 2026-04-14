@@ -7,6 +7,7 @@ import { TextareaHTMLAttributes } from "react";
 import useSearchSimilarUsersByPseudo from "@/lib/auth/useSearchSimilarUsersByPseudo";
 import useDebounce from "@/lib/misc/useDebounce";
 import { User } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type MentionUser = Pick<User, "id" | "pseudo">;
 
@@ -18,7 +19,10 @@ const Item = ({ entity }: { entity: MentionUser }) => (
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-export default function MessageAugementedTextarea(props: Props) {
+export default function MessageAugementedTextarea({
+  className,
+  ...props
+}: Props) {
   const { similarUsers, updateSearch } = useSearchSimilarUsersByPseudo();
   const debounceSearch = useDebounce(updateSearch, 500);
   const dataProvider = (token: string): MentionUser[] => {
@@ -30,6 +34,7 @@ export default function MessageAugementedTextarea(props: Props) {
     <ReactTextareaAutocomplete<MentionUser>
       loadingComponent={() => <></>}
       minChar={2}
+      className={cn("resize-none", className)}
       dropdownStyle={{
         position: "absolute",
         zIndex: 50,
