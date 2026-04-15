@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Loader, Pencil } from "lucide-react";
+import { Loader, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { z } from "zod";
 
@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import useDeleteConversationCover from "@/lib/forum/useDeleteConversationCover";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
 import { Conversation } from "@/lib/types";
 
@@ -30,11 +31,14 @@ export default function UpdateConversationButton({
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
   const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
   const [open, setOpen] = useState(false);
-  const { updateConversation, isPending } = useUpdateConversation({
+  const { deleteConversationCover, isPending: isDeletePending } =
+    useDeleteConversationCover();
+  const { updateConversation, isPending: isUpdatePending } = useUpdateConversation({
     onSuccess: () => {
       setOpen(false);
     },
   });
+  const isPending = isDeletePending || isUpdatePending;
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
@@ -146,7 +150,28 @@ export default function UpdateConversationButton({
             </FieldError>
           </FormField>
           <FormField>
-            <Label htmlFor="file">Photo de couverture</Label>
+            <Label>Photo de couverture</Label>
+            {conversation.coverUrl && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => deleteConversationCover(conversation.id)}
+                className="group mb-2 grid cursor-pointer grid-cols-[5rem_1fr] rounded-sm border border-gray-800 transition-colors hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="relative size-20">
+                  <Image
+                    alt=""
+                    src={conversation.coverUrl}
+                    fill
+                    className="rounded-l-sm object-cover"
+                  />
+                </div>
+                <div className="inline-flex items-center justify-center gap-2 rounded-r-sm bg-gray-800 transition-colors group-hover:text-red-400">
+                  <Trash2 aria-hidden className="size-4" />
+                  Supprimer
+                </div>
+              </button>
+            )}
             <label htmlFor="file" className={buttonClassName("w-full")}>
               Sélectionner un fichier...
             </label>

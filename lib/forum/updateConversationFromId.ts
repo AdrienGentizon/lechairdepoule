@@ -1,22 +1,26 @@
 import sql from "../db";
 
-export default async function updateConversationFromId({
-  conversationId,
-  userId,
-  title,
-  description,
-  cover,
-}: {
-  conversationId: string;
-  userId: string;
-  title: string;
-  description: string;
-  cover?: {
-    url: string;
-    width: number;
-    height: number;
-  };
-}) {
+export default async function updateConversationFromId(
+  {
+    conversationId,
+    userId,
+    title,
+    description,
+    cover,
+  }: {
+    conversationId: string;
+    userId: string;
+    title: string;
+    description: string;
+    cover?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+  },
+  options?: { forceDropCover?: boolean }
+) {
+  const forceDropCover = options?.forceDropCover === true;
   return (
     await sql<
       {
@@ -33,9 +37,9 @@ export default async function updateConversationFromId({
       SET
         title = ${title},
         description = ${description},
-        image_url = COALESCE(${cover?.url ?? null}, image_url),
-        image_width = COALESCE(${cover?.width ?? null}, image_width),
-        image_height = COALESCE(${cover?.height ?? null}, image_height)
+        image_url = CASE WHEN ${forceDropCover}::boolean THEN NULL ELSE COALESCE(${cover?.url ?? null}, image_url) END,
+        image_width = CASE WHEN ${forceDropCover}::boolean THEN NULL ELSE COALESCE(${cover?.width ?? null}, image_width) END,
+        image_height = CASE WHEN ${forceDropCover}::boolean THEN NULL ELSE COALESCE(${cover?.height ?? null}, image_height) END
       WHERE
         id = ${conversationId}
         AND created_by = ${userId}
