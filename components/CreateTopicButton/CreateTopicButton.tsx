@@ -164,10 +164,8 @@ export default function CreateTopicButton() {
               (newConversation.description?.length ?? 0) <= 0
             }
           >
-            <span className="relative">
-              Créer un Topic
-              {isPending && <Loader />}
-            </span>
+            Créer un Topic
+            {isPending && <Loader className="size-4 animate-spin" />}
           </Button>
         </Form>
       </DialogContent>
