@@ -21,7 +21,7 @@ export async function POST(
 
     if (!bannedBy || !canBanUser(bannedBy, userId)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const values = {
@@ -44,6 +44,6 @@ export async function POST(
     return NextResponse.json<User>(bannedUser, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

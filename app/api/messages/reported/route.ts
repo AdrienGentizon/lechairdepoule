@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     if (!user || !canListReportedMessages(user)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const messages = await selectReportedMessages();
@@ -24,6 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json<Message[]>(messages, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

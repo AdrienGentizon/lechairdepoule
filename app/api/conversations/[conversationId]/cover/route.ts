@@ -22,14 +22,14 @@ export async function DELETE(
 
     if (!user || !canUpdateConversation(user)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const conversation = await selectConversationFromId(params.conversationId);
 
     if (!conversation) {
       logger.withError("not found").flush();
-      return NextResponse.json({ error: "not found" }, { status: 404 });
+      return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
     const updated = await updateConversationFromId(
@@ -45,7 +45,7 @@ export async function DELETE(
     if (!updated) {
       logger.withError("cannot delete conversation cover").flush();
       return NextResponse.json(
-        { error: "cannot delete conversation cover" },
+        { error: "impossible de supprimer l'image" },
         { status: 500 }
       );
     }
@@ -59,6 +59,6 @@ export async function DELETE(
     return NextResponse.json<Omit<Conversation, "messages" | "createdAt" | "createdBy">>(updated, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

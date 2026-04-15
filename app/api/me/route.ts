@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     if (!user || user.bannedAt) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     logger.flush();
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest) {
 
     if (!user || user.bannedAt) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
     const payload = await req.json();
     const parsedInputs = z
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest) {
     if (!parsedInputs.success) {
       logger.append({ payload });
       logger.withError(parsedInputs.error).flush();
-      return NextResponse.json({ error: "bad request" }, { status: 400 });
+      return NextResponse.json({ error: "requête invalide" }, { status: 400 });
     }
 
     const values = {
@@ -66,7 +66,7 @@ export async function PATCH(req: NextRequest) {
     if (!updatedUser) {
       logger.append({ values });
       logger.withError("cannot update user").flush();
-      return NextResponse.json({ error: "server error" }, { status: 500 });
+      return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
     }
 
     logger.append({ updatedUser: getLoggableUser(updatedUser) });
@@ -74,6 +74,6 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json<User>(updatedUser, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

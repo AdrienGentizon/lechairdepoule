@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     if (!user || !canCreateConversation(user)) {
       logger.append(getLoggableUser(user));
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const formData = await req.formData();
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
 
     if (!user || user.bannedAt) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const conversations = await selectConversations();
@@ -94,6 +94,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

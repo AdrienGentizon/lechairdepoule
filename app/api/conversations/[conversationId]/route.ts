@@ -41,14 +41,14 @@ export async function GET(
 
     if (!user || user.bannedAt) {
       logger.withError(new Error("unauthorized")).flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const conversation = await selectConversationFromId(params.conversationId);
 
     if (!conversation) {
       logger.withError("not found").flush();
-      return NextResponse.json({ error: "not found" }, { status: 404 });
+      return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
     const messages = await selectConversationMessages(params.conversationId);
@@ -91,7 +91,7 @@ export async function GET(
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -107,7 +107,7 @@ export async function POST(
 
     if (!user || !canPostMessage(user)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const payload = await req.json();
@@ -186,7 +186,7 @@ export async function POST(
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -202,7 +202,7 @@ export async function DELETE(
 
     if (!user || !canDeleteConversation(user)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const conversation = await deleteConversationFromId({
@@ -212,7 +212,7 @@ export async function DELETE(
 
     if (!conversation) {
       logger.withError("not found").flush();
-      return NextResponse.json({ error: "not found" }, { status: 404 });
+      return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
     logger.flush();
@@ -222,7 +222,7 @@ export async function DELETE(
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -238,7 +238,7 @@ export async function PATCH(
 
     if (!user || !canUpdateConversation(user)) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const formData = await req.formData();
@@ -288,7 +288,7 @@ export async function PATCH(
       logger.append({ values });
       logger.withError("cannot update conversation").flush();
       return NextResponse.json(
-        { error: "cannot update conversation" },
+        { error: "impossible de modifier la conversation" },
         { status: 500 }
       );
     }
@@ -304,6 +304,6 @@ export async function PATCH(
     >(updatedConversation, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     if (!user || user.bannedAt) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const search = req.nextUrl.searchParams.get("search")?.toString();
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     if (!search) {
       logger.withError("search parameter is required").flush();
       return NextResponse.json(
-        { error: "search parameter is required" },
+        { error: "paramètre de recherche requis" },
         { status: 400 }
       );
     }
@@ -43,6 +43,6 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

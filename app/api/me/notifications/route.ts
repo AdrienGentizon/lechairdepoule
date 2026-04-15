@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
     if (!me) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const notifications = await selectUnreadUsernotifications({
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     if (!me) {
       logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const payload = await req.json();
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (!parsedInputs.success) {
       logger.append({ payload });
       logger.withError(parsedInputs.error).flush();
-      return NextResponse.json({ error: "invalid request" }, { status: 400 });
+      return NextResponse.json({ error: "requête invalide" }, { status: 400 });
     }
 
     const updated = await updateUserMentions({
@@ -79,6 +79,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
-    return NextResponse.json({ error: "server error" }, { status: 500 });
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
