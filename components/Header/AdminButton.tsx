@@ -8,7 +8,6 @@ import useMe from "@/lib/auth/useMe";
 export default function AdminButton() {
   const { me } = useMe();
 
-  console.log(me);
   if (me?.role !== "admin") return null;
 
   return (
