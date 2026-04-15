@@ -139,7 +139,7 @@ export default function CreateTopicButton() {
             <label htmlFor="file" className={buttonClassName("w-full")}>
               Sélectionner un fichier...
             </label>
-            <Input id="file" name="file" type="file" accept="image/*" hidden />
+            <Input id="file" name="file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
             {previewSrc && (
               <Image
                 alt=""
