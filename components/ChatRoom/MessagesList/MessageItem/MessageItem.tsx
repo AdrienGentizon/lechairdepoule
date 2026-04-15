@@ -20,6 +20,7 @@ function Header({ me, message }: { me: User; message: Message }) {
   const canBanMessageUser = (message: Message) => {
     if (me?.role !== "admin") return false;
     if (message.user.id === me?.id) return false;
+    if (message.user.bannedAt) return false;
     return true;
   };
 

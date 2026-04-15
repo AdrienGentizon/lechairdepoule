@@ -9,25 +9,28 @@ export default function AdminPage() {
   const { reportedMessages } = useReportedMessages();
   if (me?.role !== "admin") return null;
   return (
-    <section
-      aria-labelledby="messages-section"
-      className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0"
-    >
-      <h2 className="sr-only" id="messages-section">
-        Messages
+    <div>
+      <h2 className="text-center text-xl leading-12 font-thin uppercase">
+        Administration du forum
       </h2>
-      <ul className="flex flex-col gap-6">
-        {reportedMessages.map((message) => {
-          return (
-            <MessageItem
-              key={message.id}
-              message={message}
-              threadedMessages={[]}
-              hasMention={false}
-            />
-          );
-        })}
-      </ul>
-    </section>
+      <section
+        aria-labelledby="messages-section"
+        className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0"
+      >
+        <h3 className="leading-10 font-semibold">Messages signalés</h3>
+        <ul className="flex flex-col gap-6">
+          {reportedMessages.map((message) => {
+            return (
+              <MessageItem
+                key={message.id}
+                message={message}
+                threadedMessages={[]}
+                hasMention={false}
+              />
+            );
+          })}
+        </ul>
+      </section>
+    </div>
   );
 }
