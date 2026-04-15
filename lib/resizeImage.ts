@@ -1,83 +1,22 @@
-async function createImageFromFile(
-  file: File
-): Promise<HTMLImageElement | undefined> {
-  return new Promise((resolve) => {
-    if (file.size === 0) resolve(undefined);
-
-    const img = new Image();
-    const src = URL.createObjectURL(file);
-
-    img.onload = () => {
-      URL.revokeObjectURL(src);
-      resolve(img);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(src);
-      resolve(undefined);
-    };
-
-    img.src = src;
-  });
-}
-
-const OPTIONS = {
-  maxWidth: 568,
-  maxHeight: 568,
-  quality: 0.75,
-  format: "image/webp",
-};
+import imageCompression from "browser-image-compression";
 
 export async function resizeImage(
   file: File
 ): Promise<{ file: File; width: number; height: number } | undefined> {
-  const img = await createImageFromFile(file);
-  if (!img) return;
+  try {
+    const compressed = await imageCompression(file, {
+      maxWidthOrHeight: 568,
+      fileType: "image/webp",
+      initialQuality: 0.75,
+      useWebWorker: true,
+    });
 
-  return new Promise((resolve) => {
-    try {
-      const resizedResolution = {
-        width: img.width,
-        height: img.height,
-      };
+    const bitmap = await createImageBitmap(compressed);
+    const { width, height } = bitmap;
+    bitmap.close();
 
-      if (img.width > OPTIONS.maxWidth) {
-        resizedResolution.height = (OPTIONS.maxHeight / img.width) * img.height;
-        resizedResolution.width = OPTIONS.maxWidth;
-      }
-      if (img.height > OPTIONS.maxHeight) {
-        resizedResolution.width = (OPTIONS.maxWidth / img.height) * img.width;
-        resizedResolution.height = OPTIONS.maxHeight;
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.floor(resizedResolution.width);
-      canvas.height = resizedResolution.height;
-      canvas
-        .getContext("2d")
-        ?.drawImage(
-          img,
-          0,
-          0,
-          Math.floor(resizedResolution.width),
-          Math.floor(resizedResolution.height)
-        );
-
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) throw new Error(`cannot convert canvas to file`);
-          resolve({
-            file: new File([blob], file.name, { type: file.type }),
-            width: Math.floor(resizedResolution.width),
-            height: Math.floor(resizedResolution.height),
-          });
-        },
-        OPTIONS.format,
-        OPTIONS.quality
-      );
-    } catch (error) {
-      console.error(error);
-      resolve(undefined);
-    }
-  });
+    return { file: compressed, width, height };
+  } catch {
+    return undefined;
+  }
 }
