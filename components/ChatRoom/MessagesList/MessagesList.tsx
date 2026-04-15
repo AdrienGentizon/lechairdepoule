@@ -43,6 +43,7 @@ export default function MessagesList({
               height={conversation.coverHeight}
               alt=""
               aria-hidden
+              priority
               className="object-cover"
               sizes="(max-width: 640px) 100dvw, 600px"
             />
