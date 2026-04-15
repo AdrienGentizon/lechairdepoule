@@ -42,7 +42,7 @@ export default function ChatRoom({ conversationId }: Props) {
             </Link>
           </nav>
           <div className="mr-auto">
-            <h1 className="font-semibold uppercase leading-[1]">
+            <h1 className="leading-[1] font-semibold uppercase">
               {conversation.title}
             </h1>
             <p className="pl-2 text-sm font-light">
@@ -74,7 +74,7 @@ export default function ChatRoom({ conversationId }: Props) {
         </Suspense>
       </section>
       <div className="relative px-1 landscape:px-0">
-        <div className="absolute h-8 w-full -translate-y-full bg-gradient-to-b from-transparent to-background" />
+        <div className="to-background absolute h-8 w-full max-w-[calc(100dvw-0.5rem)] -translate-y-full bg-linear-to-b from-transparent" />
         <SubmitMessageForm
           conversationId={conversation.id}
           buttonLabel={`Envoyer`}
