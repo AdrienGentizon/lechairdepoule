@@ -19,7 +19,7 @@ const sans = Quicksand({
 const mono = Courier_Prime({
   subsets: ["latin"],
   weight: ["400", "700"],
-  variable: "--font-courier",
+  variable: "--font-family-courier",
 });
 
 export const metadata: Metadata = {
