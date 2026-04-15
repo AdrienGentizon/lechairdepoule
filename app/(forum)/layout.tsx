@@ -15,6 +15,8 @@ export default async function ForumLayout({
 }: {
   children: ReactNode;
 }) {
+  const forumEnabled = process.env["NEXT_PUBLIC_FORUM_ENABLED"] === "true";
+
   return (
     <ClerkProvider
       appearance={{
@@ -24,7 +26,12 @@ export default async function ForumLayout({
       <PusherProvider>
         <ReactQueryProvider>
           <ForumProvider>
-            {children}
+            {forumEnabled && <>{children}</>}
+            {!forumEnabled && (
+              <p className="font-courier mx-auto my-auto w-full max-w-1/2 text-center text-pretty">
+                Un peu de patience, ça va pas tarder...
+              </p>
+            )}
             <AbsoluteButtonGroup>
               <AdminButton />
               <UserButton />

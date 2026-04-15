@@ -17,6 +17,9 @@ function Title() {
 }
 
 export default function Header({ variant }: { variant?: "relative" }) {
+  const hideForumNavigation = true;
+  const enabledForum =
+    process.env["NEXT_PUBLIC_FORUM_ENABLED"] === "true" && !hideForumNavigation;
   return (
     <header
       className={cn(
@@ -51,7 +54,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
               <span className="sr-only">Contact</span>
             </Link>
           </li>
-          {process.env["NEXT_PUBLIC_SHOW_FORUM"] === "true" && (
+          {enabledForum && (
             <li>
               <Link href={`/forum`}>
                 <Image
