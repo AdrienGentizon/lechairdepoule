@@ -2,7 +2,7 @@ import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import useMe from "@/lib/auth/useMe";
-import useUpdateUserMentions from "@/lib/forum/useUpdateUserMentions";
+import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
 import { Message, User } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -118,7 +118,8 @@ function Thread({
 }
 
 function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
-  const { updateUserMentions, isPending } = useUpdateUserMentions();
+  const { updateUserNotifications: updateUserMentions, isPending } =
+    useUpdateUserNotifications();
   const ref = useRef<ComponentRef<"div">>(null);
 
   const markAsRead = useCallback(() => {
@@ -185,6 +186,7 @@ export default function MessageItem({
   hasMention: boolean;
 }) {
   const { me } = useMe();
+  const enableAutoMarkAsRead = false;
 
   if (!me) return null;
 
@@ -202,7 +204,9 @@ export default function MessageItem({
           >
             <MessageBodyParser message={message} />
           </p>
-          {hasMention && <MarkAsReadWhenInView messageId={message.id} />}
+          {enableAutoMarkAsRead && hasMention && (
+            <MarkAsReadWhenInView messageId={message.id} />
+          )}
           <Thread message={message} threadedMessages={threadedMessages} />
           {message.parentMessageId === null && (
             <ReplyInThreadButton message={message} />

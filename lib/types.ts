@@ -73,6 +73,11 @@ export type UserMention = {
   readAt: string | null;
 };
 
+export type UserNotifications = {
+  mentions: UserMention[];
+  replies: UserMention[];
+};
+
 export type CacheKey =
   | "me"
   | `conversation-${string}`

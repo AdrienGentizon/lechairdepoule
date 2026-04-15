@@ -3,7 +3,7 @@ import { RefObject, useEffect } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
-import useUserMentions from "@/lib/forum/useUserMentions";
+import useUserNotifications from "@/lib/forum/useUserNotifications";
 import { Conversation } from "@/lib/types";
 
 import MessageItem from "./MessageItem/MessageItem";
@@ -20,7 +20,7 @@ export default function MessagesList({
   scrollToBottom,
 }: Props) {
   const messageId = useSearchParams().get("messageId")?.toString();
-  const { userMentions } = useUserMentions();
+  const { mentions } = useUserNotifications();
 
   useEffect(() => {
     scrollToBottom();
@@ -58,13 +58,12 @@ export default function MessagesList({
               return {
                 ...message,
                 hasMention:
-                  userMentions.find(
-                    ({ messageId }) => messageId === message.id
-                  ) !== undefined,
+                  mentions.find(({ messageId }) => messageId === message.id) !==
+                  undefined,
               };
             });
           const hasMention =
-            userMentions.find(({ messageId }) => messageId === message.id) !==
+            mentions.find(({ messageId }) => messageId === message.id) !==
             undefined;
           return (
             <MessageItem

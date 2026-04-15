@@ -23,6 +23,7 @@ import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBod
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
+import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
@@ -73,7 +74,6 @@ export async function GET(
       },
       []
     );
-    console.log(mentionedUsers);
 
     logger.flush();
     return NextResponse.json<Conversation>(
@@ -157,6 +157,14 @@ export async function POST(
       messageId: insertedMessage.id,
       userIds: mentionedUsers.map(({ id }) => id),
     });
+
+    if (parsedInputs.data.parentMessageId) {
+      await upsertThreadNotifications({
+        parentMessageId: parsedInputs.data.parentMessageId,
+        newMessageId: insertedMessage.id,
+        senderId: user.id,
+      });
+    }
 
     await pusher.trigger(
       `conversations-${params.conversationId}`,

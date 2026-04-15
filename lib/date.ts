@@ -7,10 +7,10 @@ function getTimeSince(date: Date) {
   const months = Math.floor(days / 30);
 
   if (minutes < 1) return { value: 0, range: "instant" };
-  if (minutes < 60) return { value: minutes, range: "minutes" };
-  if (hours < 24) return { value: hours, range: "hours" };
-  if (days < 7) return { value: days, range: "jours" };
-  if (weeks < 4) return { value: weeks, range: "semaines" };
+  if (minutes < 60) return { value: minutes, range: "minute(s)" };
+  if (hours < 24) return { value: hours, range: "heure(s)" };
+  if (days < 7) return { value: days, range: "jour(s)" };
+  if (weeks < 4) return { value: weeks, range: "semaine(s)" };
   return { value: months, range: "mois" };
 }
 

@@ -4,10 +4,10 @@ import { UserCircle } from "lucide-react";
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
-import useUserMentions from "@/lib/forum/useUserMentions";
+import useUserNotifications from "@/lib/forum/useUserNotifications";
 
 function UserButton() {
-  const { userMentions } = useUserMentions();
+  const { unread } = useUserNotifications();
 
   return (
     <Link
@@ -18,13 +18,13 @@ function UserButton() {
       <span
         className="sr-only"
         aria-live="polite"
-      >{`Mes notifications - ${userMentions.length} non lues`}</span>
-      {userMentions.length > 0 && (
+      >{`Mes notifications - ${unread} non lues`}</span>
+      {unread > 0 && (
         <span
           className="absolute -top-0.5 -right-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
           aria-hidden
         >
-          {userMentions.length}
+          {unread}
         </span>
       )}
     </Link>
