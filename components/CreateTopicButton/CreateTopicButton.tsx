@@ -78,18 +78,24 @@ export default function CreateTopicButton() {
             )
               return setErrors({
                 title: titleEmpty ? `Titre obligatoire` : undefined,
-                description: titleEmpty ? `Description obligatoire` : undefined,
+                description: descriptionEmpty
+                  ? `Description obligatoire`
+                  : undefined,
               });
 
-            postConversation({
-              title: newConversation.title,
-              description: newConversation.description,
-              cover: file instanceof File ? file : undefined,
-            });
+            postConversation(
+              {
+                title: newConversation.title,
+                description: newConversation.description,
+                cover: file instanceof File ? file : undefined,
+              },
+              {
+                onSuccess: () => {
+                  setOpenCreateConversation(false);
+                },
+              }
+            );
             setNewConversation({});
-            setTimeout(() => {
-              setOpenCreateConversation(false);
-            }, 750);
           }}
         >
           <FormField>
@@ -139,7 +145,13 @@ export default function CreateTopicButton() {
             <label htmlFor="file" className={buttonClassName("w-full")}>
               Sélectionner un fichier...
             </label>
-            <Input id="file" name="file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <Input
+              id="file"
+              name="file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+            />
             {previewSrc && (
               <Image
                 alt=""
