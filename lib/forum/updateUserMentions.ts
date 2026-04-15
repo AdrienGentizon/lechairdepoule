@@ -10,7 +10,7 @@ export default async function updateUserMentions({
   return sql<
     { id: string; userId: string; messageId: string; readAt: string | null }[]
   >`
-    UPDATE mentions
+    UPDATE notifications
       SET read_at = NOW()
       WHERE
   	user_id = ${userId}

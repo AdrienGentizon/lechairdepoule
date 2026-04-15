@@ -5,12 +5,13 @@ type Row = {
   messageId: string;
   createdAt: string;
   readAt: string | null;
+  type: "mention" | "reply";
   conversationId: string | null;
   conversationTitle: string | null;
   excerpt: string;
 };
 
-export default async function selectUnreadUserMentions({
+export default async function selectUnreadUsernotifications({
   userId,
 }: {
   userId: string;
@@ -18,17 +19,18 @@ export default async function selectUnreadUserMentions({
   return (
     await sql<Row[]>`
   SELECT
-    mentions.id::text,
-    mentions.message_id::text as "messageId",
-    mentions.created_at as "createdAt",
-    mentions.read_at as "readAt",
+    notifications.id::text,
+    notifications.message_id::text as "messageId",
+    notifications.created_at as "createdAt",
+    notifications.read_at as "readAt",
+    notifications.type,
     messages.conversation_id::text as "conversationId",
     SUBSTRING(messages.body, 1, 30) as "excerpt",
     conversations.title as "conversationTitle"
   FROM messages
-  JOIN mentions ON mentions.message_id = messages.id
+  JOIN notifications ON notifications.message_id = messages.id
   JOIN conversations ON conversations.id = messages.conversation_id
-  WHERE mentions.user_id = ${userId} AND read_at IS NULL`
+  WHERE notifications.user_id = ${userId} AND read_at IS NULL`
   ).reduce((acc: Row[], curr) => {
     return [
       ...acc.filter(({ messageId }) => messageId !== curr.messageId),

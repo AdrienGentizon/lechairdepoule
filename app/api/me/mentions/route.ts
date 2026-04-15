@@ -4,7 +4,7 @@ import { z } from "zod";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBodyMentionWIthUserName";
-import selectUnreadUserMentions from "@/lib/forum/selectUnreadUserMentions";
+import selectUnreadUsernotifications from "@/lib/forum/selectUnreadUsernotifications";
 import updateUserMentions from "@/lib/forum/updateUserMentions";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { UserMention } from "@/lib/types";
@@ -20,17 +20,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    const mentions = await selectUnreadUserMentions({ userId: me.id });
+    const notifications = await selectUnreadUsernotifications({
+      userId: me.id,
+    });
 
     logger.flush();
     return NextResponse.json<UserMention[]>(
-      mentions.map((mention) => ({
-        ...mention,
-        excerpt: replaceMessageBodyMentionWIthUserName({
-          mentionedUsers: [{ id: me.id, pseudo: me.pseudo }],
-          body: mention.excerpt,
-        }),
-      })),
+      notifications
+        .filter((notification) => {
+          return notification.type === "mention";
+        })
+        .map((mention) => ({
+          ...mention,
+          excerpt: replaceMessageBodyMentionWIthUserName({
+            mentionedUsers: [{ id: me.id, pseudo: me.pseudo }],
+            body: mention.excerpt,
+          }),
+        })),
       { status: 200 }
     );
   } catch (error) {

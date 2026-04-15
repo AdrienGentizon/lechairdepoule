@@ -73,6 +73,7 @@ export async function GET(
       },
       []
     );
+    console.log(mentionedUsers);
 
     logger.flush();
     return NextResponse.json<Conversation>(

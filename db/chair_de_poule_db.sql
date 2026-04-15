@@ -42,12 +42,13 @@ CREATE TABLE messages (
     CONSTRAINT parent_message_fk FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE CASCADE
 );
 
-CREATE TABLE mentions (
+CREATE TABLE notifications (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   created_at TIMESTAMPTZ NOT NULL,
   read_at TIMESTAMPTZ,
   message_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
+  type TEXT NOT NULL DEFAULT 'mention'
   CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT message_fk FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
   CONSTRAINT mention_uq UNIQUE(message_id, user_id)
