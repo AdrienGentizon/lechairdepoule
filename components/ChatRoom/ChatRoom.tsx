@@ -74,7 +74,7 @@ export default function ChatRoom({ conversationId }: Props) {
         </Suspense>
       </section>
       <div className="relative px-1 landscape:px-0">
-        <div className="to-background absolute h-8 w-full max-w-[calc(100dvw-0.5rem)] -translate-y-full bg-linear-to-b from-transparent" />
+        <div className="to-background pointer-events-none absolute h-8 w-full max-w-[calc(100dvw-0.5rem)] -translate-y-full bg-linear-to-b from-transparent" />
         <SubmitMessageForm
           conversationId={conversation.id}
           buttonLabel={`Envoyer`}

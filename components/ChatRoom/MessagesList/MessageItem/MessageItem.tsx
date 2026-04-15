@@ -53,9 +53,17 @@ function Header({ me, message }: { me: User; message: Message }) {
 
 function ReplyInThreadButton({ message }: { message: Message }) {
   const [showTextarea, setShowTextarea] = useState(false);
+  const ref = useRef<ComponentRef<"div">>(null);
+
+  useEffect(() => {
+    if (showTextarea) {
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [showTextarea]);
+
   if (!message.conversationId) return null;
   return (
-    <div className={cn("pt-2", showTextarea && "pl-12")}>
+    <div ref={ref} className={cn("scroll-mb-10 pt-2", showTextarea && "pl-12")}>
       {!showTextarea && (
         <Button
           type="button"
