@@ -6,7 +6,11 @@ import { z } from "zod";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
-import { canDeleteConversation, canPostMessage, canUpdateConversation } from "@/lib/auth/permissions";
+import {
+  canDeleteConversation,
+  canPostMessage,
+  canUpdateConversation,
+} from "@/lib/auth/permissions";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
@@ -22,7 +26,7 @@ import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { Conversation, Message } from "@/lib/types";
-import uploadImage from "@/lib/uploadImage";
+import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function GET(
   req: NextRequest,
@@ -249,7 +253,18 @@ export async function PATCH(
       );
     }
 
-    const cover = await uploadImage(formData);
+    const imageFileWithMetadata = getImageFileWithMetadata(formData);
+    let cover: { url: string; width: number; height: number } | undefined =
+      undefined;
+
+    if (imageFileWithMetadata.success) {
+      const uploadResult = await uploadImage(imageFileWithMetadata.data);
+      if (uploadResult.success) {
+        cover = uploadResult.data;
+      } else {
+        logger.append({ uploadError: uploadResult.error });
+      }
+    }
 
     const values = {
       userId: user.id,

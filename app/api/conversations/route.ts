@@ -9,7 +9,7 @@ import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { Conversation } from "@/lib/types";
-import uploadImage from "@/lib/uploadImage";
+import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
   const logger = getRequestLogger(req);
@@ -41,7 +41,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const cover = await uploadImage(formData);
+    const imageFileWithMetadata = getImageFileWithMetadata(formData);
+    let cover: { url: string; width: number; height: number } | undefined =
+      undefined;
+
+    if (imageFileWithMetadata.success) {
+      const uploadResult = await uploadImage(imageFileWithMetadata.data);
+      if (uploadResult.success) {
+        cover = uploadResult.data;
+      } else {
+        logger.append({ uploadError: uploadResult.error });
+      }
+    }
 
     const insertedConversation = await insertConversation({
       title: parsedInputs.data.title,
