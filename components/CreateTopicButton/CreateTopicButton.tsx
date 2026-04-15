@@ -28,7 +28,7 @@ export default function CreateTopicButton() {
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
   const [openCreateConversation, setOpenCreateConversation] = useState(false);
 
-  const { postConversation, isPending } = usePostConversation();
+  const { postConversation, isPending, error } = usePostConversation();
 
   return (
     <Dialog
@@ -179,6 +179,11 @@ export default function CreateTopicButton() {
             Créer un Topic
             {isPending && <Loader className="size-4 animate-spin" />}
           </Button>
+          {error && (
+            <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">
+              {error.message}
+            </FieldError>
+          )}
         </Form>
       </DialogContent>
     </Dialog>

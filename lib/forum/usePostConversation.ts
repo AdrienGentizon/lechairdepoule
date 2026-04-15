@@ -37,7 +37,11 @@ export default function usePostConversation() {
       });
 
       if (!response.ok)
-        throw new Error((await response.json())?.error ?? "erreur inconnue");
+        throw new Error(
+          (await response.json())?.error ??
+            response.statusText ??
+            "erreur inconnue"
+        );
 
       return response.json() as Promise<Conversation>;
     },

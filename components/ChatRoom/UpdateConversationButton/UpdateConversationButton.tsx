@@ -33,7 +33,11 @@ export default function UpdateConversationButton({
   const [open, setOpen] = useState(false);
   const { deleteConversationCover, isPending: isDeletePending } =
     useDeleteConversationCover();
-  const { updateConversation, isPending: isUpdatePending } = useUpdateConversation({
+  const {
+    updateConversation,
+    isPending: isUpdatePending,
+    error,
+  } = useUpdateConversation({
     onSuccess: () => {
       setOpen(false);
     },
@@ -156,13 +160,14 @@ export default function UpdateConversationButton({
                 type="button"
                 disabled={isPending}
                 onClick={() => deleteConversationCover(conversation.id)}
-                className="group mb-2 grid cursor-pointer grid-cols-[5rem_1fr] rounded-sm border border-gray-800 transition-colors hover:border-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group mb-2 grid cursor-pointer grid-cols-[5rem_1fr] rounded-sm border border-gray-800 transition-colors hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <div className="relative size-20">
                   <Image
                     alt=""
                     src={conversation.coverUrl}
                     fill
+                    sizes="80px"
                     className="rounded-l-sm object-cover"
                   />
                 </div>
@@ -175,7 +180,13 @@ export default function UpdateConversationButton({
             <label htmlFor="file" className={buttonClassName("w-full")}>
               Sélectionner un fichier...
             </label>
-            <Input id="file" name="file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <Input
+              id="file"
+              name="file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+            />
             {previewSrc && (
               <Image
                 alt=""
@@ -193,6 +204,11 @@ export default function UpdateConversationButton({
           <Button className="ml-auto" type="submit" disabled={isPending}>
             Sauver
           </Button>
+          {error && (
+            <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">
+              {error.message}
+            </FieldError>
+          )}
         </Form>
         {isPending && (
           <Loader className="absolute inset-0 top-1/2 left-1/2 z-50 -ml-3 animate-spin stroke-2" />

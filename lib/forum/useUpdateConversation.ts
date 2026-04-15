@@ -41,7 +41,11 @@ export default function useUpdateConversation(options?: {
       });
 
       if (!response.ok) {
-        throw new Error((await response.json())?.error ?? "erreur inconnue");
+        throw new Error(
+          (await response.json())?.error ??
+            response.statusText ??
+            "erreur inconnue"
+        );
       }
 
       return response.json() as Promise<
