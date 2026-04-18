@@ -4,8 +4,8 @@ import Form, { FormField, Label } from "../Form/Form";
 const CONVERSATION_TYPES = [
   {
     value: "TOPIC",
-    label: "Topic",
-    description: "Sujets de conversation divers et variés...",
+    label: "Discussion",
+    description: "Sujets divers et variés...",
   },
   {
     value: "EVENT",
@@ -37,13 +37,13 @@ export default function SelectTopicType({ onSuccess }: Props) {
         onSuccess(selectedConversationType.value);
       }}
     >
-      <fieldset role="radiogroup" className="py-4">
+      <fieldset className="py-4">
         <legend>Choisissez le type de topic à créer</legend>
         {CONVERSATION_TYPES.map((option, n) => {
           return (
             <FormField
               key={n}
-              className="grid grid-cols-[min-content_1fr] gap-4 border-b border-white/50 py-2 last:border-b-0"
+              className="grid grid-cols-[auto_1fr] gap-4 border-b border-white py-2 last:border-b-0"
             >
               <input
                 id={`input-${option.value}`}
@@ -52,16 +52,16 @@ export default function SelectTopicType({ onSuccess }: Props) {
                 type="radio"
                 className="cursor-pointer"
                 defaultChecked={option.value === "TOPIC"}
+                aria-describedby={`${option.value}-description`}
               />
               <Label
                 htmlFor={`input-${option.value}`}
-                aria-describedby={`${option.value}-description`}
-                className="cursor-pointer"
+                className="cursor-pointer font-bold"
               >
                 <span>{option.label}</span>
                 <p
                   id={`${option.value}-description`}
-                  className="text-sm font-light"
+                  className="font-courier text-sm font-light"
                 >
                   {option.description}
                 </p>

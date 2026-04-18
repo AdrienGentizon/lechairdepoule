@@ -38,8 +38,10 @@ export default function CreateTopicButton() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Nouveau Topic</DialogTitle>
-          <DialogDescription className="sr-only">
-            Formulaire pour créer un nouveau topic dans le forum
+          <DialogDescription className="sr-only" aria-live="polite" aria-atomic="true">
+            {step === "CONVERSATION_TYPE"
+              ? "Étape 1 sur 2 : choisir le type de topic"
+              : "Étape 2 sur 2 : remplir les informations du topic"}
           </DialogDescription>
         </DialogHeader>
         {step === "CONVERSATION_TYPE" && (
