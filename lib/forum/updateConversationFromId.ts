@@ -27,6 +27,7 @@ export default async function updateConversationFromId(
         id: string;
         title: string;
         description: string;
+        type: string | null;
         coverUrl: string | null;
         coverWidth: number | null;
         coverHeight: number | null;
@@ -47,6 +48,7 @@ export default async function updateConversationFromId(
         id::text,
         title,
         description,
+        type,
         image_url as "coverUrl",
         image_width::integer as "coverWidth",
         image_height::integer as "coverHeight",

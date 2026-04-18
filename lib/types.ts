@@ -54,6 +54,7 @@ export type Conversation = {
   coverUrl: string | null;
   coverWidth: number | null;
   coverHeight: number | null;
+  type: string | null;
   createdAt: string;
   createdBy: {
     id: string;

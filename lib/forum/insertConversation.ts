@@ -9,6 +9,7 @@ function getConversationFromRaw(
     coverUrl: string | null;
     coverWidth: string | null;
     coverHeight: string | null;
+    type: string | null;
     created_by: string;
     created_at: string;
   },
@@ -21,6 +22,7 @@ function getConversationFromRaw(
     coverUrl: raw.coverUrl,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
+    type: raw.type,
     createdAt: raw.created_at,
     createdBy,
     messages: [],
@@ -31,6 +33,7 @@ export default async function insertConversation({
   title,
   description,
   cover,
+  type,
   user,
 }: {
   title: string;
@@ -40,6 +43,7 @@ export default async function insertConversation({
     width: number;
     height: number;
   };
+  type: string;
   user: User;
 }) {
   const rows = await sql<
@@ -50,14 +54,15 @@ export default async function insertConversation({
       coverUrl: string | null;
       coverWidth: string | null;
       coverHeight: string | null;
+      type: string | null;
       created_by: string;
       created_at: string;
     }[]
   >`
   INSERT INTO
-	conversations (title, description, image_url, image_width, image_height, created_by, created_at)
+	conversations (title, description, image_url, image_width, image_height, type, created_by, created_at)
   VALUES
-    (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${user.id}, ${Date.now()})
+    (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${Date.now()})
   RETURNING
     id::text,
     title,
@@ -65,6 +70,7 @@ export default async function insertConversation({
     image_url as "coverUrl",
     image_width as "coverWidth",
     image_height as "coverHeight",
+    type,
     created_by::text,
     created_at::text;`;
 

@@ -8,6 +8,7 @@ export default async function selectConversationFromId(conversationId: string) {
         id: string;
         title: string;
         description: string | null;
+        type: string | null;
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
@@ -21,6 +22,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.id::text,
         c.title,
         c.description,
+        c.type,
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",

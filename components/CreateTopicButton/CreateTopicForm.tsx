@@ -83,6 +83,7 @@ export default function CreateTopicForm({
           {
             title: newConversation.title,
             description: newConversation.description,
+            type: conversationType,
             cover: file instanceof File ? file : undefined,
           },
           {

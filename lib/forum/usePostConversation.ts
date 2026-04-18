@@ -13,15 +13,18 @@ export default function usePostConversation() {
     mutationFn: async ({
       title,
       description,
+      type,
       cover,
     }: {
       title: string;
       description: string;
+      type: string;
       cover?: File;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
+      body.set("type", type);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {

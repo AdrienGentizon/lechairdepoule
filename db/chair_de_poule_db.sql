@@ -23,6 +23,7 @@ CREATE TABLE conversations (
 		created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
+    type TEXT,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 

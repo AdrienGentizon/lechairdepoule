@@ -55,7 +55,7 @@ export default function CreateTopicButton() {
             conversationType={selectedConversationType ?? "TOPIC"}
             onSuccess={(conversationId: string) => {
               setStep("HIDDEN");
-              router.push(`/conversations/${conversationId}`);
+              router.push(`/forum/${conversationId}`);
             }}
           />
         )}

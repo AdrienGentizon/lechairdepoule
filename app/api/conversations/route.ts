@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       .object({
         title: z.string(),
         description: z.string(),
+        type: z.string(),
       })
       .safeParse(payload);
 
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
     const insertedConversation = await insertConversation({
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
+      type: parsedInputs.data.type,
       user: { ...user, pseudo: getUserPseudo(user) },
       cover,
     });

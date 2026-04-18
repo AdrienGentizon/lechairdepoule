@@ -11,6 +11,7 @@ export default async function selectConversations() {
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
+        type: string | null;
         createdAt: string;
         userId: string;
         userPseudo: string | null;
@@ -25,6 +26,7 @@ export default async function selectConversations() {
       c.image_url as "coverUrl",
       c.image_width as "coverWidth",
       c.image_height as "coverHeight",
+      c.type,
       c.created_at::text as "createdAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
