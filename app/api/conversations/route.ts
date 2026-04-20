@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
 
     const parsedInputs = z
       .object({
-        title: z.string(),
-        description: z.string(),
+        title: z.string().min(1).max(100),
+        description: z.string().max(500),
         type: z.enum(["TOPIC", "EVENT", "RELEASE"]),
         startsAt: nullableDate,
         endsAt: nullableDate,

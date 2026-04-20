@@ -108,7 +108,7 @@ export async function POST(
     const payload = await req.json();
     const parsedInputs = z
       .object({
-        body: z.string(),
+        body: z.string().min(1).max(2000),
         parentMessageId: z.nullable(z.string()),
       })
       .safeParse(payload);
@@ -241,8 +241,8 @@ export async function PATCH(
 
     const parsedInputs = z
       .object({
-        title: z.string(),
-        description: z.string(),
+        title: z.string().min(1).max(100),
+        description: z.string().max(500),
         startsAt: nullableDate,
         endsAt: nullableDate,
       })
