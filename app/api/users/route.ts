@@ -33,11 +33,11 @@ export async function GET(req: NextRequest) {
     logger.flush();
     return NextResponse.json<(User & { similarity: number })[]>(
       exactMatch
-        ? (await selectUsersByPseudo(search)).map((user) => {
-            return { ...user, pseudo: getUserPseudo(user), similarity: 1 };
+        ? (await selectUsersByPseudo(search)).map(({ email: _, ...user }) => {
+            return { ...user, pseudo: getUserPseudo({ ...user, email: _ }), similarity: 1 };
           })
-        : (await selectSimilarUsersByPseudo(search)).map((user) => {
-            return { ...user, pseudo: getUserPseudo(user) };
+        : (await selectSimilarUsersByPseudo(search)).map(({ email: _, ...user }) => {
+            return { ...user, pseudo: getUserPseudo({ ...user, email: _ }) };
           }),
       { status: 200 }
     );

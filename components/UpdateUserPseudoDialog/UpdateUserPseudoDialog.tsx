@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { z } from "zod";
 
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import useMe from "@/lib/auth/useMe";
 import useSearchSimilarUsersByPseudo from "@/lib/auth/useSearchSimilarUsersByPseudo";
 import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
@@ -42,8 +41,7 @@ export default function UpdateUserPseudoDialog() {
     ? "Pseudo déjà utilisé, veuillez en choisir un autre"
     : (errors.pseudo ?? errorUpdatePseudo?.message);
 
-  if (!me || me.pseudo !== getUserPseudo({ email: me.email, pseudo: null }))
-    return null;
+  if (!me || me.pseudo) return null;
 
   return (
     <Dialog open>

@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUser from "@/lib/auth/updateUser";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { User } from "@/lib/types";
@@ -19,11 +18,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
+    const { email: _, ...publicUser } = user;
     logger.flush();
-    return NextResponse.json<User>(
-      { ...user, pseudo: getUserPseudo(user) },
-      { status: 200 }
-    );
+    return NextResponse.json<User>(publicUser, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
@@ -69,7 +66,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
     }
 
-    logger.append({ updatedUser: getLoggableUser(updatedUser) });
+    logger.append({ updatedUser: { id: updatedUser.id, role: updatedUser.role, bannedAt: updatedUser.bannedAt } });
     logger.flush();
     return NextResponse.json<User>(updatedUser, { status: 200 });
   } catch (error) {

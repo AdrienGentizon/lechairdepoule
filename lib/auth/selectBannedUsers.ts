@@ -26,5 +26,5 @@ export default async function selectBannedUsers() {
       FROM public.users
       WHERE banned_at IS NOT NULL
       ORDER BY banned_at DESC`
-  ).map((user) => ({ ...user, pseudo: getUserPseudo(user) }));
+  ).map(({ email: _, ...user }) => ({ ...user, pseudo: getUserPseudo({ ...user, email: _ }) }));
 }

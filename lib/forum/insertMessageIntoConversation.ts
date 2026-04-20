@@ -1,5 +1,4 @@
 import sql from "../db";
-import { User } from "../types";
 import { getMessageFromRaw } from "./getMessageFromRaw";
 
 export default async function insertMessageIntoConversation({
@@ -11,7 +10,7 @@ export default async function insertMessageIntoConversation({
   conversationId: string;
   parentMessageId: string | null;
   body: string;
-  user: User;
+  user: { id: string; pseudo: string; bannedAt: string | null };
 }) {
   const rows = await sql<
     {

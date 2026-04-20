@@ -1,4 +1,3 @@
-import obfuscateEmail from "../obfuscateEmail";
 import getUser from "./getUser";
 
 type User = NonNullable<
@@ -15,7 +14,7 @@ const DEFAULT_EXPOSED_KEYS = {
   tosAcceptedAt: false,
   createdAt: false,
   deletedAt: false,
-  email: false,
+  email: true,
   pseudo: false,
 } satisfies Record<keyof User, boolean>;
 
@@ -37,7 +36,7 @@ function getExposedKeys(options: Options = {}) {
 
 function transformExposedValue<K extends keyof User>(key: K, value: User[K]) {
   if (!value) return value;
-  if (key === "email") return obfuscateEmail(value);
+  if (key === "email") return (value as string).split("@").at(0);
   return value;
 }
 

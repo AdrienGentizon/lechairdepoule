@@ -33,7 +33,7 @@ function UserPage({ me }: { me: User }) {
     isLoading: isSearching,
   } = useSearchSimilarUsersByPseudo({ exactMatch: true });
 
-  const [pseudo, setPseudo] = useState(me.pseudo);
+  const [pseudo, setPseudo] = useState(me.pseudo ?? "");
   const [errors, setErrors] = useState<{ pseudo?: string }>({});
 
   return (
@@ -84,7 +84,7 @@ function UserPage({ me }: { me: User }) {
             },
             {
               onSuccess: () => {
-                setPseudo(me.pseudo);
+                setPseudo(me.pseudo ?? "");
               },
             }
           );

@@ -13,7 +13,6 @@ export default async function updateUser({
     await sql<
       {
         id: string;
-        email: string;
         pseudo: string;
         role: string | null;
         createdAt: string;
@@ -29,7 +28,6 @@ export default async function updateUser({
     WHERE id = ${userId}
     RETURNING
       id::text,
-      email,
       pseudo,
       role,
       created_at::text as "createdAt",

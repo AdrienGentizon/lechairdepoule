@@ -1,5 +1,5 @@
 import sql from "../db";
-import { Conversation, User } from "../types";
+import { Conversation } from "../types";
 
 function getConversationFromRaw(
   raw: {
@@ -51,7 +51,7 @@ export default async function insertConversation({
     height: number;
   };
   type: string;
-  user: User;
+  user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt?: string | null;
   endsAt?: string | null;
 }) {
