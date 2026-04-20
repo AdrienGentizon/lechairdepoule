@@ -30,6 +30,7 @@ export default async function updateUserAsBanned({
       banned_by = ${bannedBy.id},
       banned_at = ${new Date().toISOString()}
     WHERE id = ${userId}
+      AND banned_at IS NULL
     RETURNING
       id::text,
       email,
