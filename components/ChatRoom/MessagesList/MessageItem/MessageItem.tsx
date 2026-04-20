@@ -1,6 +1,7 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
 import { Skull } from "lucide-react";
+import { z } from "zod";
 
 import Button from "@/components/Button/Button";
 import useMe, { Me } from "@/lib/auth/useMe";
@@ -159,13 +160,17 @@ function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
 
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
 
+function isSafeUrl(part: string): boolean {
+  return z.string().url().startsWith("https://").safeParse(part).success;
+}
+
 function MessageBodyParser({ message }: { message: Message }) {
   const parts = message.body.split(URL_REGEX);
 
   return (
     <>
       {parts.map((part, n) => {
-        if (part.match(URL_REGEX)) {
+        if (part.match(URL_REGEX) && isSafeUrl(part)) {
           return (
             <a
               key={`message-${message.id}-link-${n}`}
