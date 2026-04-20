@@ -35,10 +35,14 @@ export default function CreateTopicButton() {
         <Plus className="stroke-1" />
         Créer un Topic
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_1fr]">
         <DialogHeader>
           <DialogTitle>Nouveau Topic</DialogTitle>
-          <DialogDescription className="sr-only" aria-live="polite" aria-atomic="true">
+          <DialogDescription
+            className="sr-only"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {step === "CONVERSATION_TYPE"
               ? "Étape 1 sur 2 : choisir le type de topic"
               : "Étape 2 sur 2 : remplir les informations du topic"}
