@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import { canUpdateConversation } from "@/lib/auth/permissions";
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import { getRequestLogger } from "@/lib/getRequestLogger";
@@ -20,7 +19,7 @@ export async function DELETE(
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || !canUpdateConversation(user)) {
+    if (!user || user.bannedAt) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
@@ -56,7 +55,9 @@ export async function DELETE(
 
     logger.append({ conversationId: updated.id });
     logger.flush();
-    return NextResponse.json<Omit<Conversation, "messages" | "createdAt" | "createdBy">>(updated, { status: 200 });
+    return NextResponse.json<
+      Omit<Conversation, "messages" | "createdAt" | "createdBy">
+    >(updated, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });

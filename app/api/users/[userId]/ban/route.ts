@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import getUserPseudo from "@/lib/auth/getUserPseudo";
-import { canBanUser } from "@/lib/auth/permissions";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -19,7 +18,12 @@ export async function POST(
     const bannedBy = await getUser(req);
     logger.append({ bannedBy: getLoggableUser(bannedBy) });
 
-    if (!bannedBy || !canBanUser(bannedBy, userId)) {
+    if (
+      !bannedBy ||
+      bannedBy.bannedAt ||
+      bannedBy.id === userId ||
+      bannedBy.role !== "admin"
+    ) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
