@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import usePostConversation from "@/lib/forum/usePostConversation";
+
 import {
   Dialog,
   DialogContent,
@@ -14,6 +16,12 @@ import {
 import CreateTopicForm from "./CreateTopicForm";
 import SelectTopicType from "./SelectTopicType";
 
+const CONVERSATION_TYPE_LABELS = {
+  TOPIC: { title: "Nouveau topic", submit: "Créer un topic" },
+  EVENT: { title: "Nouvel événement", submit: "Créer un événement" },
+  RELEASE: { title: "Nouvelle sortie", submit: "Créer une sortie" },
+};
+
 export default function CreateTopicButton() {
   const router = useRouter();
   const [step, setStep] = useState<
@@ -22,6 +30,7 @@ export default function CreateTopicButton() {
   const [selectedConversationType, setSelectedConversationType] = useState<
     "TOPIC" | "EVENT" | "RELEASE" | undefined
   >(undefined);
+  const { postConversation, isPending, error } = usePostConversation();
 
   return (
     <Dialog
@@ -37,7 +46,11 @@ export default function CreateTopicButton() {
       </DialogTrigger>
       <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_1fr]">
         <DialogHeader>
-          <DialogTitle>Nouveau Topic</DialogTitle>
+          <DialogTitle>
+            {selectedConversationType
+              ? CONVERSATION_TYPE_LABELS[selectedConversationType].title
+              : "Nouveau topic"}
+          </DialogTitle>
           <DialogDescription
             className="sr-only"
             aria-live="polite"
@@ -59,10 +72,30 @@ export default function CreateTopicButton() {
         {step === "CONVERSATION_INPUTS" && (
           <CreateTopicForm
             conversationType={selectedConversationType ?? "TOPIC"}
-            onSuccess={(conversationId: string) => {
-              setStep("HIDDEN");
-              router.push(`/forum/${conversationId}`);
-            }}
+            onSubmit={(values) =>
+              postConversation(
+                {
+                  title: values.title,
+                  description: values.description,
+                  type: selectedConversationType ?? "TOPIC",
+                  cover: values.cover,
+                  startsAt: values.startsAt?.toISOString(),
+                  endsAt: values.endsAt?.toISOString(),
+                },
+                {
+                  onSuccess: (data) => {
+                    setStep("HIDDEN");
+                    router.push(`/forum/${data.id}`);
+                  },
+                }
+              )
+            }
+            isPending={isPending}
+            error={error as Error | null}
+            submitLabel={
+              CONVERSATION_TYPE_LABELS[selectedConversationType ?? "TOPIC"]
+                .submit
+            }
           />
         )}
       </DialogContent>

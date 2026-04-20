@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-import { Loader } from "lucide-react";
+import { Loader, Trash2 } from "lucide-react";
 import Image from "next/image";
-
-import usePostConversation from "@/lib/forum/usePostConversation";
 
 import Button, { buttonClassName } from "../Button/Button";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
@@ -28,86 +26,100 @@ function getDateTime(dateStr: string, timeStr: string): Date {
   return new Date(`${dateStr}T${timeStr || "00:00"}`);
 }
 
-type Props = {
-  conversationType: "TOPIC" | "EVENT" | "RELEASE";
-  onSuccess: (conversationId: string) => void;
+export type ConversationFormValues = {
+  title: string;
+  description: string;
+  startsAt?: Date;
+  endsAt?: Date;
+  cover?: File;
 };
 
-export default function CreateTopicForm({
-  conversationType = "TOPIC",
-  onSuccess,
-}: Props) {
-  const [newConversation, setNewConversation] = useState<{
+type Props = {
+  conversationType: "TOPIC" | "EVENT" | "RELEASE";
+  initialValues?: {
     title?: string;
     description?: string;
     startsAt?: Date;
     endsAt?: Date;
-  }>({});
+  };
+  onSubmit: (values: ConversationFormValues) => void;
+  isPending: boolean;
+  error?: Error | null;
+  coverUrl?: string;
+  onDeleteCover?: () => void;
+  submitLabel: string;
+};
+
+export default function CreateTopicForm({
+  conversationType = "TOPIC",
+  initialValues,
+  onSubmit,
+  isPending,
+  error,
+  coverUrl,
+  onDeleteCover,
+  submitLabel,
+}: Props) {
+  const [form, setForm] = useState<{
+    title?: string;
+    description?: string;
+    startsAt?: Date;
+    endsAt?: Date;
+  }>({
+    title: initialValues?.title,
+    description: initialValues?.description,
+    startsAt: initialValues?.startsAt,
+    endsAt: initialValues?.endsAt,
+  });
+  const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
   }>({});
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
 
-  const { postConversation, isPending, error } = usePostConversation();
   const conversationSpecifications =
     CONVERSATION_TYPE_SPECIFICATIONS[conversationType];
 
   return (
     <Form
-      id="post-conversation"
+      id="conversation-form"
       className="overflow-y-scroll"
       onChange={(e) => {
-        const file = new FormData(e.currentTarget).get("file");
-        if (!(file instanceof File)) return;
-        if (file.size === 0) return;
-
+        if (!(e.target instanceof HTMLInputElement) || e.target.type !== "file")
+          return;
+        const file = e.target.files?.[0];
+        if (!file || file.size === 0) return;
+        setCoverFile(file);
         const reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = (e) => {
           if (typeof e.target?.result === "string")
             setPreviewSrc(e.target.result);
         };
         reader.readAsDataURL(file);
       }}
-      onSubmit={async (e) => {
+      onSubmit={(e) => {
         e.preventDefault();
         setErrors({});
 
-        const file = new FormData(e.currentTarget).get("file");
+        const titleEmpty = (form.title?.length ?? 0) <= 0;
+        const descriptionEmpty = (form.description?.length ?? 0) <= 0;
 
-        const titleEmpty = (newConversation.title?.length ?? 0) <= 0;
-        const descriptionEmpty =
-          (newConversation.description?.length ?? 0) <= 0;
-
-        if (
-          !newConversation.title ||
-          !newConversation.description ||
-          titleEmpty ||
-          descriptionEmpty
-        )
+        if (!form.title || !form.description || titleEmpty || descriptionEmpty)
           return setErrors({
-            title: titleEmpty ? `Titre obligatoire` : undefined,
+            title: titleEmpty ? "Titre obligatoire" : undefined,
             description: descriptionEmpty
-              ? `Description obligatoire`
+              ? "Description obligatoire"
               : undefined,
           });
 
-        postConversation(
-          {
-            title: newConversation.title,
-            description: newConversation.description,
-            type: conversationType,
-            cover: file instanceof File ? file : undefined,
-            startsAt: newConversation.startsAt?.toISOString(),
-            endsAt: newConversation.endsAt?.toISOString(),
-          },
-          {
-            onSuccess: (data) => {
-              onSuccess(data.id);
-              setNewConversation({});
-            },
-          }
-        );
+        onSubmit({
+          title: form.title,
+          description: form.description,
+          startsAt: form.startsAt,
+          endsAt: form.endsAt,
+          cover: coverFile,
+        });
       }}
     >
       <FormField>
@@ -120,12 +132,10 @@ export default function CreateTopicForm({
           type="text"
           required
           autoFocus
-          value={newConversation?.title ?? ""}
-          onChange={(e) => {
-            setNewConversation((prev) => {
-              return { ...prev, title: e.target.value };
-            });
-          }}
+          value={form.title ?? ""}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, title: e.target.value }))
+          }
         />
         <FieldError>{errors.title}</FieldError>
       </FormField>
@@ -138,15 +148,10 @@ export default function CreateTopicForm({
           name="description"
           type="text"
           required
-          value={newConversation?.description ?? ""}
-          onChange={(e) => {
-            setNewConversation((prev) => {
-              return {
-                ...prev,
-                description: e.target.value,
-              };
-            });
-          }}
+          value={form.description ?? ""}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, description: e.target.value }))
+          }
         />
         <FieldError>{errors.description}</FieldError>
       </FormField>
@@ -159,9 +164,9 @@ export default function CreateTopicForm({
             <Input
               id="startsAtDate"
               type="date"
-              value={getDateTimeAsInputValue(newConversation.startsAt).date}
+              value={getDateTimeAsInputValue(form.startsAt).date}
               onChange={(e) =>
-                setNewConversation((prev) => ({
+                setForm((prev) => ({
                   ...prev,
                   startsAt: getDateTime(
                     e.target.value,
@@ -174,10 +179,10 @@ export default function CreateTopicForm({
               <Input
                 id="startsAtTime"
                 type="time"
-                disabled={!newConversation.startsAt}
-                value={getDateTimeAsInputValue(newConversation.startsAt).time}
+                disabled={!form.startsAt}
+                value={getDateTimeAsInputValue(form.startsAt).time}
                 onChange={(e) =>
-                  setNewConversation((prev) => ({
+                  setForm((prev) => ({
                     ...prev,
                     startsAt: getDateTime(
                       getDateTimeAsInputValue(prev.startsAt).date,
@@ -198,9 +203,9 @@ export default function CreateTopicForm({
             <Input
               id="endsAtDate"
               type="date"
-              value={getDateTimeAsInputValue(newConversation.endsAt).date}
+              value={getDateTimeAsInputValue(form.endsAt).date}
               onChange={(e) =>
-                setNewConversation((prev) => ({
+                setForm((prev) => ({
                   ...prev,
                   endsAt: getDateTime(
                     e.target.value,
@@ -212,10 +217,10 @@ export default function CreateTopicForm({
             <Input
               id="endsAtTime"
               type="time"
-              disabled={!newConversation.endsAt}
-              value={getDateTimeAsInputValue(newConversation.endsAt).time}
+              disabled={!form.endsAt}
+              value={getDateTimeAsInputValue(form.endsAt).time}
               onChange={(e) =>
-                setNewConversation((prev) => ({
+                setForm((prev) => ({
                   ...prev,
                   endsAt: getDateTime(
                     getDateTimeAsInputValue(prev.endsAt).date,
@@ -231,6 +236,28 @@ export default function CreateTopicForm({
       {conversationSpecifications.cover && (
         <FormField>
           <Label htmlFor="file">Photo de couverture</Label>
+          {coverUrl && onDeleteCover && (
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={onDeleteCover}
+              className="group mb-2 grid cursor-pointer grid-cols-[5rem_1fr] rounded-sm border border-gray-800 transition-colors hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <div className="relative size-20">
+                <Image
+                  alt=""
+                  src={coverUrl}
+                  fill
+                  sizes="80px"
+                  className="rounded-l-sm object-cover"
+                />
+              </div>
+              <div className="inline-flex items-center justify-center gap-2 rounded-r-sm bg-gray-800 transition-colors group-hover:text-red-400">
+                <Trash2 aria-hidden className="size-4" />
+                Supprimer
+              </div>
+            </button>
+          )}
           <label htmlFor="file" className={buttonClassName("w-full")}>
             Sélectionner un fichier...
           </label>
@@ -257,21 +284,21 @@ export default function CreateTopicForm({
         </FormField>
       )}
       <Button
-        form="post-conversation"
+        form="conversation-form"
         type="submit"
         className="mt-9 w-full"
         disabled={
           isPending ||
-          (newConversation.title?.length ?? 0) <= 0 ||
-          (newConversation.description?.length ?? 0) <= 0
+          (form.title?.length ?? 0) <= 0 ||
+          (form.description?.length ?? 0) <= 0
         }
       >
-        Créer un Topic
+        {submitLabel}
         {isPending && <Loader className="size-4 animate-spin" />}
       </Button>
       {error && (
         <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">
-          {(error as Error)?.message ??
+          {error.message ??
             "Erreur inconnue, veuillez réessayer ou nous signaler un bug."}
         </FieldError>
       )}

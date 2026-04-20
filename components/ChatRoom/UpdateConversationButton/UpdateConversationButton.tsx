@@ -1,16 +1,8 @@
 import { useState } from "react";
 
-import { Loader, Pencil, Trash2 } from "lucide-react";
-import Image from "next/image";
-import { z } from "zod";
+import { Loader, Pencil } from "lucide-react";
 
-import Button, { buttonClassName } from "@/components/Button/Button";
-import Form, {
-  FieldError,
-  FormField,
-  Input,
-  Label,
-} from "@/components/Form/Form";
+import CreateTopicForm from "@/components/CreateTopicButton/CreateTopicForm";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +20,6 @@ export default function UpdateConversationButton({
 }: {
   conversation: Conversation;
 }) {
-  const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
-  const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const { deleteConversationCover, isPending: isDeletePending } =
     useDeleteConversationCover();
@@ -38,15 +28,9 @@ export default function UpdateConversationButton({
     isPending: isUpdatePending,
     error,
   } = useUpdateConversation({
-    onSuccess: () => {
-      setOpen(false);
-    },
+    onSuccess: () => setOpen(false),
   });
   const isPending = isDeletePending || isUpdatePending;
-  const [errors, setErrors] = useState<{
-    title?: string;
-    description?: string;
-  }>({});
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -61,155 +45,36 @@ export default function UpdateConversationButton({
             Formulaire pour modifier le titre de la conversation
           </DialogDescription>
         </DialogHeader>
-        <Form
-          onChange={(e) => {
-            if (
-              !(e.target instanceof HTMLInputElement) ||
-              e.target.type !== "file"
-            )
-              return;
-            const file = e.target.files?.[0];
-            if (!file || file.size === 0) return;
-
-            setCoverFile(file);
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              if (typeof e.target?.result === "string")
-                setPreviewSrc(e.target.result);
-            };
-            reader.readAsDataURL(file);
+        <CreateTopicForm
+          conversationType={
+            (conversation.type as "TOPIC" | "EVENT" | "RELEASE") ?? "TOPIC"
+          }
+          initialValues={{
+            title: conversation.title,
+            description: conversation.description ?? undefined,
+            startsAt: conversation.startsAt
+              ? new Date(conversation.startsAt)
+              : undefined,
+            endsAt: conversation.endsAt
+              ? new Date(conversation.endsAt)
+              : undefined,
           }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            setErrors({});
-
-            const parsedInputs = z
-              .object({
-                title: z.optional(
-                  z
-                    .string()
-                    .min(3, { message: "Titre trop court (3 char min)" })
-                ),
-                description: z.optional(
-                  z.string().min(3, {
-                    message: "Description trop courte (3 char min)",
-                  })
-                ),
-              })
-              .safeParse(
-                Object.fromEntries(new FormData(e.currentTarget).entries())
-              );
-
-            if (!parsedInputs.success) {
-              return setErrors({
-                title:
-                  parsedInputs.error.formErrors.fieldErrors.title?.toString(),
-                description:
-                  parsedInputs.error.formErrors.fieldErrors.description?.toString(),
-              });
-            }
-
-            updateConversation(
-              {
-                id: conversation.id,
-                title: parsedInputs.data.title ?? conversation.title,
-                description:
-                  parsedInputs.data.description ??
-                  conversation.description ??
-                  "",
-                cover: coverFile,
-              },
-              {
-                onSuccess: () => {
-                  e.target.reset();
-                  setPreviewSrc(undefined);
-                  setCoverFile(undefined);
-                },
-              }
-            );
-          }}
-        >
-          <FormField>
-            <Label htmlFor="title">Titre</Label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={conversation.title ?? ""}
-              type="text"
-            />
-            <FieldError className="text-sm text-red-500">
-              {errors.title ?? <>&nbsp;</>}
-            </FieldError>
-          </FormField>
-          <FormField>
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              name="description"
-              defaultValue={conversation.description ?? ""}
-              type="text"
-            />
-            <FieldError className="text-sm text-red-500">
-              {errors.description ?? <>&nbsp;</>}
-            </FieldError>
-          </FormField>
-          <FormField>
-            <Label>Photo de couverture</Label>
-            {conversation.coverUrl && (
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => deleteConversationCover(conversation.id)}
-                className="group mb-2 grid cursor-pointer grid-cols-[5rem_1fr] rounded-sm border border-gray-800 transition-colors hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <div className="relative size-20">
-                  <Image
-                    alt=""
-                    src={conversation.coverUrl}
-                    fill
-                    sizes="80px"
-                    className="rounded-l-sm object-cover"
-                  />
-                </div>
-                <div className="inline-flex items-center justify-center gap-2 rounded-r-sm bg-gray-800 transition-colors group-hover:text-red-400">
-                  <Trash2 aria-hidden className="size-4" />
-                  Supprimer
-                </div>
-              </button>
-            )}
-            <label htmlFor="file" className={buttonClassName("w-full")}>
-              Sélectionner un fichier...
-            </label>
-            <Input
-              id="file"
-              name="file"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              hidden
-            />
-            {previewSrc && (
-              <Image
-                alt=""
-                aria-hidden
-                src={previewSrc}
-                width={0}
-                height={0}
-                sizes="(max-width: 640px) 390px, 512px"
-                className="max-h-96 w-full object-contain py-2"
-                style={{ height: "auto" }}
-              />
-            )}
-            <FieldError>{null}</FieldError>
-          </FormField>
-          <Button className="ml-auto" type="submit" disabled={isPending}>
-            Sauver
-          </Button>
-          {error && (
-            <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">
-              {error.message}
-            </FieldError>
-          )}
-        </Form>
+          onSubmit={(values) =>
+            updateConversation({
+              id: conversation.id,
+              title: values.title,
+              description: values.description,
+              cover: values.cover,
+              startsAt: values.startsAt?.toISOString(),
+              endsAt: values.endsAt?.toISOString(),
+            })
+          }
+          isPending={isPending}
+          error={error as Error | null}
+          coverUrl={conversation.coverUrl ?? undefined}
+          onDeleteCover={() => deleteConversationCover(conversation.id)}
+          submitLabel="Sauver"
+        />
         {isPending && (
           <Loader className="absolute inset-0 top-1/2 left-1/2 z-50 -ml-3 animate-spin stroke-2" />
         )}
