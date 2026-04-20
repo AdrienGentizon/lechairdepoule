@@ -1,14 +1,14 @@
 import { revalidateTag } from "next/cache";
 
 import sql from "../db";
-import { CacheKey, User } from "../types";
+import { CacheKey } from "../types";
 
 export default async function updateUserAsBanned({
   userId,
   bannedBy,
 }: {
   userId: string;
-  bannedBy: User;
+  bannedBy: { id: string };
 }) {
   revalidateTag("users" satisfies CacheKey, {});
 
@@ -16,8 +16,7 @@ export default async function updateUserAsBanned({
     await sql<
       {
         id: string;
-        email: string;
-        pseudo: string;
+        pseudo: string | null;
         role: string | null;
         createdAt: string;
         bannedAt: string | null;
@@ -33,7 +32,6 @@ export default async function updateUserAsBanned({
       AND banned_at IS NULL
     RETURNING
       id::text,
-      email,
       pseudo,
       role,
       created_at::text as "createdAt",

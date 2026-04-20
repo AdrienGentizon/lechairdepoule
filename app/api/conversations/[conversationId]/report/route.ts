@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateConversationAsReported from "@/lib/forum/updateConversationAsReported";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -22,10 +21,7 @@ export async function POST(
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
-    const values = {
-      reportedBy: { ...reportedBy, pseudo: getUserPseudo(reportedBy) },
-      conversationId,
-    };
+    const values = { reportedBy, conversationId };
     const reportedConversation = await updateConversationAsReported(values);
 
     if (!reportedConversation) {

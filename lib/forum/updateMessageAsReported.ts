@@ -1,6 +1,4 @@
-import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
-import { User } from "../types";
 import { reportedMessageBodyReplacement } from "../wordings";
 
 export default async function updateMessageAsReported({
@@ -8,7 +6,7 @@ export default async function updateMessageAsReported({
   reportedBy,
 }: {
   messageId: string;
-  reportedBy: User;
+  reportedBy: { id: string };
 }) {
   return (
     await sql<
@@ -22,7 +20,6 @@ export default async function updateMessageAsReported({
         parentMessageId: string | null;
         userId: string;
         userPseudo: string | null;
-        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`
@@ -31,7 +28,6 @@ export default async function updateMessageAsReported({
       m.id as message_id,
       u.id as user_id,
       u.pseudo as user_pseudo,
-      u.email as user_email,
       u.banned_at as user_banned_at
     FROM
       public.messages m,
@@ -57,28 +53,19 @@ export default async function updateMessageAsReported({
       m.conversation_id::text as "conversationId",
       m.parent_message_id::text as "parentMessageId",
       user_messages.user_pseudo as "userPseudo",
-      user_messages.user_email as "userEmail",
       user_messages.user_banned_at as "userBannedAt";`
   )
-    .map(({ userPseudo, userEmail, userId, userBannedAt, ...message }) => {
+    .map(({ userPseudo, userId, userBannedAt, ...message }) => {
       if (message.reportedAt) {
         return {
           ...message,
           body: reportedMessageBodyReplacement,
-          user: {
-            id: userId,
-            pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-            bannedAt: userBannedAt,
-          },
+          user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
         };
       }
       return {
         ...message,
-        user: {
-          id: userId,
-          pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-          bannedAt: userBannedAt,
-        },
+        user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
       };
     })
     .at(0);

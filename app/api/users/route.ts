@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import selectSimilarUsersByPseudo from "@/lib/auth/selectSimilarUsersByPseudo";
 import selectUsersByPseudo from "@/lib/auth/selectUsersByPseudo";
 import { getRequestLogger } from "@/lib/getRequestLogger";
@@ -33,12 +32,8 @@ export async function GET(req: NextRequest) {
     logger.flush();
     return NextResponse.json<(User & { similarity: number })[]>(
       exactMatch
-        ? (await selectUsersByPseudo(search)).map(({ email: _, ...user }) => {
-            return { ...user, pseudo: getUserPseudo({ ...user, email: _ }), similarity: 1 };
-          })
-        : (await selectSimilarUsersByPseudo(search)).map(({ email: _, ...user }) => {
-            return { ...user, pseudo: getUserPseudo({ ...user, email: _ }) };
-          }),
+        ? (await selectUsersByPseudo(search)).map(({ email: _, ...user }) => ({ ...user, similarity: 1 }))
+        : (await selectSimilarUsersByPseudo(search)).map(({ email: _, ...user }) => user),
       { status: 200 }
     );
   } catch (error) {

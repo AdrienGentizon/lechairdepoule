@@ -1,4 +1,3 @@
-import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
 
 export default async function selectReportedMessages() {
@@ -14,7 +13,6 @@ export default async function selectReportedMessages() {
         parentMessageId: string | null;
         userId: string;
         userPseudo: string | null;
-        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`
@@ -28,7 +26,6 @@ export default async function selectReportedMessages() {
       m.conversation_id::text as "conversationId",
       m.parent_message_id::text as "parentMessageId",
       u.pseudo as "userPseudo",
-      u.email as "userEmail",
       u.banned_at::text as "userBannedAt"
     FROM
       public.messages m,
@@ -38,12 +35,8 @@ export default async function selectReportedMessages() {
       AND m.user_id = u.id
     ORDER BY
       m.reported_at DESC;`
-  ).map(({ userBannedAt, userPseudo, userEmail, userId, ...message }) => ({
+  ).map(({ userBannedAt, userPseudo, userId, ...message }) => ({
     ...message,
-    user: {
-      id: userId,
-      pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-      bannedAt: userBannedAt,
-    },
+    user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
   }));
 }

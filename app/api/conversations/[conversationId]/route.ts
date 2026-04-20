@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
@@ -139,7 +138,7 @@ export async function POST(
         mentionedUsers,
         body: parsedInputs.data.body,
       }),
-      user: { ...user, pseudo: getUserPseudo(user) },
+      user: { id: user.id, pseudo: user.pseudo ?? "", bannedAt: user.bannedAt },
     };
     const insertedMessage = await insertMessageIntoConversation(values);
 
@@ -260,7 +259,7 @@ export async function PATCH(
       );
     }
 
-    const imageFileWithMetadata = getImageFileWithMetadata(formData);
+    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
     let cover: { url: string; width: number; height: number } | undefined =
       undefined;
 

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -28,10 +27,7 @@ export async function POST(
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
-    const values = {
-      bannedBy: { ...bannedBy, pseudo: getUserPseudo(bannedBy) },
-      userId,
-    };
+    const values = { bannedBy, userId };
     const bannedUser = await updateUserAsBanned(values);
 
     if (!bannedUser) {
@@ -40,7 +36,7 @@ export async function POST(
     }
 
     logger.append({
-      bannedUser: getLoggableUser(bannedUser),
+      bannedUser,
     });
     await pusher.trigger(`users`, `user:ban`, bannedUser);
 

@@ -1,4 +1,3 @@
-import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
 
 export default async function selectConversationFromId(conversationId: string) {
@@ -18,7 +17,6 @@ export default async function selectConversationFromId(conversationId: string) {
         reportedAt: string | null;
         userId: string;
         userPseudo: string | null;
-        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`SELECT
@@ -35,7 +33,6 @@ export default async function selectConversationFromId(conversationId: string) {
         c.reported_at::text AS "reportedAt",
         u.id::text AS "userId",
         u.pseudo AS "userPseudo",
-        u.email AS "userEmail",
         u.banned_at::text AS "userBannedAt"
       FROM
         public.conversations c
@@ -49,25 +46,18 @@ export default async function selectConversationFromId(conversationId: string) {
       ({
         userId,
         userPseudo,
-        userEmail,
         userBannedAt,
         coverUrl,
         coverWidth,
         coverHeight,
         ...conversation
-      }) => {
-        return {
-          ...conversation,
-          coverUrl: coverUrl,
-          coverWidth: coverWidth ? parseInt(coverWidth) : null,
-          coverHeight: coverHeight ? parseInt(coverHeight) : null,
-          createdBy: {
-            id: userId,
-            pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-            bannedAt: userBannedAt,
-          },
-        };
-      }
+      }) => ({
+        ...conversation,
+        coverUrl,
+        coverWidth: coverWidth ? parseInt(coverWidth) : null,
+        coverHeight: coverHeight ? parseInt(coverHeight) : null,
+        createdBy: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
+      })
     )
     .at(0);
 }

@@ -1,13 +1,11 @@
-import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
-import { User } from "../types";
 
 export default async function updateConversationAsReported({
   conversationId,
   reportedBy,
 }: {
   conversationId: string;
-  reportedBy: User;
+  reportedBy: { id: string };
 }) {
   return (
     await sql<
@@ -20,7 +18,6 @@ export default async function updateConversationAsReported({
         createdAt: string;
         userId: string;
         userPseudo: string | null;
-        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`
@@ -41,18 +38,13 @@ export default async function updateConversationAsReported({
       c.created_at::text AS "createdAt",
       u.id::text AS "userId",
       u.pseudo AS "userPseudo",
-      u.email AS "userEmail",
       u.banned_at::text AS "userBannedAt";`
   )
     .map(
-      ({ userId, userPseudo, userEmail, userBannedAt, ...conversation }) => ({
-        ...conversation,
-        createdBy: {
-          id: userId,
-          pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-          bannedAt: userBannedAt,
-        },
-      })
+      ({ userId, userPseudo, userBannedAt, ...conversation }) => ({
+      ...conversation,
+      createdBy: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
+    })
     )
     .at(0);
 }

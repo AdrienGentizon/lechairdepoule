@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import getUserPseudo from "@/lib/auth/getUserPseudo";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const imageFileWithMetadata = getImageFileWithMetadata(formData);
+    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
     let cover: { url: string; width: number; height: number } | undefined =
       undefined;
 
@@ -61,7 +60,7 @@ export async function POST(req: NextRequest) {
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       type: parsedInputs.data.type,
-      user: { ...user, pseudo: getUserPseudo(user) },
+      user: { id: user.id, pseudo: user.pseudo ?? "", bannedAt: user.bannedAt },
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,

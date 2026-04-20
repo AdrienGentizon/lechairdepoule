@@ -1,4 +1,3 @@
-import getUserPseudo from "../auth/getUserPseudo";
 import sql from "../db";
 import { reportedMessageBodyReplacement } from "../wordings";
 
@@ -19,7 +18,6 @@ export default async function selectConversationMessages(
         conversationId: string | null;
         parentMessageId: string | null;
         userPseudo: string | null;
-        userEmail: string;
         userBannedAt: string | null;
       }[]
     >`
@@ -34,7 +32,6 @@ export default async function selectConversationMessages(
       m.conversation_id::text as "conversationId",
       m.parent_message_id::text as "parentMessageId",
       u.pseudo as "userPseudo",
-      u.email as "userEmail",
       u.banned_at::text as "userBannedAt"
     FROM
       public.messages m,
@@ -46,25 +43,17 @@ export default async function selectConversationMessages(
       m.created_at DESC
     OFFSET ${offset}
     LIMIT ${limit};`
-  ).map(({ userBannedAt, userPseudo, userEmail, userId, ...message }) => {
+  ).map(({ userBannedAt, userPseudo, userId, ...message }) => {
     if (message.reportedAt || userBannedAt) {
       return {
         ...message,
         body: reportedMessageBodyReplacement,
-        user: {
-          id: userId,
-          pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-          bannedAt: userBannedAt,
-        },
+        user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
       };
     }
     return {
       ...message,
-      user: {
-        id: userId,
-        pseudo: getUserPseudo({ pseudo: userPseudo, email: userEmail }),
-        bannedAt: userBannedAt,
-      },
+      user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
     };
   });
 }
