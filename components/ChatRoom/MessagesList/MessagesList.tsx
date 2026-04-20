@@ -69,6 +69,7 @@ export default function MessagesList({
             <MessageItem
               key={`main-conversation-message-${message.id}`}
               message={message}
+              conversation={conversation}
               threadedMessages={threadedMessages}
               hasMention={hasMention}
             />

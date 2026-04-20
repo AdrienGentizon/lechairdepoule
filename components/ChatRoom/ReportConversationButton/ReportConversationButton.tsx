@@ -38,7 +38,7 @@ export default function ReportConversationButton({
 
   const [open, setOpen] = useState(false);
 
-  if (!me.canReportConversation()) return null;
+  if (!me.canReportConversation(conversation)) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

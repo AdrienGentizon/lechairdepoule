@@ -4,13 +4,16 @@ import { z } from "zod";
 
 import Button from "@/components/Button/Button";
 import Loader from "@/components/Loader/Loader";
+import { Me } from "@/lib/auth/useMe";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
+import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
 
 type Props = {
-  conversationId: string;
+  me: Me;
+  conversation: Conversation;
   messageId?: string;
   variant?: "dark";
   autoFocus?: boolean;
@@ -19,7 +22,8 @@ type Props = {
 };
 
 export default function SubmitMessageForm({
-  conversationId,
+  me,
+  conversation,
   messageId,
   variant,
   autoFocus,
@@ -28,7 +32,7 @@ export default function SubmitMessageForm({
 }: Props) {
   const [body, setBody] = useState("");
   const { postConversationMessage, error, isPending } =
-    usePostConversationMessage(conversationId);
+    usePostConversationMessage(conversation.id);
 
   return (
     <form
@@ -72,10 +76,12 @@ export default function SubmitMessageForm({
         required
       />
       {error && <p className="text-red-500">{error.message}</p>}
-      <Button className="ml-auto" type="submit" disabled={isPending}>
-        {buttonLabel}
-        {isPending && <Loader position="relative" />}
-      </Button>
+      {me.canPostMessage(conversation) && (
+        <Button className="ml-auto" type="submit" disabled={isPending}>
+          {buttonLabel}
+          {isPending && <Loader position="relative" />}
+        </Button>
+      )}
     </form>
   );
 }

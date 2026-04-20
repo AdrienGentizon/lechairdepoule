@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-import { Skull } from "lucide-react";
+import { ReactNode, useState } from "react";
 
 import Loader from "@/components/Loader/Loader";
 import {
@@ -13,25 +11,30 @@ import {
 } from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
 import useBanUser from "@/lib/forum/useBanUser";
-import { Message } from "@/lib/types";
 
-type Props = { me: Me; message: Message };
+type BanTarget = { id: string; pseudo: string; bannedAt: string | null };
+type Props = {
+  me: Me;
+  user: BanTarget;
+  children: ReactNode;
+  className?: string;
+};
 
-export default function BanUserButton({ me, message }: Props) {
-  const [openBan, setOpenBan] = useState(false);
+export default function BanUserTrigger({
+  me,
+  user,
+  children,
+  className,
+}: Props) {
+  const [open, setOpen] = useState(false);
+  const { banUser, isPending } = useBanUser();
 
-  const { banUser, isPending: isPendingBanUser } = useBanUser();
-
-  if (!me.canBanUser(message.user)) return null;
+  if (!me.canBanUser(user)) return null;
 
   return (
-    <Dialog open={openBan} onOpenChange={setOpenBan}>
-      <DialogTrigger
-        disabled={message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
-      >
-        <Skull className="size-3" />
-        Bannir
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild className={className}>
+        {children}
       </DialogTrigger>
       <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-96">
         <DialogHeader className="bg-black p-4 text-white">
@@ -43,7 +46,7 @@ export default function BanUserButton({ me, message }: Props) {
         <div className="bg-white p-2">
           <p>
             Vous êtes sur le point de dénoncer un message de{" "}
-            <strong>{message.user.pseudo}</strong>.
+            <strong>{user.pseudo}</strong>.
           </p>
           <p>
             Le message ne sera plus lisible, cependant son contenu sera conservé
@@ -54,26 +57,19 @@ export default function BanUserButton({ me, message }: Props) {
         <footer className="flex flex-col gap-1 p-2">
           <button
             className="hover:not:disabled:bg-neutral-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isPendingBanUser}
+            disabled={isPending}
             onClick={() => {
-              banUser(message.user.id, {
-                onSuccess: () => {
-                  setOpenBan(false);
-                },
-              });
+              banUser(user.id, { onSuccess: () => setOpen(false) });
             }}
           >
             <span className="relative">
-              Bannir <strong>{message.user.pseudo}</strong>
-              {isPendingBanUser && <Loader />}
+              Bannir <strong>{user.pseudo}</strong>
+              {isPending && <Loader />}
             </span>
           </button>
-
           <button
             className="w-full rounded-sm border border-black bg-white py-0.5 text-center text-black hover:bg-neutral-100"
-            onClick={() => {
-              setOpenBan(false);
-            }}
+            onClick={() => setOpen(false)}
           >
             Fermer
           </button>

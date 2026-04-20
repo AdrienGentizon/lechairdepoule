@@ -8,6 +8,7 @@ import Link from "next/link";
 import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
 import { getConversationMetadataAsString } from "@/lib/forum/utils";
+import { cn } from "@/lib/utils";
 
 import Loader from "../Loader/Loader";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
@@ -44,10 +45,22 @@ export default function ChatRoom({ conversationId }: Props) {
             </Link>
           </nav>
           <div className="mr-auto">
-            <h1 className="leading-none font-semibold uppercase">
+            <h1
+              className={cn(
+                "leading-none font-semibold uppercase",
+                conversation.reportedAt && "text-neutral-400 line-through"
+              )}
+            >
               {conversation.title}
             </h1>
-            <p className="text-sm font-light">{conversation.description}</p>
+            <p
+              className={cn(
+                "text-sm font-light",
+                conversation.reportedAt && "text-neutral-400 line-through"
+              )}
+            >
+              {conversation.description}
+            </p>
           </div>
           <div className="flex items-center gap-1">
             <UpdateConversationButton me={me} conversation={conversation} />
@@ -80,7 +93,8 @@ export default function ChatRoom({ conversationId }: Props) {
       <div className="relative px-1 landscape:px-0">
         <div className="to-background pointer-events-none absolute h-8 w-full max-w-[calc(100dvw-0.5rem)] -translate-y-full bg-linear-to-b from-transparent" />
         <SubmitMessageForm
-          conversationId={conversation.id}
+          me={me}
+          conversation={conversation}
           buttonLabel={`Envoyer`}
           onSuccess={() => {
             scrollToBottom();

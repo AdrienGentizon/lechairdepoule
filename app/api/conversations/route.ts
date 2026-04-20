@@ -99,9 +99,7 @@ export async function GET(req: NextRequest) {
       user.role === "admin"
         ? conversations
         : conversations.filter(({ reportedAt }) => !reportedAt),
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
     logger.withError(error).flush();

@@ -1,14 +1,16 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
+import { Skull } from "lucide-react";
+
 import Button from "@/components/Button/Button";
 import useMe, { Me } from "@/lib/auth/useMe";
 import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
-import { Message } from "@/lib/types";
+import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
-import BanUserButton from "./BanUserButton/BanUserButton";
+import BanUserTrigger from "./BanUserTrigger/BanUserTrigger";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
 function Header({ me, message }: { me: Me; message: Message }) {
@@ -30,14 +32,30 @@ function Header({ me, message }: { me: Me; message: Message }) {
         </div>
         <div className="ml-auto flex items-center gap-1">
           <ReportMessageButton me={me} message={message} />
-          <BanUserButton me={me} message={message} />
+          <BanUserTrigger me={me} user={message.user}>
+            <button
+              disabled={message.user.bannedAt !== null}
+              className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
+            >
+              <Skull className="size-3" />
+              Bannir
+            </button>
+          </BanUserTrigger>
         </div>
       </div>
     </header>
   );
 }
 
-function ReplyInThreadButton({ message }: { message: Message }) {
+function ReplyInThreadButton({
+  me,
+  message,
+  conversation,
+}: {
+  me: Me;
+  message: Message;
+  conversation: Conversation;
+}) {
   const [showTextarea, setShowTextarea] = useState(false);
   const ref = useRef<ComponentRef<"div">>(null);
 
@@ -64,7 +82,8 @@ function ReplyInThreadButton({ message }: { message: Message }) {
       )}
       {showTextarea && (
         <SubmitMessageForm
-          conversationId={message.conversationId}
+          me={me}
+          conversation={conversation}
           messageId={message.id}
           variant="dark"
           autoFocus
@@ -80,9 +99,11 @@ function ReplyInThreadButton({ message }: { message: Message }) {
 
 function Thread({
   message,
+  conversation,
   threadedMessages,
 }: {
   message: Message;
+  conversation: Conversation;
   threadedMessages: (Message & { hasMention: boolean })[];
 }) {
   if (threadedMessages.length === 0) return null;
@@ -94,6 +115,7 @@ function Thread({
           <MessageItem
             key={`message-${message.id}-thread-${threadedMessage.id}`}
             message={threadedMessage}
+            conversation={conversation}
             threadedMessages={[]}
             hasMention={threadedMessage.hasMention}
           />
@@ -164,12 +186,16 @@ function MessageBodyParser({ message }: { message: Message }) {
 
 export default function MessageItem({
   message,
+  conversation,
   threadedMessages,
   hasMention,
+  variant,
 }: {
   message: Message;
+  conversation: Conversation | undefined;
   threadedMessages: (Message & { hasMention: boolean })[];
   hasMention: boolean;
+  variant?: "admin";
 }) {
   const { me } = useMe();
   const enableAutoMarkAsRead = false;
@@ -193,10 +219,22 @@ export default function MessageItem({
           {enableAutoMarkAsRead && hasMention && (
             <MarkAsReadWhenInView messageId={message.id} />
           )}
-          <Thread message={message} threadedMessages={threadedMessages} />
-          {message.parentMessageId === null && (
-            <ReplyInThreadButton message={message} />
+          {conversation && (
+            <Thread
+              conversation={conversation}
+              message={message}
+              threadedMessages={threadedMessages}
+            />
           )}
+          {conversation &&
+            message.parentMessageId === null &&
+            variant !== "admin" && (
+              <ReplyInThreadButton
+                me={me}
+                message={message}
+                conversation={conversation}
+              />
+            )}
         </div>
       </li>
     </>

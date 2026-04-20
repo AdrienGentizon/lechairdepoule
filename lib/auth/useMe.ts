@@ -15,20 +15,24 @@ function getPermissions(user: User) {
     },
     canReportMessage(message: Message) {
       if (user.bannedAt) return false;
+      if (message.reportedAt) return false;
       if (message.user.id === user.id) return false;
       return true;
     },
-    canPostMessage() {
+    canPostMessage(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
+      if (conversation.reportedAt) return false;
       return true;
     },
     canUpdateConversation(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
+      if (conversation.reportedAt) return false;
       if (conversation.createdBy.id !== user.id) return false;
       return true;
     },
     canDeleteConversation(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
+      if (conversation.reportedAt) return false;
       if (conversation.createdBy.id !== user.id) return false;
       return true;
     },
@@ -41,8 +45,9 @@ function getPermissions(user: User) {
       if (user.role !== "admin") return false;
       return true;
     },
-    canReportConversation() {
+    canReportConversation(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
+      if (conversation.reportedAt) return false;
       if (user.role !== "admin") return false;
       return true;
     },

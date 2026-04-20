@@ -87,7 +87,8 @@ export type CacheKey =
   | `conversation-${string}`
   | "conversations"
   | "reported-messages"
-  | "users";
+  | "users"
+  | "banned-users";
 
 export type BroadCastKey =
   | "new_message"

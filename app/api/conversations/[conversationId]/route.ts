@@ -42,7 +42,7 @@ export async function GET(
 
     const conversation = await selectConversationFromId(params.conversationId);
 
-    if (!conversation) {
+    if (!conversation || (conversation.reportedAt && user.role !== "admin")) {
       logger.withError("not found").flush();
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
