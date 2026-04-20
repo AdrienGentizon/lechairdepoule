@@ -11,21 +11,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Me } from "@/lib/auth/useMe";
 import useBanUser from "@/lib/forum/useBanUser";
 import { Message } from "@/lib/types";
 
-type Props = { message: Message };
+type Props = { me: Me; message: Message };
 
-export default function BanUserButton({ message }: Props) {
+export default function BanUserButton({ me, message }: Props) {
   const [openBan, setOpenBan] = useState(false);
 
   const { banUser, isPending: isPendingBanUser } = useBanUser();
+
+  if (!me.canBanUser(message.user)) return null;
 
   return (
     <Dialog open={openBan} onOpenChange={setOpenBan}>
       <DialogTrigger
         disabled={message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-neutral-600 disabled:hidden"
+        className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
       >
         <Skull className="size-3" />
         Bannir

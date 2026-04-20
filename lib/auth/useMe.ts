@@ -1,6 +1,57 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { CacheKey, User } from "../types";
+import { CacheKey, Conversation, Message, User } from "../types";
+
+type SimpleConversation = Omit<Conversation, "messages">;
+
+function getPermissions(user: User) {
+  return {
+    canBanUser(targetUser: { id: string; bannedAt: string | null }) {
+      if (targetUser.bannedAt) return false;
+      if (user.bannedAt) return false;
+      if (user.role !== "admin") return false;
+      if (user.id === targetUser.id) return false;
+      return true;
+    },
+    canReportMessage(message: Message) {
+      if (user.bannedAt) return false;
+      if (message.user.id === user.id) return false;
+      return true;
+    },
+    canPostMessage() {
+      if (user.bannedAt) return false;
+      return true;
+    },
+    canUpdateConversation(conversation: SimpleConversation) {
+      if (user.bannedAt) return false;
+      if (conversation.createdBy.id !== user.id) return false;
+      return true;
+    },
+    canDeleteConversation(conversation: SimpleConversation) {
+      if (user.bannedAt) return false;
+      if (conversation.createdBy.id !== user.id) return false;
+      return true;
+    },
+    canCreateConversation() {
+      if (user.bannedAt) return false;
+      return true;
+    },
+    canListReportedMessages() {
+      if (user.role !== "admin") return false;
+      return true;
+    },
+    canReportConversation() {
+      if (user.role !== "admin") return false;
+      return true;
+    },
+    canBanMessageUser(message: Message) {
+      if (user.role !== "admin") return false;
+      if (message.user.id === user.id) return false;
+      if (message.user.bannedAt) return false;
+      return true;
+    },
+  };
+}
 
 export default function useMe() {
   const {
@@ -24,8 +75,15 @@ export default function useMe() {
   });
 
   return {
-    me,
+    me: me
+      ? {
+          ...me,
+          ...getPermissions(me),
+        }
+      : undefined,
     isLoading,
     error,
   };
 }
+
+export type Me = NonNullable<ReturnType<typeof useMe>["me"]>;

@@ -11,22 +11,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Me } from "@/lib/auth/useMe";
 import useReportMessage from "@/lib/forum/useReportMessage";
 import { Message } from "@/lib/types";
 
-type Props = { message: Message };
+type Props = { me: Me; message: Message };
 
-export default function ReportMessageButton({ message }: Props) {
+export default function ReportMessageButton({ me, message }: Props) {
   const [openReport, setOpenReport] = useState(false);
 
   const { reportMessage, isPending: isPendingReportMessage } =
     useReportMessage();
 
+  if (!me.canReportMessage(message)) return null;
+
   return (
     <Dialog open={openReport} onOpenChange={setOpenReport}>
       <DialogTrigger
         disabled={message.reportedAt !== null || message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 hover:bg-neutral-600 disabled:hidden"
+        className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
       >
         <Ban className="size-3" />
         Molo molo

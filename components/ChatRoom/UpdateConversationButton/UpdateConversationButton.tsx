@@ -11,13 +11,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Me } from "@/lib/auth/useMe";
 import useDeleteConversationCover from "@/lib/forum/useDeleteConversationCover";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
 import { Conversation } from "@/lib/types";
 
 export default function UpdateConversationButton({
+  me,
   conversation,
 }: {
+  me: Me;
   conversation: Conversation;
 }) {
   const [open, setOpen] = useState(false);
@@ -32,9 +35,11 @@ export default function UpdateConversationButton({
   });
   const isPending = isDeletePending || isUpdatePending;
 
+  if (!me.canUpdateConversation(conversation)) return null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
+      <DialogTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
         <Pencil className="size-5" />
         <span className="sr-only">Modifier</span>
       </DialogTrigger>

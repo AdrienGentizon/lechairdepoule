@@ -1,29 +1,17 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import useMe from "@/lib/auth/useMe";
+import useMe, { Me } from "@/lib/auth/useMe";
 import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
-import { Message, User } from "@/lib/types";
+import { Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
 import BanUserButton from "./BanUserButton/BanUserButton";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
-function Header({ me, message }: { me: User; message: Message }) {
-  const canReportMessage = (message: Message) => {
-    if (message.user.id === me?.id) return false;
-    return true;
-  };
-
-  const canBanMessageUser = (message: Message) => {
-    if (me?.role !== "admin") return false;
-    if (message.user.id === me?.id) return false;
-    if (message.user.bannedAt) return false;
-    return true;
-  };
-
+function Header({ me, message }: { me: Me; message: Message }) {
   return (
     <header className="flex items-center gap-2">
       <div className="flex w-full text-xs font-medium">
@@ -41,10 +29,8 @@ function Header({ me, message }: { me: User; message: Message }) {
           </h3>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          {canReportMessage(message) && (
-            <ReportMessageButton message={message} />
-          )}
-          {canBanMessageUser(message) && <BanUserButton message={message} />}
+          <ReportMessageButton me={me} message={message} />
+          <BanUserButton me={me} message={message} />
         </div>
       </div>
     </header>

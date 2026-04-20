@@ -7,10 +7,12 @@ import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
 import useConversation from "@/lib/forum/useConversation";
+import { getConversationMetadataAsString } from "@/lib/forum/utils";
 
 import Loader from "../Loader/Loader";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import MessagesList from "./MessagesList/MessagesList";
+import ReportConversationButton from "./ReportConversationButton/ReportConversationButton";
 import SubmitMessageForm from "./SubmitMessageForm/SubmitMessageForm";
 import UpdateConversationButton from "./UpdateConversationButton/UpdateConversationButton";
 
@@ -34,27 +36,29 @@ export default function ChatRoom({ conversationId }: Props) {
 
   return (
     <div className="grid grid-cols-1 grid-rows-[min-content_1fr_min-content]">
-      <header className="flex flex-col">
-        <div className="flex items-center gap-4 bg-black pb-2">
+      <header className="flex flex-col gap-2 py-2">
+        <div className="flex items-center gap-4 bg-black">
           <nav>
             <Link href={`/forum`}>
               <ArrowLeft />
             </Link>
           </nav>
           <div className="mr-auto">
-            <h1 className="leading-[1] font-semibold uppercase">
+            <h1 className="leading-none font-semibold uppercase">
               {conversation.title}
             </h1>
-            <p className="pl-2 text-sm font-light">
-              {conversation.description}
-            </p>
+            <p className="text-sm font-light">{conversation.description}</p>
           </div>
-          {conversation.createdBy.id === me.id && (
-            <div className="flex items-center gap-1">
-              <UpdateConversationButton conversation={conversation} />
-              <DeleteConversationButton conversation={conversation} />
-            </div>
-          )}
+          <div className="flex items-center gap-1">
+            <UpdateConversationButton me={me} conversation={conversation} />
+            <DeleteConversationButton me={me} conversation={conversation} />
+            <ReportConversationButton me={me} conversation={conversation} />
+          </div>
+        </div>
+        <div className="flex">
+          <h3 className="ml-auto text-xs">
+            {getConversationMetadataAsString(conversation)}
+          </h3>
         </div>
       </header>
 

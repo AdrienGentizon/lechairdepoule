@@ -11,12 +11,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Me } from "@/lib/auth/useMe";
 import useDeleteConversation from "@/lib/forum/useDeleteConversation";
 import { Conversation } from "@/lib/types";
 
 export default function DeleteConversationButton({
+  me,
   conversation,
 }: {
+  me: Me;
   conversation: Conversation;
 }) {
   const router = useRouter();
@@ -29,10 +32,12 @@ export default function DeleteConversationButton({
 
   const [open, setOpen] = useState(false);
 
+  if (!me.canDeleteConversation(conversation)) return null;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
+        <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
           <Trash2 className="size-5" />
           <span className="sr-only">Supprimer</span>
         </button>
@@ -40,7 +45,8 @@ export default function DeleteConversationButton({
       <DialogContent>
         <DialogTitle>Confirmer la suppression</DialogTitle>
         <DialogDescription className="sr-only">
-          Confirmation avant la suppression définitive de la conversation et de tous ses messages
+          Confirmation avant la suppression définitive de la conversation et de
+          tous ses messages
         </DialogDescription>
         <div className="flex flex-col gap-2 leading-5">
           <p>

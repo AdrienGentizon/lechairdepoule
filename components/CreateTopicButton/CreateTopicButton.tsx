@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
 
 import {
@@ -23,6 +24,7 @@ const CONVERSATION_TYPE_LABELS = {
 };
 
 export default function CreateTopicButton() {
+  const { me } = useMe();
   const router = useRouter();
   const [step, setStep] = useState<
     "HIDDEN" | "CONVERSATION_TYPE" | "CONVERSATION_INPUTS"
@@ -31,6 +33,8 @@ export default function CreateTopicButton() {
     "TOPIC" | "EVENT" | "RELEASE" | undefined
   >(undefined);
   const { postConversation, isPending, error } = usePostConversation();
+
+  if (!me?.canCreateConversation()) return null;
 
   return (
     <Dialog

@@ -25,7 +25,7 @@ function TopicItem({
         </h2>
         <p className="font-light">{conversation.description}</p>
         <footer className="flex pt-2">
-          <h3 className="ml-auto text-sm">
+          <h3 className="ml-auto text-xs">
             {getConversationMetadataAsString(conversation)}
           </h3>
         </footer>
@@ -49,7 +49,7 @@ export default function ForumPage() {
           );
         })}
       </ul>
-      <div className="flex flex-col border-b border-t border-white">
+      <div className="flex flex-col border-t border-b border-white">
         <CreateTopicButton />
       </div>
       {isLoading && <Loader />}
