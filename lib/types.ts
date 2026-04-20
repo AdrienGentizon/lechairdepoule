@@ -57,6 +57,7 @@ export type Conversation = {
   type: string | null;
   startsAt?: string | null;
   endsAt?: string | null;
+  reportedAt: string | null;
   createdAt: string;
   createdBy: {
     id: string;
@@ -88,7 +89,11 @@ export type CacheKey =
   | "reported-messages"
   | "users";
 
-export type BroadCastKey = "new_message" | "reported_message" | "banned_user";
+export type BroadCastKey =
+  | "new_message"
+  | "reported_message"
+  | "banned_user"
+  | "reported_conversation";
 
 export type BroadcastPayload<K = BroadCastKey, T = Record<string, unknown>> = {
   type: "broadcast";

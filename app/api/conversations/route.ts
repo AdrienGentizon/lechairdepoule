@@ -95,9 +95,14 @@ export async function GET(req: NextRequest) {
     const conversations = await selectConversations();
 
     logger.flush();
-    return NextResponse.json<Omit<Conversation, "messages">[]>(conversations, {
-      status: 200,
-    });
+    return NextResponse.json<Omit<Conversation, "messages">[]>(
+      user.role === "admin"
+        ? conversations
+        : conversations.filter(({ reportedAt }) => !reportedAt),
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     logger.withError(error).flush();
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });

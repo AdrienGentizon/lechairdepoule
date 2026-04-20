@@ -23,8 +23,11 @@ CREATE TABLE conversations (
 		created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
+    reported_at TIMESTAMPTZ,
+    reported_by INTEGER,
     type TEXT,
-    CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT
+    CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE conversation_dates (

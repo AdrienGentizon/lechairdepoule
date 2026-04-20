@@ -37,10 +37,12 @@ function getPermissions(user: User) {
       return true;
     },
     canListReportedMessages() {
+      if (user.bannedAt) return false;
       if (user.role !== "admin") return false;
       return true;
     },
     canReportConversation() {
+      if (user.bannedAt) return false;
       if (user.role !== "admin") return false;
       return true;
     },

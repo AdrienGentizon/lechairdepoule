@@ -132,7 +132,6 @@ export default function useConversation(conversationId: string) {
     );
 
     const usersChannel = pusher.subscribe(`users`);
-
     usersChannel.bind("user:ban", function (user: User) {
       onBannedUser({ user });
     });

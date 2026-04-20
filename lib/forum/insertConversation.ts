@@ -12,6 +12,7 @@ function getConversationFromRaw(
     type: string | null;
     created_by: string;
     created_at: string;
+    reported_at: string | null;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
   dates: { startsAt: string | null; endsAt: string | null }
@@ -28,6 +29,7 @@ function getConversationFromRaw(
     endsAt: dates.endsAt,
     createdAt: raw.created_at,
     createdBy,
+    reportedAt: raw.reported_at,
     messages: [],
   };
 }
@@ -67,6 +69,7 @@ export default async function insertConversation({
         type: string | null;
         created_by: string;
         created_at: string;
+        reported_at: string | null;
       }[]
     >`
     INSERT INTO
@@ -82,7 +85,8 @@ export default async function insertConversation({
       image_height as "coverHeight",
       type,
       created_by::text,
-      created_at::text;`;
+      created_at::text,
+      reported_at::text;`;
 
     const newConversation = rows.at(0);
 
@@ -99,7 +103,10 @@ export default async function insertConversation({
     return getConversationFromRaw(
       newConversation,
       { id: user.id, pseudo: user.pseudo, bannedAt: user.bannedAt },
-      { startsAt: hasDates ? (startsAt ?? null) : null, endsAt: hasDates ? (endsAt ?? null) : null }
+      {
+        startsAt: hasDates ? (startsAt ?? null) : null,
+        endsAt: hasDates ? (endsAt ?? null) : null,
+      }
     );
   });
 }

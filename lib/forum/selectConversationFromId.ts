@@ -15,6 +15,7 @@ export default async function selectConversationFromId(conversationId: string) {
         coverWidth: string | null;
         coverHeight: string | null;
         createdAt: string;
+        reportedAt: string | null;
         userId: string;
         userPseudo: string | null;
         userEmail: string;
@@ -31,6 +32,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
         c.created_at::text AS "createdAt",
+        c.reported_at::text AS "reportedAt",
         u.id::text AS "userId",
         u.pseudo AS "userPseudo",
         u.email AS "userEmail",

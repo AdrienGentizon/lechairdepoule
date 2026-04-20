@@ -9,6 +9,7 @@ import UserButton from "@/components/Header/UserButton/UserButton";
 import ForumProvider from "@/contexts/ForumProvider";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
+import UIProvider from "@/contexts/UIProvider";
 
 export default async function ForumLayout({
   children,
@@ -26,18 +27,20 @@ export default async function ForumLayout({
     >
       <PusherProvider>
         <ReactQueryProvider>
-          <ForumProvider>
-            {showForumContent && <>{children}</>}
-            {!showForumContent && (
-              <p className="font-courier mx-auto my-auto w-full max-w-1/2 text-center text-pretty">
-                Un peu de patience, ça va pas tarder...
-              </p>
-            )}
-            <AbsoluteButtonGroup>
-              <AdminButton />
-              <UserButton />
-            </AbsoluteButtonGroup>
-          </ForumProvider>
+          <UIProvider>
+            <ForumProvider>
+              {showForumContent && <>{children}</>}
+              {!showForumContent && (
+                <p className="font-courier mx-auto my-auto w-full max-w-1/2 text-center text-pretty">
+                  Un peu de patience, ça va pas tarder...
+                </p>
+              )}
+              <AbsoluteButtonGroup>
+                <AdminButton />
+                <UserButton />
+              </AbsoluteButtonGroup>
+            </ForumProvider>
+          </UIProvider>
         </ReactQueryProvider>
       </PusherProvider>
     </ClerkProvider>
