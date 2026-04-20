@@ -9,6 +9,8 @@ export default async function selectConversationFromId(conversationId: string) {
         title: string;
         description: string | null;
         type: string | null;
+        startsAt: string | null;
+        endsAt: string | null;
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
@@ -23,6 +25,8 @@ export default async function selectConversationFromId(conversationId: string) {
         c.title,
         c.description,
         c.type,
+        cd.starts_at::text AS "startsAt",
+        cd.ends_at::text AS "endsAt",
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
@@ -32,11 +36,11 @@ export default async function selectConversationFromId(conversationId: string) {
         u.email AS "userEmail",
         u.banned_at::text AS "userBannedAt"
       FROM
-        public.conversations c,
-        public.users u
+        public.conversations c
+        JOIN public.users u ON c.created_by = u.id
+        LEFT JOIN public.conversation_dates cd ON cd.conversation_id = c.id
       WHERE
         c.id = ${conversationId}
-        AND c.created_by = u.id
         AND c.deleted_at IS NULL;`
   )
     .map(

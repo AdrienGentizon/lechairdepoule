@@ -17,15 +17,21 @@ export default function useUpdateConversation(options?: {
       title,
       description,
       cover,
+      startsAt,
+      endsAt,
     }: {
       id: string;
       title: string;
       description: string;
       cover?: File;
+      startsAt?: string | null;
+      endsAt?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
+      if (startsAt) body.set("startsAt", startsAt);
+      if (endsAt) body.set("endsAt", endsAt);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {
@@ -67,6 +73,8 @@ export default function useUpdateConversation(options?: {
                 coverUrl: data.coverUrl,
                 coverWidth: data.coverWidth,
                 coverHeight: data.coverHeight,
+                startsAt: data.startsAt,
+                endsAt: data.endsAt,
               },
             ];
           }, []);
@@ -82,6 +90,8 @@ export default function useUpdateConversation(options?: {
             coverUrl: data.coverUrl,
             coverWidth: data.coverWidth,
             coverHeight: data.coverHeight,
+            startsAt: data.startsAt,
+            endsAt: data.endsAt,
           };
         }
       );

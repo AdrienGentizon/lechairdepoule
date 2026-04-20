@@ -7,6 +7,8 @@ export default async function updateConversationFromId(
     title,
     description,
     cover,
+    startsAt,
+    endsAt,
   }: {
     conversationId: string;
     userId: string;
@@ -17,12 +19,16 @@ export default async function updateConversationFromId(
       width: number;
       height: number;
     };
+    startsAt?: string | null;
+    endsAt?: string | null;
   },
   options?: { forceDropCover?: boolean }
 ) {
   const forceDropCover = options?.forceDropCover === true;
-  return (
-    await sql<
+  const updateDates = startsAt !== undefined || endsAt !== undefined;
+
+  return sql.begin(async (sql) => {
+    const result = await sql<
       {
         id: string;
         title: string;
@@ -52,6 +58,21 @@ export default async function updateConversationFromId(
         image_url as "coverUrl",
         image_width::integer as "coverWidth",
         image_height::integer as "coverHeight",
-        (SELECT image_url FROM previous) AS "previousCoverUrl";`
-  ).at(0);
+        (SELECT image_url FROM previous) AS "previousCoverUrl";`;
+
+    const updated = result.at(0);
+    if (!updated) return undefined;
+
+    if (updateDates) {
+      await sql`
+        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
+        VALUES (${conversationId}, ${startsAt ?? null}, ${endsAt ?? null})
+        ON CONFLICT (conversation_id) DO UPDATE
+          SET
+            starts_at = CASE WHEN ${startsAt !== undefined}::boolean THEN EXCLUDED.starts_at ELSE conversation_dates.starts_at END,
+            ends_at = CASE WHEN ${endsAt !== undefined}::boolean THEN EXCLUDED.ends_at ELSE conversation_dates.ends_at END`;
+    }
+
+    return { ...updated, startsAt: startsAt ?? null, endsAt: endsAt ?? null };
+  });
 }

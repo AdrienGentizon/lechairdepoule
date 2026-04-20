@@ -26,6 +26,7 @@ import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
+import { nullableDate } from "@/lib/schemas";
 import { Conversation, Message } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -248,6 +249,8 @@ export async function PATCH(
       .object({
         title: z.string(),
         description: z.string(),
+        startsAt: nullableDate,
+        endsAt: nullableDate,
       })
       .safeParse(payload);
 
@@ -281,6 +284,8 @@ export async function PATCH(
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       cover,
+      startsAt: parsedInputs.data.startsAt,
+      endsAt: parsedInputs.data.endsAt,
     };
     const updatedConversation = await updateConversationFromId(values);
 

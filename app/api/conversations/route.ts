@@ -8,6 +8,7 @@ import { canCreateConversation } from "@/lib/auth/permissions";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
+import { nullableDate } from "@/lib/schemas";
 import { Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -29,7 +30,9 @@ export async function POST(req: NextRequest) {
       .object({
         title: z.string(),
         description: z.string(),
-        type: z.string(),
+        type: z.enum(["TOPIC", "EVENT", "RELEASE"]),
+        startsAt: nullableDate,
+        endsAt: nullableDate,
       })
       .safeParse(payload);
 
@@ -61,6 +64,8 @@ export async function POST(req: NextRequest) {
       type: parsedInputs.data.type,
       user: { ...user, pseudo: getUserPseudo(user) },
       cover,
+      startsAt: parsedInputs.data.startsAt,
+      endsAt: parsedInputs.data.endsAt,
     });
 
     if (!insertedConversation)

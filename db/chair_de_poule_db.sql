@@ -24,7 +24,14 @@ CREATE TABLE conversations (
     created_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     type TEXT,
-    CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE conversation_dates (
+    conversation_id INTEGER PRIMARY KEY,
+    starts_at TIMESTAMPTZ,
+    ends_at TIMESTAMPTZ,
+    CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
 
 CREATE TABLE messages (
@@ -33,14 +40,17 @@ CREATE TABLE messages (
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ,
     reported_at TIMESTAMPTZ,
-		reported_by INTEGER,
-		user_id INTEGER NOT NULL,
-		conversation_id INTEGER,
+    reported_by INTEGER,
+    deleted_at TIMESTAMPTZ,
+    deleted_by INTEGER,
+    user_id INTEGER NOT NULL,
+    conversation_id INTEGER,
     parent_message_id INTEGER,
-    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL,
-    CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
-    CONSTRAINT parent_message_fk FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE CASCADE
+    CONSTRAINT deleted_by_fk FOREIGN KEY (deleted_by) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE RESTRICT,
+    CONSTRAINT parent_message_fk FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE notifications (
@@ -54,8 +64,8 @@ CREATE TABLE notifications (
   CONSTRAINT message_fk FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
   CONSTRAINT mention_uq UNIQUE(message_id, user_id)
 );
-CREATE INDEX idx_mentions_user_id ON mentions(user_id);
-CREATE INDEX idx_mentions_unread ON mentions(user_id, read_at) WHERE read_at IS NULL;
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_unread ON notifications(user_id, read_at) WHERE read_at IS NULL;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- CREATE INDEX trgm_idx_gist ON users USING GIST (pseudo gist_trgm_ops);

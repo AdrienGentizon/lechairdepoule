@@ -12,6 +12,8 @@ export default async function selectConversations() {
         coverWidth: string | null;
         coverHeight: string | null;
         type: string | null;
+        startsAt: string | null;
+        endsAt: string | null;
         createdAt: string;
         userId: string;
         userPseudo: string | null;
@@ -27,17 +29,19 @@ export default async function selectConversations() {
       c.image_width as "coverWidth",
       c.image_height as "coverHeight",
       c.type,
+      cd.starts_at::text as "startsAt",
+      cd.ends_at::text as "endsAt",
       c.created_at::text as "createdAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
       u.email as "userEmail",
       u.banned_at::text as "userBannedAt"
     FROM
-      public.conversations c,
-      public.users u
+      public.conversations c
+      JOIN public.users u ON c.created_by = u.id
+      LEFT JOIN public.conversation_dates cd ON cd.conversation_id = c.id
     WHERE
-      c.created_by = u.id
-      AND c.deleted_at IS NULL
+      c.deleted_at IS NULL
     ORDER BY
       c.created_at DESC;`
   ).map(

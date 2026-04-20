@@ -15,16 +15,22 @@ export default function usePostConversation() {
       description,
       type,
       cover,
+      startsAt,
+      endsAt,
     }: {
       title: string;
       description: string;
       type: string;
       cover?: File;
+      startsAt?: string | null;
+      endsAt?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
       body.set("type", type);
+      if (startsAt) body.set("startsAt", startsAt);
+      if (endsAt) body.set("endsAt", endsAt);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {

@@ -13,7 +13,8 @@ function getConversationFromRaw(
     created_by: string;
     created_at: string;
   },
-  createdBy: { id: string; pseudo: string; bannedAt: string | null }
+  createdBy: { id: string; pseudo: string; bannedAt: string | null },
+  dates: { startsAt: string | null; endsAt: string | null }
 ): Conversation {
   return {
     id: raw.id,
@@ -23,6 +24,8 @@ function getConversationFromRaw(
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
     type: raw.type,
+    startsAt: dates.startsAt,
+    endsAt: dates.endsAt,
     createdAt: raw.created_at,
     createdBy,
     messages: [],
@@ -35,6 +38,8 @@ export default async function insertConversation({
   cover,
   type,
   user,
+  startsAt,
+  endsAt,
 }: {
   title: string;
   description: string;
@@ -45,44 +50,56 @@ export default async function insertConversation({
   };
   type: string;
   user: User;
+  startsAt?: string | null;
+  endsAt?: string | null;
 }) {
-  const rows = await sql<
-    {
-      id: string;
-      title: string;
-      description: string | null;
-      coverUrl: string | null;
-      coverWidth: string | null;
-      coverHeight: string | null;
-      type: string | null;
-      created_by: string;
-      created_at: string;
-    }[]
-  >`
-  INSERT INTO
-	conversations (title, description, image_url, image_width, image_height, type, created_by, created_at)
-  VALUES
-    (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${Date.now()})
-  RETURNING
-    id::text,
-    title,
-    description,
-    image_url as "coverUrl",
-    image_width as "coverWidth",
-    image_height as "coverHeight",
-    type,
-    created_by::text,
-    created_at::text;`;
+  const hasDates = type === "EVENT" || type === "RELEASE";
 
-  const newConversation = rows.at(0);
+  return sql.begin(async (sql) => {
+    const rows = await sql<
+      {
+        id: string;
+        title: string;
+        description: string | null;
+        coverUrl: string | null;
+        coverWidth: string | null;
+        coverHeight: string | null;
+        type: string | null;
+        created_by: string;
+        created_at: string;
+      }[]
+    >`
+    INSERT INTO
+      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at)
+    VALUES
+      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${new Date()})
+    RETURNING
+      id::text,
+      title,
+      description,
+      image_url as "coverUrl",
+      image_width as "coverWidth",
+      image_height as "coverHeight",
+      type,
+      created_by::text,
+      created_at::text;`;
 
-  if (!newConversation) {
-    throw new Error("cannot insert conversation");
-  }
+    const newConversation = rows.at(0);
 
-  return getConversationFromRaw(newConversation, {
-    id: user.id,
-    pseudo: user.pseudo,
-    bannedAt: user.bannedAt,
+    if (!newConversation) {
+      throw new Error("cannot insert conversation");
+    }
+
+    if (hasDates) {
+      await sql`
+        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
+        VALUES (${newConversation.id}, ${startsAt ?? null}, ${endsAt ?? null})`;
+    }
+
+    return getConversationFromRaw(
+      newConversation,
+      { id: user.id, pseudo: user.pseudo, bannedAt: user.bannedAt },
+      { startsAt: hasDates ? (startsAt ?? null) : null, endsAt: hasDates ? (endsAt ?? null) : null }
+    );
   });
 }
