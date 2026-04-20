@@ -1,14 +1,3 @@
-export type RawUser = {
-  id: number;
-  email: string;
-  pseudo: string | null;
-  role: string | null;
-  createdAt: string;
-  bannedAt: string | null;
-  deletedAt: string | null;
-  tosAcceptedAt: string | null;
-};
-
 export type User = {
   id: string;
   pseudo: string | null;

@@ -4,7 +4,6 @@ export default async function selectUsersByPseudo(search: string) {
   return await sql<
     {
       id: string;
-      email: string;
       pseudo: string | null;
       role: string | null;
       createdAt: string;
@@ -14,7 +13,6 @@ export default async function selectUsersByPseudo(search: string) {
     }[]
   >`SELECT
       id::text,
-      email,
       pseudo,
       role,
       created_at::text as "createdAt",

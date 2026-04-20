@@ -32,8 +32,11 @@ export async function GET(req: NextRequest) {
     logger.flush();
     return NextResponse.json<(User & { similarity: number })[]>(
       exactMatch
-        ? (await selectUsersByPseudo(search)).map(({ email: _, ...user }) => ({ ...user, similarity: 1 }))
-        : (await selectSimilarUsersByPseudo(search)).map(({ email: _, ...user }) => user),
+        ? (await selectUsersByPseudo(search)).map((user) => ({
+            ...user,
+            similarity: 1,
+          }))
+        : await selectSimilarUsersByPseudo(search),
       { status: 200 }
     );
   } catch (error) {

@@ -4,7 +4,6 @@ export async function selectUsersFromId(includes: string[]) {
   return await sql<
     {
       id: string;
-      email: string;
       pseudo: string | null;
       role: string | null;
       createdAt: string;
@@ -13,7 +12,6 @@ export async function selectUsersFromId(includes: string[]) {
     }[]
   >`SELECT
       id::text,
-      email,
       pseudo,
       role,
       created_at::text as "createdAt",
