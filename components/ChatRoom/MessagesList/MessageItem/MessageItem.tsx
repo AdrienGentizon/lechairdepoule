@@ -8,6 +8,7 @@ import { getMessageMetadataAsString } from "@/lib/forum/utils";
 import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import { useChatRoom } from "../../ChatRoomContext";
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
@@ -52,6 +53,9 @@ function ReplyInThreadButton({
   updateShowThread: (show: boolean) => void;
 }) {
   const ref = useRef<ComponentRef<"div">>(null);
+  const { activeFormId, setActiveFormId } = useChatRoom();
+  const formId = `thread-${message.id}`;
+  const isFormActive = activeFormId === formId;
 
   useEffect(() => {
     if (showThread) {
@@ -60,34 +64,41 @@ function ReplyInThreadButton({
   }, [showThread]);
 
   if (!message.conversationId) return null;
+
+  const toggleThread = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (showThread) {
+      updateShowThread(false);
+      setActiveFormId(null);
+    } else {
+      updateShowThread(true);
+      setActiveFormId(formId);
+    }
+  };
+
   return (
     <div
       ref={ref}
       className={cn("flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-12")}
     >
       {showThread && (
-        <>
-          <SubmitMessageForm
-            me={me}
-            conversation={conversation}
-            messageId={message.id}
-            variant="dark"
-            autoFocus
-            buttonLabel={`Envoyer`}
-            onSuccess={() => {}}
-          />
-        </>
+        <SubmitMessageForm
+          me={me}
+          conversation={conversation}
+          formId={formId}
+          messageId={message.id}
+          buttonLabel={`Envoyer`}
+          placeholder={`Participer dans le fil de discussion...`}
+          onSuccess={() => {}}
+        />
       )}
 
       <button
         type="button"
         className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
-        onClick={(e) => {
-          e.stopPropagation();
-          updateShowThread(!showThread);
-        }}
+        onClick={toggleThread}
       >
-        {showThread
+        {showThread || isFormActive
           ? `Fermer le fil de discussion`
           : threadedMessages.length > 0
             ? `Rejoindre le fil de discussion (${threadedMessages.length})`

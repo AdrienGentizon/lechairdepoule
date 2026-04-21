@@ -9,36 +9,42 @@ import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import { useChatRoom } from "../ChatRoomContext";
 import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
 
 type Props = {
   me: Me;
   conversation: Conversation;
+  formId: string;
   messageId?: string;
-  variant?: "dark";
   autoFocus?: boolean;
   buttonLabel: ReactNode;
+  placeholder?: string;
+  withCloseButton?: boolean;
   onSuccess?: () => void;
-  onCancel?: () => void;
 };
 
 export default function SubmitMessageForm({
   me,
   conversation,
+  formId,
   messageId,
-  variant,
   autoFocus,
   buttonLabel,
+  placeholder,
+  withCloseButton = false,
   onSuccess,
-  onCancel,
 }: Props) {
   const [body, setBody] = useState("");
   const { postConversationMessage, error, isPending } =
     usePostConversationMessage(conversation.id);
+  const { activeFormId, setActiveFormId } = useChatRoom();
+
+  const isActive = activeFormId === formId;
 
   return (
     <form
-      className="flex w-full flex-col gap-1 sm:max-w-2xl"
+      className="flex w-full flex-col gap-1 px-0 sm:max-w-2xl"
       onSubmit={(e) => {
         e.preventDefault();
         if (!e.currentTarget.checkValidity()) return;
@@ -54,6 +60,7 @@ export default function SubmitMessageForm({
             onSuccess: () => {
               onSuccess?.();
               setBody("");
+              setActiveFormId(null);
             },
           }
         );
@@ -67,30 +74,40 @@ export default function SubmitMessageForm({
         name="body"
         className={cn(
           "border-foreground bg-foreground font-courier min-h-20 w-full rounded-sm border px-4 py-2 text-black",
-          variant === "dark" &&
-            "border-foreground bg-background text-foreground border"
+          !isActive &&
+            "border-foreground bg-background text-foreground min-h-auto border"
         )}
-        autoFocus={autoFocus}
+        rows={isActive ? undefined : 1}
+        autoFocus={autoFocus ?? true}
         value={body}
+        placeholder={placeholder}
+        onFocus={() => setActiveFormId(formId)}
         onChange={(e) => {
           setBody(e.target.value);
         }}
         required
       />
       {error && <p className="text-red-500">{error.message}</p>}
-      <div className="flex items-center justify-end gap-2">
-        {onCancel && (
-          <Button type="button" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
-        {me.canPostMessage(conversation) && (
-          <Button type="submit" disabled={isPending}>
-            {buttonLabel}
-            {isPending && <Loader position="relative" />}
-          </Button>
-        )}
-      </div>
+      {isActive && (
+        <div className="flex items-center justify-end gap-2">
+          {withCloseButton && (
+            <Button
+              type="button"
+              onClick={() => {
+                setActiveFormId(null);
+              }}
+            >
+              Annuler
+            </Button>
+          )}
+          {me.canPostMessage(conversation) && (
+            <Button type="submit" disabled={isPending}>
+              {buttonLabel}
+              {isPending && <Loader position="relative" />}
+            </Button>
+          )}
+        </div>
+      )}
     </form>
   );
 }

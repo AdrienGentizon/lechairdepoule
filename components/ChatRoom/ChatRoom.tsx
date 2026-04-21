@@ -11,6 +11,7 @@ import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { cn } from "@/lib/utils";
 
 import Loader from "../Loader/Loader";
+import { ChatRoomProvider } from "./ChatRoomContext";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import MessagesList from "./MessagesList/MessagesList";
 import ReportConversationButton from "./ReportConversationButton/ReportConversationButton";
@@ -21,7 +22,7 @@ type Props = {
   conversationId: string;
 };
 
-export default function ChatRoom({ conversationId }: Props) {
+function ChatRoom({ conversationId }: Props) {
   const { me } = useMe();
   const { conversation, isLoading, lastEmptyLiRef, scrollToBottom } =
     useConversation(conversationId);
@@ -90,12 +91,15 @@ export default function ChatRoom({ conversationId }: Props) {
           />
         </Suspense>
       </section>
-      <div className="relative px-1 landscape:px-0">
-        <div className="to-background pointer-events-none absolute h-8 w-full max-w-[calc(100dvw-0.5rem)] -translate-y-full bg-linear-to-b from-transparent" />
+      <div className="relative px-1">
+        <div className="to-background pointer-events-none absolute inset-x-0 h-8 -translate-y-full bg-linear-to-b from-transparent" />
         <SubmitMessageForm
           me={me}
           conversation={conversation}
+          formId="main"
           buttonLabel={`Envoyer`}
+          placeholder={`Participer à la conversation...`}
+          withCloseButton
           onSuccess={() => {
             scrollToBottom();
           }}
@@ -104,5 +108,13 @@ export default function ChatRoom({ conversationId }: Props) {
 
       {isLoading && <Loader />}
     </div>
+  );
+}
+
+export default function Wrapper({ conversationId }: Props) {
+  return (
+    <ChatRoomProvider>
+      <ChatRoom conversationId={conversationId} />
+    </ChatRoomProvider>
   );
 }
