@@ -45,7 +45,7 @@ export default function ReportConversationButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
+            <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:text-purple-300">
               <Ban className="size-5" />
               <span className="sr-only">Signaler</span>
             </button>

@@ -37,7 +37,7 @@ export default function DeleteConversationButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:bg-neutral-800 hover:text-neutral-100">
+        <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:text-purple-300">
           <Trash2 className="size-5" />
           <span className="sr-only">Supprimer</span>
         </button>

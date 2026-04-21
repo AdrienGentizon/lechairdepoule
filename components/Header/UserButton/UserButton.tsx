@@ -12,9 +12,9 @@ function UserButton() {
   return (
     <Link
       href={`/user`}
-      className="origin-center scale-[1.5] cursor-pointer hover:scale-[1.525] portrait:scale-[1.25]"
+      className="text-foreground cursor-pointer hover:text-purple-300"
     >
-      <UserCircle className="stroke-white stroke-1" aria-hidden />
+      <UserCircle aria-hidden />
       <span
         className="sr-only"
         aria-live="polite"

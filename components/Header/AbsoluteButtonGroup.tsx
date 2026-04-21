@@ -6,7 +6,7 @@ export default function AbsoluteButtonGroup({
   children: ReactNode;
 }) {
   return (
-    <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
+    <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
       {children}
     </div>
   );
