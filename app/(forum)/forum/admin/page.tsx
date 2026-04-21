@@ -1,5 +1,7 @@
 "use client";
 
+import { Skull } from "lucide-react";
+
 import BanUserTrigger from "@/components/ChatRoom/MessagesList/MessageItem/BanUserTrigger/BanUserTrigger";
 import MessageItem from "@/components/ChatRoom/MessagesList/MessageItem/MessageItem";
 import ConversationItem from "@/components/ConversationItem/ConversationItem";
@@ -129,7 +131,8 @@ export default function AdminPage() {
                     user={user}
                     className="absolute right-4"
                   >
-                    <button className="rounded-sm border border-white px-2 py-0.5 text-sm hover:bg-white hover:text-black">
+                    <button className="inline-flex items-center gap-1 rounded-sm border border-white px-2 py-0.5 text-xs hover:bg-white hover:text-black">
+                      <Skull className="size-3" />
                       Bannir
                     </button>
                   </BanUserTrigger>
