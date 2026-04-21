@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import Button, { buttonClassName } from "../Button/Button";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
+import { cn } from "@/lib/utils";
 
 const CONVERSATION_TYPE_SPECIFICATIONS = {
   TOPIC: { cover: false, startsAt: false, endsAt: false },
@@ -60,6 +61,7 @@ export default function CreateTopicForm({
   onDeleteCover,
   submitLabel,
 }: Props) {
+  const [rulesAccepted, setRulesAccepted] = useState(false);
   const [form, setForm] = useState<{
     title?: string;
     description?: string;
@@ -75,6 +77,7 @@ export default function CreateTopicForm({
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
+    rules?: string;
   }>({});
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
 
@@ -102,20 +105,22 @@ export default function CreateTopicForm({
         e.preventDefault();
         setErrors({});
 
-        const titleEmpty = (form.title?.length ?? 0) <= 0;
-        const descriptionEmpty = (form.description?.length ?? 0) <= 0;
+        const title = form.title ?? "";
+        const description = form.description ?? "";
+        const rulesNotAccepted = !initialValues && !rulesAccepted;
 
-        if (!form.title || !form.description || titleEmpty || descriptionEmpty)
+        if (!title || !description || rulesNotAccepted)
           return setErrors({
-            title: titleEmpty ? "Titre obligatoire" : undefined,
-            description: descriptionEmpty
-              ? "Description obligatoire"
+            title: !title ? "Titre obligatoire" : undefined,
+            description: !description ? "Description obligatoire" : undefined,
+            rules: rulesNotAccepted
+              ? "Veuillez accepter les règles du forum"
               : undefined,
           });
 
         onSubmit({
-          title: form.title,
-          description: form.description,
+          title,
+          description,
           startsAt: form.startsAt,
           endsAt: form.endsAt,
           cover: coverFile,
@@ -283,16 +288,23 @@ export default function CreateTopicForm({
           <FieldError>{null}</FieldError>
         </FormField>
       )}
-      <Button
-        form="conversation-form"
-        type="submit"
-        className="mt-9 w-full"
-        disabled={
-          isPending ||
-          (form.title?.length ?? 0) <= 0 ||
-          (form.description?.length ?? 0) <= 0
-        }
-      >
+      {!initialValues && (
+        <div className="flex items-center gap-2 py-2">
+          <input
+            id="rules-acceptance"
+            type="checkbox"
+            checked={rulesAccepted}
+            onChange={(e) => setRulesAccepted(e.target.checked)}
+          />
+          <label
+            htmlFor="rules-acceptance"
+            className={cn("text-sm", errors.rules && "text-red-500")}
+          >
+            Je m&apos;engage à respecter les règles du forum
+          </label>
+        </div>
+      )}
+      <Button form="conversation-form" type="submit" className="mt-9 w-full">
         {submitLabel}
         {isPending && <Loader className="size-4 animate-spin" />}
       </Button>
