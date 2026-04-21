@@ -49,6 +49,7 @@ function getPermissions(user: User) {
       if (user.bannedAt) return false;
       if (conversation.reportedAt) return false;
       if (user.role !== "admin") return false;
+      if (conversation.createdBy.id === user.id) return false;
       return true;
     },
     canBanMessageUser(message: Message) {
