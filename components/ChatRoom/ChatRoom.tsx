@@ -38,8 +38,8 @@ function ChatRoom({ conversationId }: Props) {
 
   return (
     <div className="grid grid-cols-1 grid-rows-[min-content_1fr_min-content]">
-      <header className="flex flex-col gap-2 py-2">
-        <div className="flex items-center gap-4 bg-black">
+      <header className="bg-background text-foreground relative flex flex-col gap-2 py-2">
+        <div className="flex items-center gap-4">
           <nav>
             <Link href={`/forum`}>
               <ArrowLeft />
@@ -70,15 +70,16 @@ function ChatRoom({ conversationId }: Props) {
           </div>
         </div>
         <div className="flex">
-          <h3 className="ml-auto text-xs">
+          <h3 className="ml-auto pr-2 text-xs">
             {getConversationMetadataAsString(conversation)}
           </h3>
         </div>
+        <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 translate-y-full bg-linear-to-b to-transparent" />
       </header>
 
       <section
         aria-labelledby="messages-section"
-        className="no-scrollbar overflow-y-scroll bg-black px-1 py-2 sm:max-w-2xl"
+        className="no-scrollbar overflow-y-scroll bg-black px-1 py-6 sm:max-w-2xl"
       >
         <h2 className="sr-only" id="messages-section">
           Messages
