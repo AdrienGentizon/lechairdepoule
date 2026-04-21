@@ -52,7 +52,7 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         >
           <button
             disabled={conversation.createdBy.bannedAt !== null}
-            className="bg-background right-4 inline-flex cursor-pointer items-center gap-1 rounded-sm border border-white px-2 py-1 text-xs hover:bg-neutral-700 disabled:hidden"
+            className="bg-background right-4 inline-flex cursor-pointer items-center gap-1 rounded-sm border border-white px-2 py-0.5 text-xs hover:bg-neutral-700 disabled:hidden"
           >
             <Skull className="size-3" />
             Bannir

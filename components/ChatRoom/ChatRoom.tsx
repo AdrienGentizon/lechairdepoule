@@ -77,7 +77,7 @@ export default function ChatRoom({ conversationId }: Props) {
 
       <section
         aria-labelledby="messages-section"
-        className="no-scrollbar overflow-y-scroll bg-black px-1 sm:max-w-2xl landscape:px-0"
+        className="no-scrollbar overflow-y-scroll bg-black px-1 py-2 sm:max-w-2xl"
       >
         <h2 className="sr-only" id="messages-section">
           Messages

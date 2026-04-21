@@ -1,9 +1,7 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { Skull } from "lucide-react";
 import { z } from "zod";
 
-import Button from "@/components/Button/Button";
 import useMe, { Me } from "@/lib/auth/useMe";
 import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
@@ -11,7 +9,6 @@ import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
-import BanUserTrigger from "./BanUserTrigger/BanUserTrigger";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
 function Header({ me, message }: { me: Me; message: Message }) {
@@ -33,15 +30,6 @@ function Header({ me, message }: { me: Me; message: Message }) {
         </div>
         <div className="ml-auto flex items-center gap-1">
           <ReportMessageButton me={me} message={message} />
-          <BanUserTrigger me={me} user={message.user}>
-            <button
-              disabled={message.user.bannedAt !== null}
-              className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
-            >
-              <Skull className="size-3" />
-              Bannir
-            </button>
-          </BanUserTrigger>
         </div>
       </div>
     </header>
@@ -52,48 +40,59 @@ function ReplyInThreadButton({
   me,
   message,
   conversation,
+  threadedMessages,
+  showThread,
+  updateShowThread,
 }: {
   me: Me;
   message: Message;
   conversation: Conversation;
+  threadedMessages: (Message & { hasMention: boolean })[];
+  showThread: boolean;
+  updateShowThread: (show: boolean) => void;
 }) {
-  const [showTextarea, setShowTextarea] = useState(false);
   const ref = useRef<ComponentRef<"div">>(null);
 
   useEffect(() => {
-    if (showTextarea) {
+    if (showThread) {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-  }, [showTextarea]);
+  }, [showThread]);
 
   if (!message.conversationId) return null;
   return (
-    <div ref={ref} className={cn("scroll-mb-10 pt-2", showTextarea && "pl-12")}>
-      {!showTextarea && (
-        <Button
-          type="button"
-          className="ml-auto"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowTextarea(true);
-          }}
-        >
-          Répondre
-        </Button>
+    <div
+      ref={ref}
+      className={cn("flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-12")}
+    >
+      {showThread && (
+        <>
+          <SubmitMessageForm
+            me={me}
+            conversation={conversation}
+            messageId={message.id}
+            variant="dark"
+            autoFocus
+            buttonLabel={`Envoyer`}
+            onSuccess={() => {}}
+          />
+        </>
       )}
-      {showTextarea && (
-        <SubmitMessageForm
-          me={me}
-          conversation={conversation}
-          messageId={message.id}
-          variant="dark"
-          autoFocus
-          buttonLabel={`Répondre`}
-          onSuccess={() => {
-            setShowTextarea(false);
-          }}
-        />
-      )}
+
+      <button
+        type="button"
+        className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
+        onClick={(e) => {
+          e.stopPropagation();
+          updateShowThread(!showThread);
+        }}
+      >
+        {showThread
+          ? `Fermer le fil de discussion`
+          : threadedMessages.length > 0
+            ? `Rejoindre le fil de discussion (${threadedMessages.length})`
+            : `Répondre dans le fil de discussion`}
+      </button>
     </div>
   );
 }
@@ -203,6 +202,7 @@ export default function MessageItem({
   variant?: "admin";
 }) {
   const { me } = useMe();
+  const [showThread, setShowThread] = useState(false);
   const enableAutoMarkAsRead = false;
 
   if (!me) return null;
@@ -224,7 +224,7 @@ export default function MessageItem({
           {enableAutoMarkAsRead && hasMention && (
             <MarkAsReadWhenInView messageId={message.id} />
           )}
-          {conversation && (
+          {conversation && showThread && (
             <Thread
               conversation={conversation}
               message={message}
@@ -238,6 +238,9 @@ export default function MessageItem({
                 me={me}
                 message={message}
                 conversation={conversation}
+                threadedMessages={threadedMessages}
+                showThread={showThread}
+                updateShowThread={setShowThread}
               />
             )}
         </div>

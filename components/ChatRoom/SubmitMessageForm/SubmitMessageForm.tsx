@@ -19,6 +19,7 @@ type Props = {
   autoFocus?: boolean;
   buttonLabel: ReactNode;
   onSuccess?: () => void;
+  onCancel?: () => void;
 };
 
 export default function SubmitMessageForm({
@@ -29,6 +30,7 @@ export default function SubmitMessageForm({
   autoFocus,
   buttonLabel,
   onSuccess,
+  onCancel,
 }: Props) {
   const [body, setBody] = useState("");
   const { postConversationMessage, error, isPending } =
@@ -36,7 +38,7 @@ export default function SubmitMessageForm({
 
   return (
     <form
-      className="flex flex-col gap-1 sm:max-w-2xl"
+      className="flex w-full flex-col gap-1 sm:max-w-2xl"
       onSubmit={(e) => {
         e.preventDefault();
         if (!e.currentTarget.checkValidity()) return;
@@ -76,12 +78,19 @@ export default function SubmitMessageForm({
         required
       />
       {error && <p className="text-red-500">{error.message}</p>}
-      {me.canPostMessage(conversation) && (
-        <Button className="ml-auto" type="submit" disabled={isPending}>
-          {buttonLabel}
-          {isPending && <Loader position="relative" />}
-        </Button>
-      )}
+      <div className="flex items-center justify-end gap-2">
+        {onCancel && (
+          <Button type="button" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        {me.canPostMessage(conversation) && (
+          <Button type="submit" disabled={isPending}>
+            {buttonLabel}
+            {isPending && <Loader position="relative" />}
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

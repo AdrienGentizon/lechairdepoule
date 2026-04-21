@@ -29,7 +29,7 @@ export default function ReportMessageButton({ me, message }: Props) {
     <Dialog open={openReport} onOpenChange={setOpenReport}>
       <DialogTrigger
         disabled={message.reportedAt !== null || message.user.bannedAt !== null}
-        className="inline-flex h-full items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:bg-neutral-600 disabled:hidden"
+        className="inline-flex h-full cursor-pointer items-center gap-1 rounded-t-sm border-t border-r border-l border-white px-2 hover:text-purple-300 disabled:hidden"
       >
         <Ban className="size-3" />
         Molo molo
