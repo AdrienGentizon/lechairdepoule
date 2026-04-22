@@ -75,7 +75,7 @@ export default function useMe() {
 
       if (!response.ok) {
         console.log((await response.json()).error);
-        return;
+        return null;
       }
 
       return response.json() as Promise<User>;
