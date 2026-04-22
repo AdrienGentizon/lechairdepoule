@@ -43,7 +43,7 @@ export default function ForumPage() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
-      <div className="flex items-center justify-center gap-2 pb-4">
+      <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
         {FILTERS.map(({ type, label }) => {
           const count =
             type === "ALL"
@@ -54,7 +54,7 @@ export default function ForumPage() {
               key={type}
               onClick={() => setActiveFilter(type)}
               className={cn(
-                "px-1",
+                "px-2",
                 activeFilter === type &&
                   "border-purple-300 bg-neutral-950 text-purple-300"
               )}
@@ -63,7 +63,7 @@ export default function ForumPage() {
               {count > 0 && (
                 <span
                   className={cn(
-                    "desktop:flex hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900",
+                    "hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900 sm:flex",
                     activeFilter === type && "bg-purple-300"
                   )}
                 >

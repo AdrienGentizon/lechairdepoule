@@ -80,7 +80,7 @@ function ReplyInThreadButton({
     <div
       ref={ref}
       className={cn(
-        "desktop:pl-12 flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-6"
+        "flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-6 sm:pl-12"
       )}
     >
       {showThread && (
@@ -122,7 +122,7 @@ function Thread({
   if (threadedMessages.length === 0) return null;
 
   return (
-    <ul className="desktop:pl-12 flex flex-col gap-2 rounded-sm pt-6 pl-6">
+    <ul className="flex flex-col gap-2 rounded-sm pt-6 pl-6 sm:pl-12">
       {threadedMessages.map((threadedMessage) => {
         return (
           <MessageItem
