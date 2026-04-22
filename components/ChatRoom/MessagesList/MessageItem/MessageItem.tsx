@@ -79,7 +79,9 @@ function ReplyInThreadButton({
   return (
     <div
       ref={ref}
-      className={cn("flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-12")}
+      className={cn(
+        "desktop:pl-12 flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-6"
+      )}
     >
       {showThread && (
         <SubmitMessageForm
@@ -120,7 +122,7 @@ function Thread({
   if (threadedMessages.length === 0) return null;
 
   return (
-    <ul className="flex flex-col gap-2 rounded-sm pt-6 pl-12">
+    <ul className="desktop:pl-12 flex flex-col gap-2 rounded-sm pt-6 pl-6">
       {threadedMessages.map((threadedMessage) => {
         return (
           <MessageItem
@@ -220,7 +222,7 @@ export default function MessageItem({
 
   return (
     <>
-      <li id={message.id} className="relative portrait:pb-6">
+      <li id={message.id} className="relative">
         <Header me={me} message={message} />
         <div className="rounded-b-sm border border-white p-2">
           <p

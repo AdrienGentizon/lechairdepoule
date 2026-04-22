@@ -32,7 +32,7 @@ export default function MessagesList({
   }, [messageId]);
 
   return (
-    <ul className="flex min-h-[calc(100dvh-400px)] flex-col gap-6 rounded-sm py-2">
+    <ul className="desktop:gap-6 flex min-h-[calc(100dvh-400px)] flex-col gap-4 rounded-sm py-2">
       {conversation.coverUrl &&
         conversation.coverWidth &&
         conversation.coverHeight && (

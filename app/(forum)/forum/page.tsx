@@ -43,7 +43,7 @@ export default function ForumPage() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
-      <div className="flex items-center justify-center gap-2 pb-2">
+      <div className="flex items-center justify-center gap-2 pb-4">
         {FILTERS.map(({ type, label }) => {
           const count =
             type === "ALL"
@@ -53,17 +53,17 @@ export default function ForumPage() {
             <Button
               key={type}
               onClick={() => setActiveFilter(type)}
-              className={
-                activeFilter === type
-                  ? "border-purple-300 bg-neutral-950 text-purple-300"
-                  : ""
-              }
+              className={cn(
+                "px-1",
+                activeFilter === type &&
+                  "border-purple-300 bg-neutral-950 text-purple-300"
+              )}
             >
               {label}{" "}
               {count > 0 && (
                 <span
                   className={cn(
-                    "flex size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900",
+                    "desktop:flex hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900",
                     activeFilter === type && "bg-purple-300"
                   )}
                 >
