@@ -69,19 +69,17 @@ export function Label({
   );
 }
 
+export const inputClassName = (className?: string) =>
+  cn(
+    "rounded-sm border border-neutral-300 bg-neutral-800 px-2 py-0.5 text-sm font-light text-white outline-none selection:bg-white selection:text-black placeholder:text-gray-300 focus:border-purple-300",
+    className
+  );
+
 export function Input({
   className,
   ...props
 }: InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      className={cn(
-        "rounded-sm border border-neutral-300 bg-neutral-800 px-2 py-0.5 text-sm font-light text-white outline-none selection:bg-white selection:text-black focus:border-purple-300",
-        className
-      )}
-      {...props}
-    />
-  );
+  return <input className={inputClassName(className)} {...props} />;
 }
 
 export default function Form({
