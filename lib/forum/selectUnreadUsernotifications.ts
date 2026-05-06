@@ -30,7 +30,7 @@ export default async function selectUnreadUsernotifications({
   FROM messages
   JOIN notifications ON notifications.message_id = messages.id
   JOIN conversations ON conversations.id = messages.conversation_id
-  WHERE notifications.user_id = ${userId} AND read_at IS NULL`
+  WHERE notifications.user_id = ${userId} AND read_at IS NULL AND conversations.deleted_at IS NULL`
   ).reduce((acc: Row[], curr) => {
     return [
       ...acc.filter(({ messageId }) => messageId !== curr.messageId),
