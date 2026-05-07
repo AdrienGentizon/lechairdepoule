@@ -16,9 +16,6 @@ export default async function ForumLayout({
 }: {
   children: ReactNode;
 }) {
-  const showForumContent =
-    process.env["NEXT_PUBLIC_FORUM_PENDING_MESSAGE"] !== "true";
-
   return (
     <ClerkProvider
       appearance={{
@@ -29,12 +26,7 @@ export default async function ForumLayout({
         <ReactQueryProvider>
           <UIProvider>
             <ForumProvider>
-              {showForumContent && <>{children}</>}
-              {!showForumContent && (
-                <p className="font-courier mx-auto my-auto w-full max-w-1/2 text-center text-pretty">
-                  Un peu de patience, ça va pas tarder...
-                </p>
-              )}
+              {children}
               <AbsoluteButtonGroup>
                 <AdminButton />
                 <UserButton />

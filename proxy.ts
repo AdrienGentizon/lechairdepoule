@@ -3,9 +3,7 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isProtectedRoute = createRouteMatcher(["/forum(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const showForumContent =
-    process.env["NEXT_PUBLIC_FORUM_PENDING_MESSAGE"] !== "true";
-  if (showForumContent && isProtectedRoute(req)) await auth.protect();
+  if (isProtectedRoute(req)) await auth.protect();
 });
 
 export const config = {
