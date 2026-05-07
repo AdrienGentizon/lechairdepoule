@@ -45,6 +45,7 @@ export type Conversation = {
   type: string | null;
   startsAt?: string | null;
   endsAt?: string | null;
+  isPinned: boolean;
   reportedAt: string | null;
   createdAt: string;
   createdBy: {

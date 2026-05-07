@@ -10,6 +10,7 @@ function getConversationFromRaw(
     coverWidth: string | null;
     coverHeight: string | null;
     type: string | null;
+    is_pinned: boolean;
     created_by: string;
     created_at: string;
     reported_at: string | null;
@@ -25,6 +26,7 @@ function getConversationFromRaw(
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
     type: raw.type,
+    isPinned: raw.is_pinned,
     startsAt: dates.startsAt,
     endsAt: dates.endsAt,
     createdAt: raw.created_at,
@@ -67,6 +69,7 @@ export default async function insertConversation({
         coverWidth: string | null;
         coverHeight: string | null;
         type: string | null;
+        is_pinned: boolean;
         created_by: string;
         created_at: string;
         reported_at: string | null;
@@ -84,6 +87,7 @@ export default async function insertConversation({
       image_width as "coverWidth",
       image_height as "coverHeight",
       type,
+      is_pinned,
       created_by::text,
       created_at::text,
       reported_at::text;`;

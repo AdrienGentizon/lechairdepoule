@@ -26,6 +26,7 @@ CREATE TABLE conversations (
     reported_at TIMESTAMPTZ,
     reported_by INTEGER,
     type TEXT,
+    is_pinned BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL
 );

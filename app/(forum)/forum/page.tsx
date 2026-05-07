@@ -29,6 +29,7 @@ function filterAndSort(
       ? conversations
       : conversations.filter((c) => c.type === filter);
   return [...result].sort((a, b) => {
+    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
     const dateA = new Date(a.startsAt ?? a.createdAt).getTime();
     const dateB = new Date(b.startsAt ?? b.createdAt).getTime();
     return dateB - dateA;

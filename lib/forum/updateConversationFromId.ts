@@ -34,6 +34,7 @@ export default async function updateConversationFromId(
         title: string;
         description: string;
         type: string | null;
+        isPinned: boolean;
         coverUrl: string | null;
         coverWidth: number | null;
         coverHeight: number | null;
@@ -59,6 +60,7 @@ export default async function updateConversationFromId(
         image_url as "coverUrl",
         image_width::integer as "coverWidth",
         image_height::integer as "coverHeight",
+        is_pinned AS "isPinned",
         (SELECT image_url FROM previous) AS "previousCoverUrl",
         reported_at::text AS "reportedAt";`;
 
