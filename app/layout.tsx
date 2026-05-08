@@ -40,15 +40,15 @@ export default async function RootLayout({
       <body
         className={cn(
           `${sans.variable} ${mono.variable} antialiased`,
-          "dark z-10 grid h-[100dvh] min-h-full grid-cols-1 grid-rows-[1fr_min-content] justify-items-center overflow-hidden portrait:w-dvw"
+          "dark grid h-dvh min-h-full grid-cols-1 grid-rows-[auto_1fr_auto] justify-items-center overflow-x-hidden portrait:w-dvw"
         )}
       >
+        <RandomBackground assets={assets} />
         <Header />
-        <main className="no-scrollbar relative grid min-h-full w-full grid-cols-1 grid-rows-1 portrait:max-w-[100dvw] [&>*:first-child]:pt-32 sm:[&>*:first-child]:pt-44">
+        <main className="no-scrollbar relative grid min-h-full w-full grid-cols-1 grid-rows-1 portrait:max-w-dvw">
           <div className="relative mx-auto grid w-full max-w-2xl grid-cols-1 grid-rows-1 overflow-y-scroll bg-black">
             {children}
           </div>
-          <RandomBackground assets={assets} />
         </main>
         <Footer />
       </body>
