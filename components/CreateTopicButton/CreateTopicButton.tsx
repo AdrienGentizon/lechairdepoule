@@ -44,9 +44,14 @@ export default function CreateTopicButton() {
         setStep("CONVERSATION_TYPE");
       }}
     >
-      <DialogTrigger className="flex w-full cursor-pointer items-center justify-center gap-2 px-4 py-6 font-light uppercase">
-        <Plus className="stroke-1" />
-        Créer un Topic
+      <DialogTrigger className="flex w-full cursor-pointer items-center justify-center gap-2 px-4 py-3 font-light uppercase">
+        <Plus className="stroke-[1.5px]" aria-hidden="true" />
+        <span className="flex flex-col items-start">
+          <span className="font-semibold">Créer une discussion</span>
+          <span className="text-muted-foreground text-xs normal-case">
+            Topic · Événement · Sortie
+          </span>
+        </span>
       </DialogTrigger>
       <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_1fr]">
         <DialogHeader>
