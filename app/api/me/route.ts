@@ -42,8 +42,9 @@ export async function PATCH(req: NextRequest) {
       .object({
         pseudo: z
           .string()
+          .trim()
           .min(3, { message: "Pseudo trop court (3 char min)" }),
-        cgu: z.boolean({ message: "Vous devez accepter les CGU" }),
+        cgu: z.literal(true, { message: "Vous devez accepter les CGU" }),
       })
       .safeParse(payload);
 

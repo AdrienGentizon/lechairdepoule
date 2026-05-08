@@ -72,6 +72,7 @@ export default function UpdateUserPseudoDialog() {
                 .object({
                   pseudo: z
                     .string()
+                    .trim()
                     .min(3, { message: "Pseudo trop court (3 char min)" }),
                   cgu: z.literal(true, {
                     message: "Vous devez accepter les CGU",
