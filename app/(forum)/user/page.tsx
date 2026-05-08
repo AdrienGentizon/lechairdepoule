@@ -119,6 +119,14 @@ function UserPage({ me }: { me: User }) {
           Modifier
         </Button>
       </Form>
+      {userMentions.length === 0 && userNotifications.length === 0 && (
+        <section aria-labelledby="notifications">
+          <h2 id="notifications" className="text-lg font-semibold">
+            Notifications
+          </h2>
+          <p>{`Aucune notification récente ou non lue.`}</p>
+        </section>
+      )}
       {(userMentions.length > 0 || userNotifications.length > 0) && (
         <section aria-labelledby="notifications">
           <h2 id="notifications" className="text-lg font-semibold">

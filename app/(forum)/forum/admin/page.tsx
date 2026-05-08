@@ -71,9 +71,18 @@ export default function AdminPage() {
 
   return (
     <div className="no-scrollbar flex flex-col overflow-y-scroll bg-black px-2 sm:max-w-2xl">
-      <h2 className="text-center text-xl leading-12 font-thin uppercase">
+      <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
         Administration du forum
       </h2>
+      {reportedMessages.length +
+        reportedConversations.length +
+        reportedUsers.length +
+        bannedUsers.length ===
+        0 && (
+        <p className="font-courier pt-3 pb-8 font-light">
+          Aucun signalement en cours.
+        </p>
+      )}
       {reportedMessages.length > 0 && (
         <section className="flex flex-col gap-2 pb-8">
           <h3 className="bg-foreground text-background rounded-sm px-2 font-semibold">
