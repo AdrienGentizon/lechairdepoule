@@ -15,7 +15,7 @@ export default function AdminButton() {
       href={`/forum/admin`}
       className="stroke-foreground cursor-pointer hover:text-purple-300"
     >
-      <Settings />
+      <Settings className="size-8" />
       <span className="sr-only">Espace d&appos;administration</span>
     </Link>
   );

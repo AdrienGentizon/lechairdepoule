@@ -44,38 +44,41 @@ export default function ForumPage() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
-      <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
-        {FILTERS.map(({ type, label }) => {
-          const count =
-            type === "ALL"
-              ? conversations.length
-              : conversations.filter((c) => c.type === type).length;
-          return (
-            <Button
-              key={type}
-              onClick={() => setActiveFilter(type)}
-              className={cn(
-                "px-2",
-                activeFilter === type &&
-                  "border-purple-300 bg-neutral-950 text-purple-300"
-              )}
-            >
-              {label}{" "}
-              {count > 0 && (
-                <span
-                  className={cn(
-                    "hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900 sm:flex",
-                    activeFilter === type && "bg-purple-300"
-                  )}
-                >
-                  {count}
-                </span>
-              )}
-            </Button>
-          );
-        })}
+      <div className="relative">
+        <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
+          {FILTERS.map(({ type, label }) => {
+            const count =
+              type === "ALL"
+                ? conversations.length
+                : conversations.filter((c) => c.type === type).length;
+            return (
+              <Button
+                key={type}
+                onClick={() => setActiveFilter(type)}
+                className={cn(
+                  "px-2",
+                  activeFilter === type &&
+                    "border-purple-300 bg-neutral-950 text-purple-300"
+                )}
+              >
+                {label}{" "}
+                {count > 0 && (
+                  <span
+                    className={cn(
+                      "hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900 sm:flex",
+                      activeFilter === type && "bg-purple-300"
+                    )}
+                  >
+                    {count}
+                  </span>
+                )}
+              </Button>
+            );
+          })}
+        </div>
+        <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 bg-linear-to-b to-transparent" />
       </div>
-      <ul className="grid auto-rows-min grid-cols-1 overflow-y-scroll">
+      <ul className="grid auto-rows-min grid-cols-1 overflow-y-scroll pt-8 pb-4">
         {filtered.map((conversation) => {
           return (
             <ConversationItem
@@ -85,7 +88,9 @@ export default function ForumPage() {
           );
         })}
       </ul>
-      <div className="flex flex-col border-t border-b border-white">
+      <div className="relative flex flex-col border-t border-b border-white">
+        <div className="from-background pointer-events-none absolute inset-x-0 -top-px h-8 -translate-y-full bg-linear-to-t to-transparent" />
+
         <CreateTopicButton />
       </div>
       {isLoading && <Loader />}

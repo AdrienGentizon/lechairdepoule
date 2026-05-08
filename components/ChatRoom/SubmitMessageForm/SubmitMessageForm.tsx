@@ -89,7 +89,7 @@ export default function SubmitMessageForm({
       />
       {error && <p className="text-red-500">{error.message}</p>}
       {isActive && (
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-2 pb-2">
           {withCloseButton && (
             <Button
               type="button"

@@ -5,6 +5,7 @@ import { Courier_Prime, Quicksand } from "next/font/google";
 
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
+import Main from "@/components/Main";
 import RandomBackground from "@/components/RandomBackground/RandomBackground";
 import { cn } from "@/lib/utils";
 import getRandomBackground from "@/queries/getRandomBackground";
@@ -45,11 +46,7 @@ export default async function RootLayout({
       >
         <RandomBackground assets={assets} />
         <Header />
-        <main className="no-scrollbar relative grid min-h-full w-full grid-cols-1 grid-rows-1 portrait:max-w-dvw">
-          <div className="relative mx-auto grid w-full max-w-2xl grid-cols-1 grid-rows-1 overflow-y-scroll bg-black">
-            {children}
-          </div>
-        </main>
+        <Main>{children}</Main>
         <Footer />
       </body>
       <Analytics />

@@ -14,7 +14,7 @@ function UserButton() {
       href={`/user`}
       className="text-foreground cursor-pointer hover:text-purple-300"
     >
-      <UserCircle aria-hidden />
+      <UserCircle aria-hidden className="size-8" />
       <span
         className="sr-only"
         aria-live="polite"

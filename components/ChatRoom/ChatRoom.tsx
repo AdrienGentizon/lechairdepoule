@@ -37,7 +37,7 @@ function ChatRoom({ conversationId }: Props) {
     );
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[min-content_1fr_min-content]">
+    <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] px-1">
       <header className="bg-background text-foreground relative flex flex-col gap-2 py-2">
         <div className="flex items-center gap-4">
           <nav>
@@ -77,23 +77,17 @@ function ChatRoom({ conversationId }: Props) {
         <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 translate-y-full bg-linear-to-b to-transparent" />
       </header>
 
-      <section
-        aria-labelledby="messages-section"
-        className="no-scrollbar overflow-y-scroll bg-black px-1 py-6 sm:max-w-2xl"
-      >
-        <h2 className="sr-only" id="messages-section">
-          Messages
-        </h2>
-        <Suspense>
-          <MessagesList
-            conversation={conversation}
-            lastEmptyLiRef={lastEmptyLiRef}
-            scrollToBottom={scrollToBottom}
-          />
-        </Suspense>
-      </section>
-      <div className="relative px-1">
-        <div className="to-background pointer-events-none absolute inset-x-0 h-8 -translate-y-full bg-linear-to-b from-transparent" />
+      <Suspense>
+        <MessagesList
+          conversation={conversation}
+          lastEmptyLiRef={lastEmptyLiRef}
+          scrollToBottom={scrollToBottom}
+        />
+      </Suspense>
+
+      <div>
+        <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 -translate-y-full bg-linear-to-t to-transparent" />
+
         <SubmitMessageForm
           me={me}
           conversation={conversation}

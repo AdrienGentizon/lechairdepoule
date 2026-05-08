@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
 import AdminButton from "@/components/Header/AdminButton";
-import UserButton from "@/components/Header/UserButton/UserButton";
+import UserButton from "@/components/Header/UserButton";
 import ForumProvider from "@/contexts/ForumProvider";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
