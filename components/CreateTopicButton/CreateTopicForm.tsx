@@ -316,34 +316,35 @@ export default function CreateTopicForm({
             <FieldError>{null}</FieldError>
           </FormField>
         )}
-        {conversationSpecifications.closableToContributions && (
-          <FormField>
-            <div className="flex items-center gap-2">
-              <input
-                id="closed-to-contributions"
-                type="checkbox"
-                checked={
-                  form.closedToContributionsAt !== null &&
-                  form.closedToContributionsAt !== undefined
-                }
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    closedToContributionsAt: e.target.checked
-                      ? prev.closedToContributionsAt || new Date()
-                      : null,
-                  }))
-                }
-              />
-              <Label htmlFor="closed-to-contributions">
-                Désactiver les contributions
-              </Label>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Vous seul pourrez poster des messages.
-            </p>
-          </FormField>
-        )}
+        {!initialValues &&
+          conversationSpecifications.closableToContributions && (
+            <FormField>
+              <div className="flex items-center gap-2">
+                <input
+                  id="closed-to-contributions"
+                  type="checkbox"
+                  checked={
+                    form.closedToContributionsAt !== null &&
+                    form.closedToContributionsAt !== undefined
+                  }
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      closedToContributionsAt: e.target.checked
+                        ? prev.closedToContributionsAt || new Date()
+                        : null,
+                    }))
+                  }
+                />
+                <Label htmlFor="closed-to-contributions">
+                  Désactiver les contributions
+                </Label>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Vous seul pourrez poster des messages.
+              </p>
+            </FormField>
+          )}
       </div>
       <div>
         {!initialValues && (
