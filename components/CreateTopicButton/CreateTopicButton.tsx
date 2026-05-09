@@ -53,7 +53,7 @@ export default function CreateTopicButton() {
           </span>
         </span>
       </DialogTrigger>
-      <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_1fr]">
+      <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
         <DialogHeader>
           <DialogTitle>
             {selectedConversationType
@@ -90,6 +90,7 @@ export default function CreateTopicButton() {
                   cover: values.cover,
                   startsAt: values.startsAt?.toISOString(),
                   endsAt: values.endsAt?.toISOString(),
+                  closedToContributionsAt: values.closedToContributionsAt?.toISOString() ?? null,
                 },
                 {
                   onSuccess: (data) => {

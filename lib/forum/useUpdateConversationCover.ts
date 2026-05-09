@@ -1,14 +1,30 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { resizeImage } from "../resizeImage";
 import { CacheKey, Conversation, SimpleConversation } from "../types";
 
-export default function useDeleteConversationCover() {
+export default function useUpdateConversationCover() {
   const queryClient = useQueryClient();
-  const { mutate: deleteConversationCover, isPending } = useMutation({
-    mutationFn: async (conversationId: string) => {
+  const { mutate: updateConversationCover, isPending } = useMutation({
+    mutationFn: async ({
+      id: conversationId,
+      cover,
+    }: {
+      id: string;
+      cover: File;
+    }) => {
+      const body = new FormData();
+      const resizedImage = await resizeImage(cover);
+
+      if (resizedImage) {
+        body.set("coverFile", resizedImage.file);
+        body.set("coverWidth", resizedImage.width.toString());
+        body.set("coverHeight", resizedImage.height.toString());
+      }
+
       const response = await fetch(
         `/api/conversations/${conversationId}/cover`,
-        { method: "DELETE" }
+        { method: "POST", body }
       );
 
       if (!response.ok) {
@@ -46,5 +62,5 @@ export default function useDeleteConversationCover() {
     },
   });
 
-  return { deleteConversationCover, isPending };
+  return { updateConversationCover, isPending };
 }

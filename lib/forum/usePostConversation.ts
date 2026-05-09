@@ -17,6 +17,7 @@ export default function usePostConversation() {
       cover,
       startsAt,
       endsAt,
+      closedToContributionsAt,
     }: {
       title: string;
       description: string;
@@ -24,6 +25,7 @@ export default function usePostConversation() {
       cover?: File;
       startsAt?: string | null;
       endsAt?: string | null;
+      closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
@@ -31,6 +33,7 @@ export default function usePostConversation() {
       body.set("type", type);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
+      if (closedToContributionsAt) body.set("closedToContributionsAt", closedToContributionsAt);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {

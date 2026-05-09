@@ -46,6 +46,7 @@ export type Conversation = {
   startsAt?: string | null;
   endsAt?: string | null;
   isPinned: boolean;
+  closedToContributionsAt: string | null;
   reportedAt: string | null;
   createdAt: string;
   createdBy: {
@@ -55,6 +56,8 @@ export type Conversation = {
   };
   messages: Message[];
 };
+
+export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
 
 export type UserMention = {
   id: string;

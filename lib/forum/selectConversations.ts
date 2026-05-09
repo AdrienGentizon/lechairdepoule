@@ -14,6 +14,7 @@ export default async function selectConversations() {
         startsAt: string | null;
         endsAt: string | null;
         isPinned: boolean;
+        closedToContributionsAt: string | null;
         reportedAt: string | null;
         createdAt: string;
         userId: string;
@@ -32,6 +33,7 @@ export default async function selectConversations() {
       cd.starts_at::text as "startsAt",
       cd.ends_at::text as "endsAt",
       c.is_pinned as "isPinned",
+      c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",
       c.created_at::text as "createdAt",
       u.id::text as "userId",

@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
         type: z.enum(["TOPIC", "EVENT", "RELEASE"]),
         startsAt: nullableDate,
         endsAt: nullableDate,
+        closedToContributionsAt: nullableDate,
       })
       .safeParse(payload);
 
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     });
 
     if (!insertedConversation)

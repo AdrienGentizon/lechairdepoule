@@ -14,6 +14,7 @@ export default async function selectConversationFromId(conversationId: string) {
         coverWidth: string | null;
         coverHeight: string | null;
         isPinned: boolean;
+        closedToContributionsAt: string | null;
         createdAt: string;
         reportedAt: string | null;
         userId: string;
@@ -31,6 +32,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
         c.is_pinned AS "isPinned",
+        c.closed_to_contributions_at::text AS "closedToContributionsAt",
         c.created_at::text AS "createdAt",
         c.reported_at::text AS "reportedAt",
         u.id::text AS "userId",

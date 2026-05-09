@@ -1,23 +1,27 @@
 import sql from "../db";
 
-export default async function updateConversationFromId({
+export default async function updateConversationCoverFromId({
   conversationId,
   userId,
-  title,
-  description,
-  startsAt,
-  endsAt,
-  closedToContributionsAt,
+  cover,
 }: {
   conversationId: string;
   userId: string;
-  title: string;
-  description: string;
-  startsAt: string | null;
-  endsAt: string | null;
-  closedToContributionsAt: string | null;
+  cover: {
+    url: string;
+    width: number;
+    height: number;
+  };
 }) {
   return sql.begin(async (sql) => {
+    const previousCoverUrl =
+      (
+        await sql<{ imageUrl: string | null }[]>`
+          SELECT image_url AS "imageUrl"
+          FROM public.conversations
+          WHERE id = ${conversationId} AND created_by = ${userId}`
+      ).at(0)?.imageUrl ?? null;
+
     const updatedConversation = (
       await sql<
         {
@@ -31,13 +35,14 @@ export default async function updateConversationFromId({
           coverWidth: number | null;
           coverHeight: number | null;
           reportedAt: string | null;
+          createdAt: string;
         }[]
       >`
         UPDATE public.conversations
         SET
-          title = ${title},
-          description = ${description},
-          closed_to_contributions_at = ${closedToContributionsAt}
+          image_url = ${cover.url},
+          image_width = ${cover.width},
+          image_height = ${cover.height}
         WHERE id = ${conversationId} AND created_by = ${userId}
         RETURNING
           id::text,
@@ -49,24 +54,24 @@ export default async function updateConversationFromId({
           image_height::integer AS "coverHeight",
           is_pinned AS "isPinned",
           closed_to_contributions_at::text AS "closedToContributionsAt",
-          reported_at::text AS "reportedAt"`
+          reported_at::text AS "reportedAt",
+          created_at::text AS "createdAt"          `
     ).at(0);
 
     if (!updatedConversation) return undefined;
 
-    const upsertedDates = (
+    const dates = (
       await sql<{ startsAt: string | null; endsAt: string | null }[]>`
-        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
-        VALUES (${conversationId}, ${startsAt}, ${endsAt})
-        ON CONFLICT (conversation_id) DO UPDATE
-          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at
-        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt"`
+        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt"
+        FROM conversation_dates
+        WHERE conversation_id = ${conversationId}`
     ).at(0);
 
     return {
       ...updatedConversation,
-      startsAt: upsertedDates?.startsAt ?? null,
-      endsAt: upsertedDates?.endsAt ?? null,
+      previousCoverUrl,
+      startsAt: dates?.startsAt ?? null,
+      endsAt: dates?.endsAt ?? null,
     };
   });
 }

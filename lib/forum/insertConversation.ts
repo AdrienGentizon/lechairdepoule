@@ -11,6 +11,7 @@ function getConversationFromRaw(
     coverHeight: string | null;
     type: string | null;
     is_pinned: boolean;
+    closed_to_contributions_at: string | null;
     created_by: string;
     created_at: string;
     reported_at: string | null;
@@ -27,6 +28,7 @@ function getConversationFromRaw(
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
     type: raw.type,
     isPinned: raw.is_pinned,
+    closedToContributionsAt: raw.closed_to_contributions_at,
     startsAt: dates.startsAt,
     endsAt: dates.endsAt,
     createdAt: raw.created_at,
@@ -44,6 +46,7 @@ export default async function insertConversation({
   user,
   startsAt,
   endsAt,
+  closedToContributionsAt,
 }: {
   title: string;
   description: string;
@@ -56,29 +59,32 @@ export default async function insertConversation({
   user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt?: string | null;
   endsAt?: string | null;
+  closedToContributionsAt?: string | null;
 }) {
   const hasDates = type === "EVENT" || type === "RELEASE";
 
   return sql.begin(async (sql) => {
-    const rows = await sql<
-      {
-        id: string;
-        title: string;
-        description: string | null;
-        coverUrl: string | null;
-        coverWidth: string | null;
-        coverHeight: string | null;
-        type: string | null;
-        is_pinned: boolean;
-        created_by: string;
-        created_at: string;
-        reported_at: string | null;
-      }[]
-    >`
+    const insertedConversation = (
+      await sql<
+        {
+          id: string;
+          title: string;
+          description: string | null;
+          coverUrl: string | null;
+          coverWidth: string | null;
+          coverHeight: string | null;
+          type: string | null;
+          is_pinned: boolean;
+          closed_to_contributions_at: string | null;
+          created_by: string;
+          created_at: string;
+          reported_at: string | null;
+        }[]
+      >`
     INSERT INTO
-      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at)
+      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at, closed_to_contributions_at)
     VALUES
-      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${new Date()})
+      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${new Date()}, ${closedToContributionsAt ?? null})
     RETURNING
       id::text,
       title,
@@ -88,24 +94,24 @@ export default async function insertConversation({
       image_height as "coverHeight",
       type,
       is_pinned,
+      closed_to_contributions_at::text,
       created_by::text,
       created_at::text,
-      reported_at::text;`;
+      reported_at::text;`
+    ).at(0);
 
-    const newConversation = rows.at(0);
-
-    if (!newConversation) {
+    if (!insertedConversation) {
       throw new Error("cannot insert conversation");
     }
 
     if (hasDates) {
       await sql`
         INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
-        VALUES (${newConversation.id}, ${startsAt ?? null}, ${endsAt ?? null})`;
+        VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null})`;
     }
 
     return getConversationFromRaw(
-      newConversation,
+      insertedConversation,
       { id: user.id, pseudo: user.pseudo, bannedAt: user.bannedAt },
       {
         startsAt: hasDates ? (startsAt ?? null) : null,

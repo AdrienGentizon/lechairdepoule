@@ -20,13 +20,14 @@ CREATE TABLE conversations (
     image_url TEXT,
     image_width INTEGER,
     image_height INTEGER,
-		created_by INTEGER NOT NULL,
+	created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     reported_at TIMESTAMPTZ,
     reported_by INTEGER,
     type TEXT,
     is_pinned BOOLEAN NOT NULL DEFAULT false,
+    closed_to_contributions_at TIMESTAMPTZ,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL
 );

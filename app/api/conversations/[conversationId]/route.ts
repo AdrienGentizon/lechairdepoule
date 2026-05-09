@@ -1,5 +1,3 @@
-import { del } from "@vercel/blob";
-
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -22,7 +20,6 @@ import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { nullableDate } from "@/lib/schemas";
 import { Conversation, Message } from "@/lib/types";
-import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function GET(
   req: NextRequest,
@@ -236,8 +233,7 @@ export async function PATCH(
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const payload = Object.fromEntries(formData.entries());
+    const payload = Object.fromEntries((await req.formData()).entries());
 
     const parsedInputs = z
       .object({
@@ -245,6 +241,7 @@ export async function PATCH(
         description: z.string().max(500),
         startsAt: nullableDate,
         endsAt: nullableDate,
+        closedToContributionsAt: nullableDate,
       })
       .safeParse(payload);
 
@@ -259,27 +256,14 @@ export async function PATCH(
       );
     }
 
-    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
-    let cover: { url: string; width: number; height: number } | undefined =
-      undefined;
-
-    if (imageFileWithMetadata.success) {
-      const uploadResult = await uploadImage(imageFileWithMetadata.data);
-      if (uploadResult.success) {
-        cover = uploadResult.data;
-      } else {
-        logger.append({ uploadError: uploadResult.error });
-      }
-    }
-
     const values = {
       userId: user.id,
       conversationId: params.conversationId,
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
-      cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     };
     const updatedConversation = await updateConversationFromId(values);
 
@@ -290,10 +274,6 @@ export async function PATCH(
         { error: "impossible de modifier la conversation" },
         { status: 500 }
       );
-    }
-
-    if (cover && updatedConversation.previousCoverUrl) {
-      await del(updatedConversation.previousCoverUrl);
     }
 
     logger.append({ updatedConversation });

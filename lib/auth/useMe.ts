@@ -22,6 +22,7 @@ function getPermissions(user: User) {
     canPostMessage(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
       if (conversation.reportedAt) return false;
+      if (conversation.closedToContributionsAt && conversation.createdBy.id !== user.id) return false;
       return true;
     },
     canUpdateConversation(conversation: SimpleConversation) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Loader, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import CreateTopicForm from "@/components/CreateTopicButton/CreateTopicForm";
 import {
@@ -14,6 +14,7 @@ import {
 import { Me } from "@/lib/auth/useMe";
 import useDeleteConversationCover from "@/lib/forum/useDeleteConversationCover";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
+import useUpdateConversationCover from "@/lib/forum/useUpdateConversationCover";
 import { Conversation } from "@/lib/types";
 
 export default function UpdateConversationButton({
@@ -24,16 +25,19 @@ export default function UpdateConversationButton({
   conversation: Conversation;
 }) {
   const [open, setOpen] = useState(false);
-  const { deleteConversationCover, isPending: isDeletePending } =
+  const [pendingCover, setPendingCover] = useState<File | undefined>(undefined);
+  const { deleteConversationCover, isPending: isDeletingCover } =
     useDeleteConversationCover();
+  const { updateConversationCover, isPending: isUpdatingCover } =
+    useUpdateConversationCover();
   const {
     updateConversation,
-    isPending: isUpdatePending,
+    isPending: isUpdatingDetails,
     error,
   } = useUpdateConversation({
     onSuccess: () => setOpen(false),
   });
-  const isPending = isDeletePending || isUpdatePending;
+  const isPending = isDeletingCover || isUpdatingDetails || isUpdatingCover;
 
   if (!me.canUpdateConversation(conversation)) return null;
 
@@ -43,7 +47,7 @@ export default function UpdateConversationButton({
         <Pencil className="size-5" />
         <span className="sr-only">Modifier</span>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
         <DialogHeader>
           <DialogTitle>Modifier la conversation</DialogTitle>
           <DialogDescription className="sr-only">
@@ -63,26 +67,33 @@ export default function UpdateConversationButton({
             endsAt: conversation.endsAt
               ? new Date(conversation.endsAt)
               : undefined,
+            closedToContributionsAt: conversation.closedToContributionsAt
+              ? new Date(conversation.closedToContributionsAt)
+              : null,
           }}
-          onSubmit={(values) =>
+          onSubmit={(values) => {
+            if (pendingCover) {
+              updateConversationCover({
+                id: conversation.id,
+                cover: pendingCover,
+              });
+            }
             updateConversation({
               id: conversation.id,
               title: values.title,
               description: values.description,
-              cover: values.cover,
               startsAt: values.startsAt?.toISOString(),
               endsAt: values.endsAt?.toISOString(),
-            })
-          }
+              closedToContributionsAt: values.closedToContributionsAt?.toISOString() ?? null,
+            });
+          }}
           isPending={isPending}
           error={error as Error | null}
           coverUrl={conversation.coverUrl ?? undefined}
           onDeleteCover={() => deleteConversationCover(conversation.id)}
+          onUpdateCover={setPendingCover}
           submitLabel="Sauver"
         />
-        {isPending && (
-          <Loader className="absolute inset-0 top-1/2 left-1/2 z-50 -ml-3 animate-spin stroke-2" />
-        )}
       </DialogContent>
     </Dialog>
   );

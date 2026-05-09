@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { resizeImage } from "../resizeImage";
-import { CacheKey, Conversation } from "../types";
+import { CacheKey, Conversation, SimpleConversation } from "../types";
 
 export default function useUpdateConversation(options?: {
   onSuccess?: () => void;
@@ -16,30 +15,23 @@ export default function useUpdateConversation(options?: {
       id: conversationId,
       title,
       description,
-      cover,
       startsAt,
       endsAt,
+      closedToContributionsAt,
     }: {
       id: string;
       title: string;
       description: string;
-      cover?: File;
       startsAt?: string | null;
       endsAt?: string | null;
+      closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
-      if (cover) {
-        const resizedImage = await resizeImage(cover);
-        if (resizedImage) {
-          body.set("coverFile", resizedImage.file);
-          body.set("coverWidth", resizedImage.width.toString());
-          body.set("coverHeight", resizedImage.height.toString());
-        }
-      }
+      body.set("closedToContributionsAt", closedToContributionsAt ?? "");
 
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
@@ -54,9 +46,7 @@ export default function useUpdateConversation(options?: {
         );
       }
 
-      return response.json() as Promise<
-        Omit<Conversation, "messages" | "createdAt" | "createdBy">
-      >;
+      return response.json() as Promise<SimpleConversation>;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(
@@ -75,6 +65,7 @@ export default function useUpdateConversation(options?: {
                 coverHeight: data.coverHeight,
                 startsAt: data.startsAt,
                 endsAt: data.endsAt,
+                closedToContributionsAt: data.closedToContributionsAt,
               },
             ];
           }, []);
@@ -92,6 +83,7 @@ export default function useUpdateConversation(options?: {
             coverHeight: data.coverHeight,
             startsAt: data.startsAt,
             endsAt: data.endsAt,
+            closedToContributionsAt: data.closedToContributionsAt,
           };
         }
       );

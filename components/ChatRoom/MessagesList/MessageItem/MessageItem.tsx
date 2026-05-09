@@ -83,7 +83,7 @@ function ReplyInThreadButton({
         "flex w-full scroll-mb-10 flex-col gap-2 pt-2 pl-6 sm:pl-12"
       )}
     >
-      {showThread && (
+      {showThread && me.canPostMessage(conversation) && (
         <SubmitMessageForm
           me={me}
           conversation={conversation}
@@ -95,17 +95,19 @@ function ReplyInThreadButton({
         />
       )}
 
-      <button
-        type="button"
-        className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
-        onClick={toggleThread}
-      >
-        {showThread || isFormActive
-          ? `Fermer le fil de discussion`
-          : threadedMessages.length > 0
-            ? `Rejoindre le fil de discussion (${threadedMessages.length})`
-            : `Répondre dans le fil de discussion`}
-      </button>
+      {conversation.closedToContributionsAt === null && (
+        <button
+          type="button"
+          className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
+          onClick={toggleThread}
+        >
+          {showThread || isFormActive
+            ? `Fermer le fil de discussion`
+            : threadedMessages.length > 0
+              ? `Rejoindre le fil de discussion (${threadedMessages.length})`
+              : `Répondre dans le fil de discussion`}
+        </button>
+      )}
     </div>
   );
 }
