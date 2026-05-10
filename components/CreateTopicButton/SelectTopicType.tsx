@@ -1,4 +1,7 @@
+import { Conversation } from "@/lib/types";
+
 import Button from "../Button/Button";
+import ConversationIcon from "../ConversationItem/ConversationIcon";
 import Form, { FormField, Label } from "../Form/Form";
 
 const CONVERSATION_TYPES = [
@@ -18,10 +21,9 @@ const CONVERSATION_TYPES = [
     description: "Sortie de disque, fanzine, livre, bd...",
   },
 ] as const;
-type ConversationType = (typeof CONVERSATION_TYPES)[number]["value"];
 
 type Props = {
-  onSuccess: (type: ConversationType) => void;
+  onSuccess: (type: NonNullable<Conversation["type"]>) => void;
 };
 
 export default function SelectTopicType({ onSuccess }: Props) {
@@ -58,7 +60,10 @@ export default function SelectTopicType({ onSuccess }: Props) {
                 htmlFor={`input-${option.value}`}
                 className="cursor-pointer font-bold"
               >
-                <span>{option.label}</span>
+                <span className="inline-flex w-full items-center gap-2">
+                  <ConversationIcon type={option.value} className="size-4" />
+                  {option.label}
+                </span>
                 <p
                   id={`${option.value}-description`}
                   className="font-courier text-sm font-light"

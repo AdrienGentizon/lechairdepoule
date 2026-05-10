@@ -56,7 +56,7 @@ export default function UpdateConversationButton({
         </DialogHeader>
         <CreateTopicForm
           conversationType={
-            (conversation.type as "TOPIC" | "EVENT" | "RELEASE") ?? "TOPIC"
+            (conversation.type as NonNullable<Conversation["type"]>) ?? "TOPIC"
           }
           initialValues={{
             title: conversation.title,
@@ -84,7 +84,8 @@ export default function UpdateConversationButton({
               description: values.description,
               startsAt: values.startsAt?.toISOString(),
               endsAt: values.endsAt?.toISOString(),
-              closedToContributionsAt: values.closedToContributionsAt?.toISOString() ?? null,
+              closedToContributionsAt:
+                values.closedToContributionsAt?.toISOString() ?? null,
             });
           }}
           isPending={isPending}

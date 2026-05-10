@@ -3,12 +3,21 @@ import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 import Image from "next/image";
 
+import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import Button, { buttonClassName } from "../Button/Button";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
 
-const CONVERSATION_TYPE_SPECIFICATIONS = {
+const CONVERSATION_TYPE_SPECIFICATIONS: Record<
+  NonNullable<Conversation["type"]>,
+  {
+    cover: boolean;
+    startsAt: boolean;
+    endsAt: boolean;
+    closableToContributions: boolean;
+  }
+> = {
   TOPIC: {
     cover: false,
     startsAt: false,
@@ -53,7 +62,7 @@ export type ConversationFormValues = {
 };
 
 type Props = {
-  conversationType: "TOPIC" | "EVENT" | "RELEASE";
+  conversationType: NonNullable<Conversation["type"]>;
   initialValues?: {
     title?: string;
     description?: string;

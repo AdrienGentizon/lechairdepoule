@@ -6,7 +6,7 @@ import getUser from "@/lib/auth/getUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import { nullableDate } from "@/lib/schemas";
+import { ConversationTypeEnum, NullishDateSchema } from "@/lib/schemas";
 import { Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
       .object({
         title: z.string().min(1).max(100),
         description: z.string().max(500),
-        type: z.enum(["TOPIC", "EVENT", "RELEASE"]),
-        startsAt: nullableDate,
-        endsAt: nullableDate,
-        closedToContributionsAt: nullableDate,
+        type: ConversationTypeEnum,
+        startsAt: NullishDateSchema,
+        endsAt: NullishDateSchema,
+        closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
 

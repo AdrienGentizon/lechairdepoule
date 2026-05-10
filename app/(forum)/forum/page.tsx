@@ -1,39 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+
+import { MessageCircle, MicVocal, Newspaper } from "lucide-react";
+import z from "zod";
 
 import Button from "@/components/Button/Button";
 import ConversationItem from "@/components/ConversationItem/ConversationItem";
 import CreateTopicButton from "@/components/CreateTopicButton/CreateTopicButton";
 import Loader from "@/components/Loader/Loader";
 import useConversations from "@/lib/forum/useConversations";
+import { ConversationTypeEnum } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 
-type FilterType = "ALL" | "TOPIC" | "EVENT" | "RELEASE";
+type FilterType = z.infer<typeof ConversationTypeEnum> | "ALL";
 
 type Conversation = Omit<import("@/lib/types").Conversation, "messages">;
 
-const FILTERS: { type: FilterType; label: string }[] = [
-  { type: "ALL", label: "Tous" },
-  { type: "TOPIC", label: "Discussions" },
-  { type: "EVENT", label: "Evénements" },
-  { type: "RELEASE", label: "Sorties" },
+const FILTERS: { type: FilterType; label: string; icon: ReactNode }[] = [
+  { type: "ALL", label: "Tous", icon: <></> },
+  {
+    type: "TOPIC",
+    label: "Discussions",
+    icon: <MessageCircle className="size-3" />,
+  },
+  {
+    type: "EVENT",
+    label: "Evénements",
+    icon: <MicVocal className="size-3" />,
+  },
+  {
+    type: "RELEASE",
+    label: "Sorties",
+    icon: <Newspaper className="size-3" />,
+  },
 ];
 
 function filterAndSort(
   conversations: Conversation[],
   filter: FilterType
 ): Conversation[] {
-  const result =
+  const filtered =
     filter === "ALL"
       ? conversations
       : conversations.filter((c) => c.type === filter);
-  return [...result].sort((a, b) => {
-    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
-    const dateA = new Date(a.startsAt ?? a.createdAt).getTime();
-    const dateB = new Date(b.startsAt ?? b.createdAt).getTime();
-    return dateB - dateA;
-  });
+  return filtered
+    .toSorted((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+    .toSorted((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return 0;
+    });
 }
 
 export default function ForumPage() {
@@ -46,7 +65,7 @@ export default function ForumPage() {
     <div className="grid grid-rows-[auto_1fr_auto]">
       <div className="relative">
         <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
-          {FILTERS.map(({ type, label }) => {
+          {FILTERS.map(({ type, label, icon }) => {
             const count =
               type === "ALL"
                 ? conversations.length
@@ -61,11 +80,12 @@ export default function ForumPage() {
                     "border-purple-300 bg-neutral-950 text-purple-300"
                 )}
               >
+                {icon}
                 {label}{" "}
                 {count > 0 && (
                   <span
                     className={cn(
-                      "hidden size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900 sm:flex",
+                      "flex size-3 items-center justify-center rounded-full bg-white text-[8px] font-bold text-neutral-900",
                       activeFilter === type && "bg-purple-300"
                     )}
                   >

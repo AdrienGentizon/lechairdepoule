@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
+import { Conversation } from "@/lib/types";
 
 import {
   Dialog,
@@ -17,7 +18,13 @@ import {
 import CreateTopicForm from "./CreateTopicForm";
 import SelectTopicType from "./SelectTopicType";
 
-const CONVERSATION_TYPE_LABELS = {
+const CONVERSATION_TYPE_LABELS: Record<
+  NonNullable<Conversation["type"]>,
+  {
+    title: string;
+    submit: string;
+  }
+> = {
   TOPIC: { title: "Nouveau topic", submit: "Créer un topic" },
   EVENT: { title: "Nouvel événement", submit: "Créer un événement" },
   RELEASE: { title: "Nouvelle sortie", submit: "Créer une sortie" },
@@ -30,7 +37,7 @@ export default function CreateTopicButton() {
     "HIDDEN" | "CONVERSATION_TYPE" | "CONVERSATION_INPUTS"
   >("HIDDEN");
   const [selectedConversationType, setSelectedConversationType] = useState<
-    "TOPIC" | "EVENT" | "RELEASE" | undefined
+    NonNullable<Conversation["type"]> | undefined
   >(undefined);
   const { postConversation, isPending, error } = usePostConversation();
 
@@ -90,7 +97,8 @@ export default function CreateTopicButton() {
                   cover: values.cover,
                   startsAt: values.startsAt?.toISOString(),
                   endsAt: values.endsAt?.toISOString(),
-                  closedToContributionsAt: values.closedToContributionsAt?.toISOString() ?? null,
+                  closedToContributionsAt:
+                    values.closedToContributionsAt?.toISOString() ?? null,
                 },
                 {
                   onSuccess: (data) => {

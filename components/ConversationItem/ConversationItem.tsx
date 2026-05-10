@@ -7,6 +7,8 @@ import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import ConversationIcon from "./ConversationIcon";
+
 type Props = {
   conversation: Omit<Conversation, "messages">;
   variant?: "admin";
@@ -24,11 +26,12 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         <h2
           id={`forum-${conversation.id}`}
           className={cn(
-            "font-semibold uppercase",
+            "inline-flex w-full items-center justify-between gap-2 font-semibold uppercase",
             conversation.reportedAt && "text-neutral-400 line-through"
           )}
         >
           {conversation.title}
+          <ConversationIcon type={conversation.type} className="size-4" />
         </h2>
         <p
           className={cn(

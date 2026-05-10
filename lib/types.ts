@@ -1,3 +1,7 @@
+import z from "zod";
+
+import { ConversationTypeEnum } from "./schemas";
+
 export type User = {
   id: string;
   pseudo: string | null;
@@ -42,7 +46,7 @@ export type Conversation = {
   coverUrl: string | null;
   coverWidth: number | null;
   coverHeight: number | null;
-  type: string | null;
+  type: ({} & string) | z.infer<typeof ConversationTypeEnum> | null;
   startsAt?: string | null;
   endsAt?: string | null;
   isPinned: boolean;

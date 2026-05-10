@@ -18,7 +18,7 @@ import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
-import { nullableDate } from "@/lib/schemas";
+import { NullishDateSchema } from "@/lib/schemas";
 import { Conversation, Message } from "@/lib/types";
 
 export async function GET(
@@ -239,9 +239,9 @@ export async function PATCH(
       .object({
         title: z.string().min(1).max(100),
         description: z.string().max(500),
-        startsAt: nullableDate,
-        endsAt: nullableDate,
-        closedToContributionsAt: nullableDate,
+        startsAt: NullishDateSchema,
+        endsAt: NullishDateSchema,
+        closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
 
