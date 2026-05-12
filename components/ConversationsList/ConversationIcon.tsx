@@ -1,16 +1,17 @@
-import { MessageCircle, MicVocal, Newspaper } from "lucide-react";
+import { ComponentProps } from "react";
 
-import { Conversation } from "@/lib/types";
+import { LucideIcon, MessageCircle, MicVocal, Newspaper } from "lucide-react";
+
+import { SimpleConversation } from "@/lib/types";
 
 export default function ConversationIcon({
   type,
-  className,
-}: {
-  type: Conversation["type"];
-  className?: string;
+  ...props
+}: Omit<ComponentProps<LucideIcon>, "type"> & {
+  type: SimpleConversation["type"];
 }) {
-  if (type === "TOPIC") return <MessageCircle className={className} />;
-  if (type === "EVENT") return <MicVocal className={className} />;
-  if (type === "RELEASE") return <Newspaper className={className} />;
+  if (type === "TOPIC") return <MessageCircle {...props} />;
+  if (type === "EVENT") return <MicVocal {...props} />;
+  if (type === "RELEASE") return <Newspaper {...props} />;
   return <></>;
 }

@@ -17,14 +17,9 @@ type Props = {
 
 export default function ConversationItem({ conversation, variant, me }: Props) {
   return (
-    <li
-      className="relative flex h-min flex-col border-b border-white px-4 py-2 first:border-t"
-      role="link"
-      aria-labelledby={`forum-${conversation.id}`}
-    >
-      <Link href={`/forum/${conversation.id}`}>
-        <h2
-          id={`forum-${conversation.id}`}
+    <li className="relative flex h-min flex-col border-b border-white px-4 py-2 first:border-t">
+      <Link href={`/forum/${conversation.id}`} className="flex flex-col">
+        <strong
           className={cn(
             "inline-flex w-full items-center justify-between gap-2 font-semibold uppercase",
             conversation.reportedAt && "text-neutral-400 line-through"
@@ -32,7 +27,7 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         >
           {conversation.title}
           <ConversationIcon type={conversation.type} className="size-4" />
-        </h2>
+        </strong>
         <p
           className={cn(
             "font-light",
@@ -41,11 +36,9 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         >
           {conversation.description}
         </p>
-        <footer className="flex pt-2">
-          <h3 className="ml-auto text-xs">
-            {getConversationMetadataAsString(conversation)}
-          </h3>
-        </footer>
+        <small className="ml-auto w-fit pt-2 text-xs">
+          {getConversationMetadataAsString(conversation)}
+        </small>
       </Link>
       {variant === "admin" && me && (
         <BanUserTrigger
