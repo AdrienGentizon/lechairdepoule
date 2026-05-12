@@ -1,5 +1,7 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
+
 import { useState } from "react";
 
 import { AtSign, MessageCircle } from "lucide-react";
@@ -22,6 +24,7 @@ import useUserNotifications from "@/lib/forum/useUserNotifications";
 import { User } from "@/lib/types";
 
 function UserPage({ me }: { me: User }) {
+  const { signOut } = useClerk();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
   const { mentions: userMentions, replies: userNotifications } =
     useUserNotifications();
@@ -188,6 +191,11 @@ function UserPage({ me }: { me: User }) {
           <Button className="w-full">Lire les CGU</Button>
         </Link>
       </section>
+      <div className="pt-4">
+        <Button className="w-full" onClick={() => signOut()}>
+          Se déconnecter
+        </Button>
+      </div>
     </div>
   );
 }
