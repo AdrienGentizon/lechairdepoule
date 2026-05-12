@@ -196,8 +196,16 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
     };
   }, [pusher, onReportedConversation]);
 
+  const counts = {
+    all: conversations.length,
+    topic: conversations.filter((c) => c.type === "TOPIC").length,
+    event: conversations.filter((c) => c.type === "EVENT").length,
+    release: conversations.filter((c) => c.type === "RELEASE").length,
+  };
+
   return {
     conversations: filterAndSort(conversations, activeFilter, from, to),
+    counts,
     error,
     isLoading,
     activeFilter,

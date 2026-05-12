@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 export default function ForumPage() {
   const {
     conversations,
+    counts,
     isLoading,
     activeFilter,
     timeframePresets,
@@ -24,10 +25,7 @@ export default function ForumPage() {
       <div className="relative">
         <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
           {CONVERSATION_FILTERS.map(({ type, label, icon: Icon }) => {
-            const count =
-              type === "all"
-                ? conversations.length
-                : conversations.filter((c) => c.type === type).length;
+            const count = counts[type];
             return (
               <Button
                 key={type}
