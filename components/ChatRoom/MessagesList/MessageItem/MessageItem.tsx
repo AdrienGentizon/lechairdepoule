@@ -229,7 +229,7 @@ export default function MessageItem({
         <div className="rounded-b-sm border border-white p-2">
           <p
             className={cn(
-              "font-courier pl-2",
+              "font-courier pl-2 whitespace-pre-wrap",
               (message.reportedAt !== null || message.user.bannedAt !== null) &&
                 "text-neutral-400 line-through"
             )}
