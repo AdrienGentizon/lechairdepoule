@@ -21,16 +21,31 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
       <Link href={`/forum/${conversation.id}`} className="flex flex-col">
         <strong
           className={cn(
-            "inline-flex w-full items-center justify-between gap-2 font-semibold uppercase",
+            "grid w-full grid-cols-[1fr_auto] grid-rows-1 items-start gap-2 pb-2 leading-none font-semibold uppercase",
+            conversation.startsAt && "grid-cols-[1fr_auto_auto]",
             conversation.reportedAt && "text-neutral-400 line-through"
           )}
         >
           {conversation.title}
+          {conversation.startsAt && (
+            <em className="text-xs leading-4 font-light whitespace-nowrap text-purple-300 not-italic">{`${new Date(
+              conversation.startsAt
+            ).toLocaleDateString(undefined, {
+              weekday: "short",
+              month: "2-digit",
+              day: "2-digit",
+            })} à ${new Date(conversation.startsAt).toLocaleTimeString(
+              undefined,
+              {
+                timeStyle: "short",
+              }
+            )}`}</em>
+          )}
           <ConversationIcon type={conversation.type} className="size-4" />
         </strong>
         <p
           className={cn(
-            "font-light",
+            "leading-tight font-light",
             conversation.reportedAt && "text-neutral-400 line-through"
           )}
         >

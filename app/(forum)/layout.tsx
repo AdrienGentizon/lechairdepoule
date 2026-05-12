@@ -1,7 +1,9 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
+
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
 import AdminButton from "@/components/Header/AdminButton";
@@ -17,24 +19,28 @@ export default async function ForumLayout({
   children: ReactNode;
 }) {
   return (
-    <ClerkProvider
-      appearance={{
-        theme: dark,
-      }}
-    >
-      <PusherProvider>
-        <ReactQueryProvider>
-          <UIProvider>
-            <ForumProvider>
-              {children}
-              <AbsoluteButtonGroup>
-                <AdminButton />
-                <UserButton />
-              </AbsoluteButtonGroup>
-            </ForumProvider>
-          </UIProvider>
-        </ReactQueryProvider>
-      </PusherProvider>
-    </ClerkProvider>
+    <Suspense>
+      <NuqsAdapter>
+        <ClerkProvider
+          appearance={{
+            theme: dark,
+          }}
+        >
+          <PusherProvider>
+            <ReactQueryProvider>
+              <UIProvider>
+                <ForumProvider>
+                  {children}
+                  <AbsoluteButtonGroup>
+                    <AdminButton />
+                    <UserButton />
+                  </AbsoluteButtonGroup>
+                </ForumProvider>
+              </UIProvider>
+            </ReactQueryProvider>
+          </PusherProvider>
+        </ClerkProvider>
+      </NuqsAdapter>
+    </Suspense>
   );
 }

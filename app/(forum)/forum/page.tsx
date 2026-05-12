@@ -10,8 +10,14 @@ import useConversations, {
 import { cn } from "@/lib/utils";
 
 export default function ForumPage() {
-  const { conversations, isLoading, activeFilter, updateActiveFilter } =
-    useConversations();
+  const {
+    conversations,
+    isLoading,
+    activeFilter,
+    timeframePresets,
+    updateActiveFilter,
+    updateTimeFrame,
+  } = useConversations();
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
@@ -19,13 +25,16 @@ export default function ForumPage() {
         <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
           {CONVERSATION_FILTERS.map(({ type, label, icon: Icon }) => {
             const count =
-              type === "ALL"
+              type === "all"
                 ? conversations.length
                 : conversations.filter((c) => c.type === type).length;
             return (
               <Button
                 key={type}
-                onClick={() => updateActiveFilter(type)}
+                onClick={() => {
+                  updateActiveFilter(type);
+                  updateTimeFrame({ from: null, to: null });
+                }}
                 className={cn(
                   "px-2",
                   activeFilter === type &&
@@ -47,6 +56,29 @@ export default function ForumPage() {
               </Button>
             );
           })}
+        </div>
+        <div>
+          {["event", "release"].includes(activeFilter) && (
+            <div className="flex items-center justify-center gap-2">
+              {timeframePresets.map((filter, n) => {
+                return (
+                  <Button
+                    key={n}
+                    className={cn(
+                      "px-2",
+                      filter.active &&
+                        "border-purple-300 bg-neutral-950 text-purple-300"
+                    )}
+                    onClick={() => {
+                      updateTimeFrame({ from: filter.from, to: filter.to });
+                    }}
+                  >
+                    {filter.label}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 bg-linear-to-b to-transparent" />
       </div>

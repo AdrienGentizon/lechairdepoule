@@ -80,7 +80,7 @@ type Props = {
 };
 
 export default function CreateTopicForm({
-  conversationType = "TOPIC",
+  conversationType = "topic",
   initialValues,
   onSubmit,
   isPending,
