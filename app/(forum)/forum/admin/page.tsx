@@ -4,7 +4,7 @@ import { Skull } from "lucide-react";
 
 import BanUserTrigger from "@/components/ChatRoom/MessagesList/MessageItem/BanUserTrigger/BanUserTrigger";
 import MessageItem from "@/components/ChatRoom/MessagesList/MessageItem/MessageItem";
-import ConversationItem from "@/components/ConversationItem/ConversationItem";
+import ConversationItem from "@/components/ConversationsList/ConversationItem";
 import useMe from "@/lib/auth/useMe";
 import useBannedUsers from "@/lib/forum/useBannedUsers";
 import useConversations from "@/lib/forum/useConversations";

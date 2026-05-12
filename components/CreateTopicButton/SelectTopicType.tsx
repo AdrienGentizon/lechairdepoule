@@ -1,7 +1,7 @@
 import { Conversation } from "@/lib/types";
 
 import Button from "../Button/Button";
-import ConversationIcon from "../ConversationItem/ConversationIcon";
+import ConversationIcon from "../ConversationsList/ConversationIcon";
 import Form, { FormField, Label } from "../Form/Form";
 
 const CONVERSATION_TYPES = [
