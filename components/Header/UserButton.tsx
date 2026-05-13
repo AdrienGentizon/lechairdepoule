@@ -21,7 +21,7 @@ function UserButton() {
       >{`Mes notifications - ${unread} non lues`}</span>
       {unread > 0 && (
         <span
-          className="absolute -top-0.5 -right-0.5 flex size-3 scale-75 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
+          className="absolute -top-0.5 -right-0.5 flex size-3 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
           aria-hidden
         >
           {unread}

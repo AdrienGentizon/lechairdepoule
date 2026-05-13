@@ -1,12 +1,10 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
+import TextParser from "@/components/TextParser";
 import useMe, { Me } from "@/lib/auth/useMe";
-import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
 import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-import TextParser from "@/components/TextParser";
 
 import { useChatRoom } from "../../ChatRoomContext";
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
@@ -116,10 +114,12 @@ function Thread({
   message,
   conversation,
   threadedMessages,
+  focusedMessageId,
 }: {
   message: Message;
   conversation: Conversation;
   threadedMessages: (Message & { hasMention: boolean })[];
+  focusedMessageId?: string;
 }) {
   if (threadedMessages.length === 0) return null;
 
@@ -132,7 +132,7 @@ function Thread({
             message={threadedMessage}
             conversation={conversation}
             threadedMessages={[]}
-            hasMention={threadedMessage.hasMention}
+            focusedMessageId={focusedMessageId}
           />
         );
       })}
@@ -140,96 +140,69 @@ function Thread({
   );
 }
 
-function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
-  const { updateUserNotifications: updateUserMentions, isPending } =
-    useUpdateUserNotifications();
-  const ref = useRef<ComponentRef<"div">>(null);
-
-  const markAsRead = useCallback(() => {
-    if (isPending) return;
-    updateUserMentions([messageId]);
-  }, [isPending, updateUserMentions, messageId]);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const abortController = new AbortController();
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          markAsRead();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(ref.current);
-
-    return () => {
-      abortController.abort();
-    };
-  }, [markAsRead]);
-  return <div ref={ref} />;
-}
-
-
 export default function MessageItem({
   message,
   conversation,
   threadedMessages,
-  hasMention,
   variant,
+  focusedMessageId,
 }: {
   message: Message;
   conversation: Conversation | undefined;
   threadedMessages: (Message & { hasMention: boolean })[];
-  hasMention: boolean;
   variant?: "admin";
+  focusedMessageId?: string;
 }) {
   const { me } = useMe();
-  const [showThread, setShowThread] = useState(false);
-  const enableAutoMarkAsRead = false;
+
+  const [showThread, setShowThread] = useState(() =>
+    threadedMessages.some((m) => m.id === focusedMessageId)
+  );
+
+  const scrollRef = useCallback(
+    (node: ComponentRef<"li"> | null) => {
+      if (!node || message.id !== focusedMessageId) return;
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [message.id, focusedMessageId]
+  );
 
   if (!me) return null;
 
   return (
-    <>
-      <li id={message.id} className="relative">
-        <Header me={me} message={message} />
-        <div className="rounded-b-sm border border-white p-2">
-          <p
-            className={cn(
-              "font-courier pl-2 whitespace-pre-wrap",
-              (message.reportedAt !== null || message.user.bannedAt !== null) &&
-                "text-neutral-400 line-through"
-            )}
-          >
-            <TextParser text={message.body} />
-          </p>
-          {enableAutoMarkAsRead && hasMention && (
-            <MarkAsReadWhenInView messageId={message.id} />
+    <li ref={scrollRef} data-message-id={message.id} className="relative">
+      <Header me={me} message={message} />
+      <div className="rounded-b-sm border border-white p-2">
+        <p
+          className={cn(
+            "font-courier pl-2 whitespace-pre-wrap",
+            (message.reportedAt !== null || message.user.bannedAt !== null) &&
+              "text-neutral-400 line-through"
           )}
-          {conversation && showThread && (
-            <Thread
-              conversation={conversation}
+        >
+          <TextParser text={message.body} />
+        </p>
+        {conversation && showThread && (
+          <Thread
+            conversation={conversation}
+            message={message}
+            threadedMessages={threadedMessages}
+            focusedMessageId={focusedMessageId}
+          />
+        )}
+        {conversation &&
+          message.parentMessageId === null &&
+          variant !== "admin" && (
+            <ReplyInThreadButton
+              me={me}
               message={message}
+              conversation={conversation}
               threadedMessages={threadedMessages}
+              showThread={showThread}
+              updateShowThread={setShowThread}
             />
           )}
-          {conversation &&
-            message.parentMessageId === null &&
-            variant !== "admin" && (
-              <ReplyInThreadButton
-                me={me}
-                message={message}
-                conversation={conversation}
-                threadedMessages={threadedMessages}
-                showThread={showThread}
-                updateShowThread={setShowThread}
-              />
-            )}
-        </div>
-      </li>
-    </>
+      </div>
+    </li>
   );
 }

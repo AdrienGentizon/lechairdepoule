@@ -1,7 +1,6 @@
 import { RefObject, useEffect } from "react";
 
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 
 import useUserNotifications from "@/lib/forum/useUserNotifications";
 import { Conversation } from "@/lib/types";
@@ -11,28 +10,27 @@ import MessageItem from "./MessageItem/MessageItem";
 type Props = {
   conversation: Conversation;
   lastEmptyLiRef: RefObject<HTMLLIElement | null>;
+  messageIdFromSearchParams: string | undefined;
   scrollToBottom: () => void;
 };
 
 export default function MessagesList({
   conversation,
   lastEmptyLiRef,
+  messageIdFromSearchParams,
   scrollToBottom,
 }: Props) {
-  const messageId = useSearchParams().get("messageId")?.toString();
   const { mentions } = useUserNotifications();
+  const focusedMessage = conversation?.messages.find(
+    ({ id }) => id === messageIdFromSearchParams
+  );
 
   useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
-
-  useEffect(() => {
-    if (!messageId) return;
-    window.location.hash = messageId;
-  }, [messageId]);
+    if (!focusedMessage) scrollToBottom();
+  }, [scrollToBottom, focusedMessage]);
 
   return (
-    <ul className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6">
+    <ul className="flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6">
       {conversation.coverUrl &&
         conversation.coverWidth &&
         conversation.coverHeight && (
@@ -62,16 +60,14 @@ export default function MessagesList({
                   undefined,
               };
             });
-          const hasMention =
-            mentions.find(({ messageId }) => messageId === message.id) !==
-            undefined;
+
           return (
             <MessageItem
-              key={`main-conversation-message-${message.id}`}
+              key={message.id}
               message={message}
               conversation={conversation}
               threadedMessages={threadedMessages}
-              hasMention={hasMention}
+              focusedMessageId={messageIdFromSearchParams}
             />
           );
         })}

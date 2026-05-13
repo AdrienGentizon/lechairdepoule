@@ -95,7 +95,6 @@ export default function AdminPage() {
                 message={message}
                 conversation={undefined}
                 threadedMessages={[]}
-                hasMention={false}
                 variant="admin"
               />
             ))}

@@ -22,7 +22,11 @@ function getPermissions(user: User) {
     canPostMessage(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
       if (conversation.reportedAt) return false;
-      if (conversation.closedToContributionsAt && conversation.createdBy.id !== user.id) return false;
+      if (
+        conversation.closedToContributionsAt &&
+        conversation.createdBy.id !== user.id
+      )
+        return false;
       return true;
     },
     canUpdateConversation(conversation: SimpleConversation) {
@@ -65,7 +69,7 @@ function getPermissions(user: User) {
 export default function useMe() {
   const {
     data: me,
-    isLoading,
+    isFetching,
     error,
   } = useQuery({
     queryKey: ["me" satisfies CacheKey],
@@ -90,7 +94,7 @@ export default function useMe() {
           ...getPermissions(me),
         }
       : undefined,
-    isLoading,
+    isFetching,
     error,
   };
 }

@@ -21,9 +21,10 @@ import UpdateConversationButton from "./UpdateConversationButton/UpdateConversat
 
 type Props = {
   conversationId: string;
+  messageIdFromSearchParams: string | undefined;
 };
 
-function ChatRoom({ conversationId }: Props) {
+function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
   const { me } = useMe();
   const { conversation, isLoading, lastEmptyLiRef, scrollToBottom } =
     useConversation(conversationId);
@@ -83,6 +84,7 @@ function ChatRoom({ conversationId }: Props) {
           conversation={conversation}
           lastEmptyLiRef={lastEmptyLiRef}
           scrollToBottom={scrollToBottom}
+          messageIdFromSearchParams={messageIdFromSearchParams}
         />
       </Suspense>
 
@@ -107,10 +109,16 @@ function ChatRoom({ conversationId }: Props) {
   );
 }
 
-export default function Wrapper({ conversationId }: Props) {
+export default function Wrapper({
+  conversationId,
+  messageIdFromSearchParams,
+}: Props) {
   return (
     <ChatRoomProvider>
-      <ChatRoom conversationId={conversationId} />
+      <ChatRoom
+        conversationId={conversationId}
+        messageIdFromSearchParams={messageIdFromSearchParams}
+      />
     </ChatRoomProvider>
   );
 }
