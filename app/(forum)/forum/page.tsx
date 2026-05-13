@@ -23,7 +23,7 @@ export default function ForumPage() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
       <div className="relative">
-        <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll pb-4">
+        <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll py-2">
           {CONVERSATION_FILTERS.map(({ type, label, icon: Icon }) => {
             const count = counts[type];
             return (
@@ -55,29 +55,27 @@ export default function ForumPage() {
             );
           })}
         </div>
-        <div>
-          {["event", "release"].includes(activeFilter) && (
-            <div className="flex items-center justify-center gap-2">
-              {timeframePresets.map((filter, n) => {
-                return (
-                  <Button
-                    key={n}
-                    className={cn(
-                      "px-2",
-                      filter.active &&
-                        "border-purple-300 bg-neutral-950 text-purple-300"
-                    )}
-                    onClick={() => {
-                      updateTimeFrame({ from: filter.from, to: filter.to });
-                    }}
-                  >
-                    {filter.label}
-                  </Button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        {["event", "release"].includes(activeFilter) && (
+          <div className="flex items-center justify-center gap-2 py-2">
+            {timeframePresets.map((filter, n) => {
+              return (
+                <Button
+                  key={n}
+                  className={cn(
+                    "px-2",
+                    filter.active &&
+                      "border-purple-300 bg-neutral-950 text-purple-300"
+                  )}
+                  onClick={() => {
+                    updateTimeFrame({ from: filter.from, to: filter.to });
+                  }}
+                >
+                  {filter.label}
+                </Button>
+              );
+            })}
+          </div>
+        )}
         <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 bg-linear-to-b to-transparent" />
       </div>
       <ConversationsList
