@@ -106,7 +106,7 @@ function filterAndSort(
       : conversations.filter((c) => c.type === filter.toUpperCase());
 
   const byTimeframe =
-    filter === "event" || filter === "release"
+    (filter === "event" || filter === "release") && (from || to)
       ? byType.filter(filterByTimeframe(from, to))
       : byType;
 
@@ -132,6 +132,12 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
   const [to, setTo] = useQueryState("to", parseAsTimestamp);
 
   const timeframePresets = [
+    {
+      label: "Tous",
+      from: null,
+      to: null,
+      active: isActiveTimeframe(null, null, from, to),
+    },
     {
       label: "Passés",
       from: null,
