@@ -13,7 +13,7 @@ import { getDateSpan, getMonthSpan, getWeekSpan } from "../date";
 import { ConversationTypeEnum } from "../schemas";
 import { CacheKey, Conversation, SimpleConversation } from "../types";
 
-type FilterEnum = z.infer<typeof ConversationTypeEnum> | "all";
+type FilterEnum = Lowercase<z.infer<typeof ConversationTypeEnum> | "ALL">;
 
 export const CONVERSATION_FILTERS: {
   type: ReturnType<typeof useConversations>["activeFilter"];
@@ -132,24 +132,44 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
   const [to, setTo] = useQueryState("to", parseAsTimestamp);
 
   const timeframePresets = [
-    { label: "Passés", from: null, to: getDateSpan().from, active: isActiveTimeframe(null, getDateSpan().from, from, to) },
+    {
+      label: "Passés",
+      from: null,
+      to: getDateSpan().from,
+      active: isActiveTimeframe(null, getDateSpan().from, from, to),
+    },
     {
       label: "Cette semaine",
       from: getWeekSpan().monday,
       to: getWeekSpan().sunday,
-      active: isActiveTimeframe(getWeekSpan().monday, getWeekSpan().sunday, from, to),
+      active: isActiveTimeframe(
+        getWeekSpan().monday,
+        getWeekSpan().sunday,
+        from,
+        to
+      ),
     },
     {
       label: "Ce mois ci",
       from: getMonthSpan().firstDay,
       to: getMonthSpan().lastDay,
-      active: isActiveTimeframe(getMonthSpan().firstDay, getMonthSpan().lastDay, from, to),
+      active: isActiveTimeframe(
+        getMonthSpan().firstDay,
+        getMonthSpan().lastDay,
+        from,
+        to
+      ),
     },
     {
       label: "Futurs",
       from: new Date(getMonthSpan().lastDay.getTime() + 1),
       to: null,
-      active: isActiveTimeframe(new Date(getMonthSpan().lastDay.getTime() + 1), null, from, to),
+      active: isActiveTimeframe(
+        new Date(getMonthSpan().lastDay.getTime() + 1),
+        null,
+        from,
+        to
+      ),
     },
   ];
 

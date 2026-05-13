@@ -10,4 +10,4 @@ export const NullishDateSchema = z.preprocess(
     .transform((v) => v ?? null)
 );
 
-export const ConversationTypeEnum = z.enum(["topic", "event", "release"]);
+export const ConversationTypeEnum = z.enum(["TOPIC", "EVENT", "RELEASE"]);
