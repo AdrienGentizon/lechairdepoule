@@ -11,6 +11,7 @@ export default function Main({
 }) {
   return (
     <main
+      id="main-content"
       className={cn(
         "no-scrollbar relative grid min-h-full w-full max-w-2xl grid-cols-1 grid-rows-1 overflow-y-scroll bg-black portrait:max-w-dvw",
         className

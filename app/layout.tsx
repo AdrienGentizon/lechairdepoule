@@ -44,6 +44,12 @@ export default async function RootLayout({
           "dark grid h-dvh min-h-full grid-cols-1 grid-rows-[auto_1fr_auto] justify-items-center overflow-x-hidden portrait:w-dvw"
         )}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black"
+        >
+          Aller au contenu principal
+        </a>
         <RandomBackground assets={assets} />
         <Header />
         <Main>{children}</Main>
