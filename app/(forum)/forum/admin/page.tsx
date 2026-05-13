@@ -71,9 +71,9 @@ export default function AdminPage() {
 
   return (
     <div className="no-scrollbar flex flex-col overflow-y-scroll bg-black px-2 sm:max-w-2xl">
-      <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
+      <h1 className="bg-foreground text-background rounded-sm px-2 font-semibold">
         Administration du forum
-      </h2>
+      </h1>
       {reportedMessages.length +
         reportedConversations.length +
         reportedUsers.length +
@@ -85,9 +85,9 @@ export default function AdminPage() {
       )}
       {reportedMessages.length > 0 && (
         <section className="flex flex-col gap-2 pb-8">
-          <h3 className="bg-foreground text-background rounded-sm px-2 font-semibold">
+          <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
             Messages signalés
-          </h3>
+          </h2>
           <ul className="flex flex-col gap-6">
             {reportedMessages.map((message) => (
               <MessageItem
@@ -103,9 +103,9 @@ export default function AdminPage() {
       )}
       {reportedConversations.length > 0 && (
         <section className="flex flex-col gap-2 pb-8">
-          <h3 className="bg-foreground text-background rounded-sm px-2 font-semibold">
+          <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
             Conversations signalées
-          </h3>
+          </h2>
           <ul className="flex flex-col">
             {reportedConversations.map((conversation) => (
               <ConversationItem
@@ -120,9 +120,9 @@ export default function AdminPage() {
       )}
       {reportedUsers.length > 0 && (
         <section className="flex flex-col gap-2 pb-8">
-          <h3 className="bg-foreground text-background rounded-sm px-2 font-semibold">
+          <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
             Utilisateurs signalés
-          </h3>
+          </h2>
           <ul className="flex flex-col">
             {reportedUsers.map(
               ({ user, reportedMessageIds, reportedConversationIds }) => (
@@ -152,9 +152,9 @@ export default function AdminPage() {
       )}
       {bannedUsers.length > 0 && (
         <section className="flex flex-col gap-2 pb-8">
-          <h3 className="bg-foreground text-background rounded-sm px-2 font-semibold">
+          <h2 className="bg-foreground text-background rounded-sm px-2 font-semibold">
             Utilisateurs bannis
-          </h3>
+          </h2>
           <ul className="flex flex-col">
             {bannedUsers.map((user) => (
               <li

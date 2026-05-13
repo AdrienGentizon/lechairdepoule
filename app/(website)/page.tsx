@@ -8,6 +8,7 @@ export default async function Home() {
   const events = await getEvents();
   return (
     <Suspense>
+      <h1 className="sr-only">Agenda des animations</h1>
       <EventsList events={events} />
     </Suspense>
   );

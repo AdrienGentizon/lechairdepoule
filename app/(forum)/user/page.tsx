@@ -35,6 +35,7 @@ function UserPage({ me }: { me: User }) {
 
   return (
     <div className="max-h-[90dvh] overflow-y-scroll">
+      <h1 className="sr-only">Mon profil</h1>
       <Form
         id="update-user"
         onFocus={() => {

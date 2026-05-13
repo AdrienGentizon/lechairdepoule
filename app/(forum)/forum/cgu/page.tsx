@@ -31,11 +31,8 @@ export default async function TermsOfServicePage() {
   if (!cgu) return redirect("/");
 
   return (
-    <section aria-labelledby="cgu">
-      <h2 id="cgu" className="pt-4 pb-1 text-lg font-semibold">
-        {`Conditions générales d'utilisation`}
-      </h2>
+    <div>
       <MarkdownRenderer content={cgu} className="p-2" />
-    </section>
+    </div>
   );
 }

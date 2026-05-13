@@ -12,14 +12,9 @@ export default async function ContactPage() {
   if (!contactPage) return notFound();
 
   return (
-    <section
-      aria-labelledby="contact-section"
-      className="flex flex-col items-center justify-center gap-4 bg-black"
-    >
-      <h2 id="contact-section" className="sr-only">
-        Contacts
-      </h2>
-      <div className="flex flex-col items-center justify-center pt-4 sm:pb-4 sm:pt-8">
+    <div className="flex flex-col items-center justify-center gap-4 bg-black">
+      <h1 className="sr-only">Contacts</h1>
+      <div className="flex flex-col items-center justify-center pt-4 sm:pt-8 sm:pb-4">
         <h2 className="sr-only">Adresse</h2>
         <div className="font-mono">
           <Markdown>{contactPage.contactNumbers}</Markdown>
@@ -48,6 +43,6 @@ export default async function ContactPage() {
         </div>
       </div>
       <ContactForm />
-    </section>
+    </div>
   );
 }

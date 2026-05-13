@@ -22,6 +22,7 @@ export default function ForumPage() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
+      <h1 className="sr-only">Forum</h1>
       <div className="flex max-h-dvw w-full flex-col overflow-hidden pl-2">
         <div className="flex items-center gap-2 overflow-x-scroll py-2 sm:justify-center">
           {CONVERSATION_FILTERS.map(({ type, label, icon: Icon }) => {
@@ -80,6 +81,7 @@ export default function ForumPage() {
       <ConversationsList
         conversations={conversations}
         className="overflow-y-scroll pt-4 pb-4"
+        isLoading={isLoading}
       />
 
       <div className="flex flex-col border-t border-b border-white">
