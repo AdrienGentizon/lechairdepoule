@@ -6,9 +6,10 @@ export function getConversationMetadataAsString(
 ) {
   const author = `créé par ${conversation.createdBy.pseudo}`;
   const since = `${getSinceAsString(new Date(conversation.createdAt))}`;
-  return ["EVENT", "RELEASE"].includes(conversation.type ?? "")
-    ? author
-    : [author, since].join(" ");
+  const showSince =
+    !conversation.startsAt &&
+    ["EVENT", "RELEASE"].includes(conversation.type ?? "");
+  return showSince ? [author, since].join(" ") : author;
 }
 
 export function getMessageMetadataAsString(message: Message) {
