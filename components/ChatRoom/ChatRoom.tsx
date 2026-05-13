@@ -41,12 +41,12 @@ function ChatRoom({ conversationId }: Props) {
     <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] px-1">
       <header className="bg-background text-foreground relative flex flex-col gap-2 py-2">
         <div className="flex items-center gap-4">
-          <nav>
+          <nav className="self-start">
             <Link href={`/forum`}>
               <ArrowLeft />
             </Link>
           </nav>
-          <div className="mr-auto">
+          <div className="flex flex-col gap-2">
             <h1
               className={cn(
                 "leading-none font-semibold uppercase",
@@ -64,7 +64,7 @@ function ChatRoom({ conversationId }: Props) {
               <TextParser text={conversation.description ?? ""} />
             </p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-2 self-start pr-2">
             <UpdateConversationButton me={me} conversation={conversation} />
             <DeleteConversationButton me={me} conversation={conversation} />
             <ReportConversationButton me={me} conversation={conversation} />

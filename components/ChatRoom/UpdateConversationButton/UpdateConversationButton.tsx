@@ -43,7 +43,7 @@ export default function UpdateConversationButton({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm p-2 hover:text-purple-300">
+      <DialogTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
         <Pencil className="size-5" />
         <span className="sr-only">Modifier</span>
       </DialogTrigger>
