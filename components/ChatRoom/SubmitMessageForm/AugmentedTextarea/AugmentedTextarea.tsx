@@ -5,7 +5,6 @@ import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import { TextareaHTMLAttributes } from "react";
 
 import useSearchSimilarUsersByPseudo from "@/lib/auth/useSearchSimilarUsersByPseudo";
-import useDebounce from "@/lib/misc/useDebounce";
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -27,12 +26,13 @@ function AugmentedTextareaWithMentions({
   className,
   ...props
 }: Omit<Props, "options">) {
-  const { similarUsers, updateSearch } = useSearchSimilarUsersByPseudo();
-  const debounceSearch = useDebounce(updateSearch, 500);
+  const { searchSimilarUsers } = useSearchSimilarUsersByPseudo();
 
-  const dataProvider = (token: string): MentionUser[] => {
-    debounceSearch(token);
-    return (similarUsers || []).map(({ id, pseudo }) => ({ id, pseudo }));
+  const dataProvider = async (token: string): Promise<MentionUser[]> => {
+    const similarUsers = await searchSimilarUsers(token);
+    return similarUsers.map(({ id, pseudo }) => {
+      return { id, pseudo };
+    });
   };
 
   const trigger = {
