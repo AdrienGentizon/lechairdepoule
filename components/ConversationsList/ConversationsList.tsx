@@ -6,9 +6,11 @@ import ConversationItem from "./ConversationItem";
 export default function ConversationsList({
   conversations,
   className,
+  isLoading,
 }: {
   conversations: Omit<Conversation, "messages">[];
   className?: string;
+  isLoading?: boolean;
 }) {
   return (
     <ul
@@ -18,7 +20,7 @@ export default function ConversationsList({
         className
       )}
     >
-      {conversations.length === 0 && (
+      {!isLoading && conversations.length === 0 && (
         <li>
           <p className="font-courier rounded-sm border border-neutral-500 bg-neutral-800 px-4 py-1 text-center text-sm text-neutral-300">
             La liste est vide...
