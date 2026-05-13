@@ -7,7 +7,14 @@ import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import Button, { buttonClassName } from "../Button/Button";
-import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
+import AugmentedTextarea from "../ChatRoom/SubmitMessageForm/AugmentedTextarea/AugmentedTextarea";
+import Form, {
+  FieldError,
+  FormField,
+  Input,
+  Label,
+  inputClassName,
+} from "../Form/Form";
 
 const CONVERSATION_TYPE_SPECIFICATIONS: Record<
   NonNullable<Conversation["type"]>,
@@ -182,10 +189,10 @@ export default function CreateTopicForm({
           <Label htmlFor="description" aria-required>
             Description
           </Label>
-          <Input
+          <AugmentedTextarea
             id="description"
             name="description"
-            type="text"
+            className={inputClassName()}
             required
             value={form.description ?? ""}
             onChange={(e) =>

@@ -10,7 +10,7 @@ import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import { useChatRoom } from "../ChatRoomContext";
-import MessageAugementedTextarea from "./MessageAugementedTextarea/MessageAugementedTextarea";
+import AugmentedTextarea from "./AugmentedTextarea/AugmentedTextarea";
 
 type Props = {
   me: Me;
@@ -69,7 +69,7 @@ function SubmitMessageForm({
       <label htmlFor="body" className="sr-only">
         Message
       </label>
-      <MessageAugementedTextarea
+      <AugmentedTextarea
         id="body"
         name="body"
         className={cn(
@@ -81,6 +81,9 @@ function SubmitMessageForm({
         autoFocus={autoFocus ?? true}
         value={body}
         placeholder={placeholder}
+        options={{
+          mentions: true,
+        }}
         onFocus={() => setActiveFormId(formId)}
         onChange={(e) => {
           setBody(e.target.value);
@@ -119,7 +122,8 @@ export default function Wrapper({ me, conversation, ...props }: Props) {
   )
     return (
       <p className="font-courier rounded-sm border border-neutral-500 bg-neutral-800 px-4 py-2 text-sm text-neutral-400">
-        Retrouvez ici les messages des organisateurs (la section commentaire est désactivée).
+        Retrouvez ici les messages des organisateurs (la section commentaire est
+        désactivée).
       </p>
     );
 

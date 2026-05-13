@@ -17,24 +17,37 @@ const Item = ({ entity }: { entity: MentionUser }) => (
   </div>
 );
 
-type Props = TextareaHTMLAttributes<HTMLTextAreaElement>;
+type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  options?: {
+    mentions: boolean;
+  };
+};
 
-export default function MessageAugementedTextarea({
+function AugmentedTextareaWithMentions({
   className,
   ...props
-}: Props) {
+}: Omit<Props, "options">) {
   const { similarUsers, updateSearch } = useSearchSimilarUsersByPseudo();
   const debounceSearch = useDebounce(updateSearch, 500);
+
   const dataProvider = (token: string): MentionUser[] => {
     debounceSearch(token);
     return (similarUsers || []).map(({ id, pseudo }) => ({ id, pseudo }));
+  };
+
+  const trigger = {
+    "@": {
+      dataProvider,
+      component: Item,
+      output: (item: MentionUser) => `@${item.pseudo}`,
+    },
   };
 
   return (
     <ReactTextareaAutocomplete<MentionUser>
       loadingComponent={() => <></>}
       minChar={2}
-      className={cn("resize-none", className)}
+      className={className}
       dropdownStyle={{
         position: "absolute",
         zIndex: 50,
@@ -50,14 +63,24 @@ export default function MessageAugementedTextarea({
         transform: `translate(0, calc(-100% - 1rem))`,
       }}
       containerClassName="relative"
-      trigger={{
-        "@": {
-          dataProvider,
-          component: Item,
-          output: (item: MentionUser) => `@${item.pseudo}`,
-        },
-      }}
+      trigger={trigger}
       {...props}
     />
+  );
+}
+
+export default function AugmentedTextarea({
+  className,
+  options,
+  ...props
+}: Props) {
+  const augmentedClassName = cn("resize-none", className);
+
+  if (!options?.mentions) {
+    return <textarea className={augmentedClassName} {...props} />;
+  }
+
+  return (
+    <AugmentedTextareaWithMentions className={augmentedClassName} {...props} />
   );
 }

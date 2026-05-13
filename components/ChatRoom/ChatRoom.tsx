@@ -56,7 +56,7 @@ function ChatRoom({ conversationId }: Props) {
             </h1>
             <p
               className={cn(
-                "text-sm font-light",
+                "text-sm font-light whitespace-pre-wrap",
                 conversation.reportedAt && "text-neutral-400 line-through"
               )}
             >
