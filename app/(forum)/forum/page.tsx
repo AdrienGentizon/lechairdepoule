@@ -22,8 +22,8 @@ export default function ForumPage() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto]">
-      <div className="relative">
-        <div className="flex max-w-dvw items-center justify-center gap-2 overflow-x-scroll py-2">
+      <div className="flex max-h-dvw w-full flex-col overflow-hidden pl-2">
+        <div className="flex items-center gap-2 overflow-x-scroll py-2 sm:justify-center">
           {CONVERSATION_FILTERS.map(({ type, label, icon: Icon }) => {
             const count = counts[type];
             return (
@@ -56,13 +56,13 @@ export default function ForumPage() {
           })}
         </div>
         {["event", "release"].includes(activeFilter) && (
-          <div className="flex items-center justify-center gap-2 py-2">
+          <div className="flex items-center gap-2 overflow-x-scroll py-2 sm:justify-center">
             {timeframePresets.map((filter, n) => {
               return (
                 <Button
                   key={n}
                   className={cn(
-                    "px-2",
+                    "px-2 whitespace-nowrap",
                     filter.active &&
                       "border-purple-300 bg-neutral-950 text-purple-300"
                   )}
@@ -76,16 +76,13 @@ export default function ForumPage() {
             })}
           </div>
         )}
-        <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 bg-linear-to-b to-transparent" />
       </div>
       <ConversationsList
         conversations={conversations}
-        className="overflow-y-scroll pt-8 pb-4"
+        className="overflow-y-scroll pt-4 pb-4"
       />
 
-      <div className="relative flex flex-col border-t border-b border-white">
-        <div className="from-background pointer-events-none absolute inset-x-0 -top-px h-8 -translate-y-full bg-linear-to-t to-transparent" />
-
+      <div className="flex flex-col border-t border-b border-white">
         <CreateTopicButton />
       </div>
       {isLoading && <Loader />}
