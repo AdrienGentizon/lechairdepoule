@@ -40,7 +40,7 @@ function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
 
   return (
     <div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] px-1">
-      <header className="bg-background text-foreground relative flex flex-col gap-2 py-2">
+      <header className="bg-background text-foreground flex flex-col gap-2 py-2">
         <div className="flex items-center gap-4">
           <nav className="self-start">
             <Link href={`/forum`}>
@@ -76,7 +76,6 @@ function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
             {getConversationMetadataAsString(conversation)}
           </h3>
         </div>
-        <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 z-10 h-8 translate-y-full bg-linear-to-b to-transparent" />
       </header>
 
       <Suspense>
@@ -88,21 +87,17 @@ function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
         />
       </Suspense>
 
-      <div>
-        <div className="from-background pointer-events-none absolute inset-x-0 z-10 h-8 -translate-y-full bg-linear-to-t to-transparent" />
-
-        <SubmitMessageForm
-          me={me}
-          conversation={conversation}
-          formId="main"
-          buttonLabel={`Envoyer`}
-          placeholder={`Participer à la conversation...`}
-          withCloseButton
-          onSuccess={() => {
-            scrollToBottom();
-          }}
-        />
-      </div>
+      <SubmitMessageForm
+        me={me}
+        conversation={conversation}
+        formId="main"
+        buttonLabel={`Envoyer`}
+        placeholder={`Participer à la conversation...`}
+        withCloseButton
+        onSuccess={() => {
+          scrollToBottom();
+        }}
+      />
 
       {isLoading && <Loader />}
     </div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import useUserNotifications from "@/lib/forum/useUserNotifications";
 import { Conversation } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 import MessageItem from "./MessageItem/MessageItem";
 
@@ -30,7 +31,12 @@ export default function MessagesList({
   }, [scrollToBottom, focusedMessage]);
 
   return (
-    <ul className="flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6">
+    <ul
+      className={cn(
+        "flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6",
+        "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
+      )}
+    >
       {conversation.coverUrl &&
         conversation.coverWidth &&
         conversation.coverHeight && (
