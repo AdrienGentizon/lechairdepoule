@@ -22,7 +22,7 @@ export default function CguCheckbox({
   return (
     <div className="flex flex-col gap-1 py-2">
       <div className="flex items-center gap-2">
-        <input type="checkbox" {...props} />
+        <input type="checkbox" className="accent-purple-300" {...props} />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger
             className={cn(

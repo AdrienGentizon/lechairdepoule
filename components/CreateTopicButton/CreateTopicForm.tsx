@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Loader, Trash2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -192,7 +193,7 @@ export default function CreateTopicForm({
           <AugmentedTextarea
             id="description"
             name="description"
-            className={inputClassName()}
+            className={inputClassName("min-h-20")}
             required
             value={form.description ?? ""}
             onChange={(e) =>
@@ -339,6 +340,7 @@ export default function CreateTopicForm({
                 <input
                   id="closed-to-contributions"
                   type="checkbox"
+                  className="accent-purple-300"
                   checked={
                     form.closedToContributionsAt !== null &&
                     form.closedToContributionsAt !== undefined
@@ -369,13 +371,23 @@ export default function CreateTopicForm({
               id="rules-acceptance"
               type="checkbox"
               checked={rulesAccepted}
+              className="accent-purple-300"
               onChange={(e) => setRulesAccepted(e.target.checked)}
             />
             <label
               htmlFor="rules-acceptance"
               className={cn("text-sm", errors.rules && "text-red-500")}
             >
-              Je m&apos;engage à respecter les règles du forum
+              Je m&apos;engage à respecter les{" "}
+              <Link
+                href={`/forum/cgu`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-300 underline transition-colors hover:text-purple-400"
+              >
+                règles
+              </Link>{" "}
+              du forum
             </label>
           </div>
         )}
