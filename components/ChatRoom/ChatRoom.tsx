@@ -11,6 +11,7 @@ import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { cn } from "@/lib/utils";
 
 import Loader from "../Loader/Loader";
+import TextParser from "../TextParser";
 import { ChatRoomProvider } from "./ChatRoomContext";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import MessagesList from "./MessagesList/MessagesList";
@@ -60,7 +61,7 @@ function ChatRoom({ conversationId }: Props) {
                 conversation.reportedAt && "text-neutral-400 line-through"
               )}
             >
-              {conversation.description}
+              <TextParser text={conversation.description ?? ""} />
             </p>
           </div>
           <div className="flex items-center gap-1">

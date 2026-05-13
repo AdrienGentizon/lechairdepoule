@@ -1,12 +1,12 @@
 import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { z } from "zod";
-
 import useMe, { Me } from "@/lib/auth/useMe";
 import useUpdateUserNotifications from "@/lib/forum/useUpdateUserNotifications";
 import { getMessageMetadataAsString } from "@/lib/forum/utils";
 import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+import TextParser from "@/components/TextParser";
 
 import { useChatRoom } from "../../ChatRoomContext";
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
@@ -172,36 +172,6 @@ function MarkAsReadWhenInView({ messageId }: { messageId: string }) {
   return <div ref={ref} />;
 }
 
-const URL_REGEX = /(https?:\/\/[^\s]+)/g;
-
-function isSafeUrl(part: string): boolean {
-  return z.string().url().startsWith("https://").safeParse(part).success;
-}
-
-function MessageBodyParser({ message }: { message: Message }) {
-  const parts = message.body.split(URL_REGEX);
-
-  return (
-    <>
-      {parts.map((part, n) => {
-        if (part.match(URL_REGEX) && isSafeUrl(part)) {
-          return (
-            <a
-              key={`message-${message.id}-link-${n}`}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 underline hover:text-blue-300"
-            >
-              {part}
-            </a>
-          );
-        }
-        return part;
-      })}
-    </>
-  );
-}
 
 export default function MessageItem({
   message,
@@ -234,7 +204,7 @@ export default function MessageItem({
                 "text-neutral-400 line-through"
             )}
           >
-            <MessageBodyParser message={message} />
+            <TextParser text={message.body} />
           </p>
           {enableAutoMarkAsRead && hasMention && (
             <MarkAsReadWhenInView messageId={message.id} />

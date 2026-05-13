@@ -45,7 +45,7 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         </strong>
         <p
           className={cn(
-            "leading-tight font-light whitespace-pre-wrap",
+            "leading-tight font-light line-clamp-2",
             conversation.reportedAt && "text-neutral-400 line-through"
           )}
         >
