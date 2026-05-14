@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import AgendaPNG from "@/public/agenda.png";
 import ContactPNG from "@/public/contact.png";
 import ForumPNG from "@/public/forum.png";
+import HorsLesMursPNG from "@/public/hors-les-murs.png";
 
 import LogoSite from "../png/LogoSite";
 
@@ -35,7 +36,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
                 src={AgendaPNG}
                 alt="Agenda"
                 className="h-6 w-auto object-contain landscape:h-10"
-                role="button"
+                aria-hidden
               />
               <span className="sr-only">Agenda</span>
             </Link>
@@ -46,7 +47,7 @@ export default function Header({ variant }: { variant?: "relative" }) {
                 src={ContactPNG}
                 alt="Contact"
                 className="h-6 w-auto object-contain landscape:h-10"
-                role="button"
+                aria-hidden
               />
               <span className="sr-only">Contact</span>
             </Link>
@@ -57,9 +58,20 @@ export default function Header({ variant }: { variant?: "relative" }) {
                 src={ForumPNG}
                 alt="Forum"
                 className="h-6 w-auto object-contain landscape:h-10"
-                role="button"
+                aria-hidden
               />
               <span className="sr-only">Forum</span>
+            </Link>
+          </li>
+          <li>
+            <Link href={`/agenda`}>
+              <Image
+                src={HorsLesMursPNG}
+                alt="Hors les murs"
+                className="h-6 w-auto object-contain landscape:h-10"
+                aria-hidden
+              />
+              <span className="sr-only">Hors les murs</span>
             </Link>
           </li>
         </ul>
