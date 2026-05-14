@@ -17,6 +17,7 @@ export default async function selectConversationsByTypes(
         type: string | null;
         startsAt: string;
         endsAt: string | null;
+        price: string | null;
         createdAt: string;
         userId: string;
         userPseudo: string | null;
@@ -32,6 +33,7 @@ export default async function selectConversationsByTypes(
       c.type,
       cd.starts_at::text as "startsAt",
       cd.ends_at::text as "endsAt",
+      cd.price::text as "price",
       c.created_at::text as "createdAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo"

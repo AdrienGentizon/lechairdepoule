@@ -37,27 +37,25 @@ const getCachedAgendaConversations = unstable_cache(
 );
 
 export default async function AgendaPage() {
-  const conversations = await getCachedAgendaConversations();
-
-  const sorted = [...conversations].sort((a, b) => {
-    if (!a.startsAt) return 1;
-    if (!b.startsAt) return -1;
-    return a.startsAt.localeCompare(b.startsAt);
-  });
+  const conversations = (await getCachedAgendaConversations()).toSorted(
+    (a, b) => {
+      return a.startsAt.localeCompare(b.startsAt);
+    }
+  );
 
   return (
     <div className="grid grid-cols-1 grid-rows-1 overflow-hidden">
       <h1 className="sr-only">Agenda hors les murs</h1>
       <ul
         className={cn(
-          "flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6",
+          "flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm pt-8 pb-4",
           "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
         )}
       >
-        {sorted.map((conversation) => (
+        {conversations.map((conversation) => (
           <li
             key={conversation.id}
-            className="border-foreground border-b py-3 first:border-t"
+            className="border-foreground border-b py-2 first:border-t"
           >
             <details className="group cursor-pointer">
               <summary className="grid grid-cols-[100px_1fr] gap-2 pr-6">
@@ -79,17 +77,20 @@ export default async function AgendaPage() {
                   </span>
                 </time>
                 <div className="flex flex-col justify-center gap-1">
-                  <span className="text-xl leading-none font-light uppercase">
+                  <span className="text-xl leading-none font-medium uppercase">
                     {conversation.title}
                   </span>
-                  {conversation.startsAt && (
-                    <time
-                      dateTime={conversation.startsAt ?? undefined}
-                      className="text-sm font-light text-purple-300 uppercase"
-                    >
-                      {formatTime(conversation.startsAt)}
-                    </time>
-                  )}
+                  <span className="flex items-center text-sm leading-none font-light text-purple-300">
+                    {conversation.startsAt && (
+                      <time dateTime={conversation.startsAt ?? undefined}>
+                        {formatTime(conversation.startsAt)}
+                      </time>
+                    )}
+                    {conversation.startsAt && conversation.price && (
+                      <>&nbsp;&middot;&nbsp;</>
+                    )}
+                    {conversation.price && <span>{conversation.price}</span>}
+                  </span>
                 </div>
               </summary>
               <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 group-open:grid-rows-[1fr]">
