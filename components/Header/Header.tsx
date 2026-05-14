@@ -8,6 +8,7 @@ import ForumPNG from "@/public/forum.png";
 import HorsLesMursPNG from "@/public/hors-les-murs.png";
 
 import LogoSite from "../png/LogoSite";
+import HeaderClientLogic from "./HeaderClientLogic";
 
 function Title() {
   return (
@@ -16,6 +17,13 @@ function Title() {
     </Link>
   );
 }
+
+const navItems = [
+  { href: "/", src: AgendaPNG, alt: "Agenda", "data-nav-link-overlay": "/" },
+  { href: "/contact", src: ContactPNG, alt: "Contact", "data-nav-link-overlay": "/contact" },
+  { href: "/forum", src: ForumPNG, alt: "Forum", "data-nav-link-overlay": "/forum" },
+  { href: "/agenda", src: HorsLesMursPNG, alt: "Hors les murs", "data-nav-link-overlay": "/agenda" },
+];
 
 export default function Header({ variant }: { variant?: "relative" }) {
   return (
@@ -28,52 +36,29 @@ export default function Header({ variant }: { variant?: "relative" }) {
       <Link href={`/`}>
         <LogoSite />
       </Link>
-      <nav>
+      <HeaderClientLogic />
+      <nav aria-labelledby="nav-main-label">
+        <span id="nav-main-label" className="sr-only">Navigation principale</span>
         <ul className="flex items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
-          <li>
-            <Link href={`/`}>
-              <Image
-                src={AgendaPNG}
-                alt="Agenda"
-                className="h-6 w-auto object-contain landscape:h-10"
-                aria-hidden
-              />
-              <span className="sr-only">Agenda</span>
-            </Link>
-          </li>
-          <li>
-            <Link href={`/contact`}>
-              <Image
-                src={ContactPNG}
-                alt="Contact"
-                className="h-6 w-auto object-contain landscape:h-10"
-                aria-hidden
-              />
-              <span className="sr-only">Contact</span>
-            </Link>
-          </li>
-          <li>
-            <Link href={`/forum`}>
-              <Image
-                src={ForumPNG}
-                alt="Forum"
-                className="h-6 w-auto object-contain landscape:h-10"
-                aria-hidden
-              />
-              <span className="sr-only">Forum</span>
-            </Link>
-          </li>
-          <li>
-            <Link href={`/agenda`}>
-              <Image
-                src={HorsLesMursPNG}
-                alt="Hors les murs"
-                className="h-6 w-auto object-contain landscape:h-10"
-                aria-hidden
-              />
-              <span className="sr-only">Hors les murs</span>
-            </Link>
-          </li>
+          {navItems.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>
+                <div className="relative">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    className="h-6 w-auto object-contain landscape:h-10"
+                    aria-hidden
+                  />
+                  <div
+                    data-nav-link-overlay={item["data-nav-link-overlay"]}
+                    className="absolute inset-0 hidden bg-purple-300 mix-blend-multiply"
+                  />
+                </div>
+                <span className="sr-only">{item.alt}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </header>
