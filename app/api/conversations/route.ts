@@ -6,7 +6,7 @@ import getUser from "@/lib/auth/getUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import { ConversationTypeEnum, NullishDateSchema } from "@/lib/schemas";
+import { ConversationTypeEnum, NullishDateSchema, PriceSchema } from "@/lib/schemas";
 import { Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
         type: ConversationTypeEnum,
         startsAt: NullishDateSchema,
         endsAt: NullishDateSchema,
+        priceInCents: PriceSchema,
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      priceInCents: parsedInputs.data.priceInCents,
       closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     });
 

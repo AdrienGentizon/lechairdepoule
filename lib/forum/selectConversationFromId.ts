@@ -10,6 +10,7 @@ export default async function selectConversationFromId(conversationId: string) {
         type: string | null;
         startsAt: string | null;
         endsAt: string | null;
+        priceInCents: number | null;
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
@@ -28,6 +29,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.type,
         cd.starts_at::text AS "startsAt",
         cd.ends_at::text AS "endsAt",
+        cd.price_cents AS "priceInCents",
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
@@ -60,7 +62,11 @@ export default async function selectConversationFromId(conversationId: string) {
         coverUrl,
         coverWidth: coverWidth ? parseInt(coverWidth) : null,
         coverHeight: coverHeight ? parseInt(coverHeight) : null,
-        createdBy: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
+        createdBy: {
+          id: userId,
+          pseudo: userPseudo ?? "",
+          bannedAt: userBannedAt,
+        },
       })
     )
     .at(0);

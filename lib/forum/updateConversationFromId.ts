@@ -7,6 +7,7 @@ export default async function updateConversationFromId({
   description,
   startsAt,
   endsAt,
+  priceInCents,
   closedToContributionsAt,
 }: {
   conversationId: string;
@@ -15,6 +16,7 @@ export default async function updateConversationFromId({
   description: string;
   startsAt: string | null;
   endsAt: string | null;
+  priceInCents: number | null;
   closedToContributionsAt: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -55,18 +57,19 @@ export default async function updateConversationFromId({
     if (!updatedConversation) return undefined;
 
     const upsertedDates = (
-      await sql<{ startsAt: string | null; endsAt: string | null }[]>`
-        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
-        VALUES (${conversationId}, ${startsAt}, ${endsAt})
+      await sql<{ startsAt: string | null; endsAt: string | null; priceInCents: number | null }[]>`
+        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price_cents)
+        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${priceInCents})
         ON CONFLICT (conversation_id) DO UPDATE
-          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at
-        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt"`
+          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price_cents = EXCLUDED.price_cents
+        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price_cents AS "priceInCents"`
     ).at(0);
 
     return {
       ...updatedConversation,
       startsAt: upsertedDates?.startsAt ?? null,
       endsAt: upsertedDates?.endsAt ?? null,
+      priceInCents: upsertedDates?.priceInCents ?? null,
     };
   });
 }

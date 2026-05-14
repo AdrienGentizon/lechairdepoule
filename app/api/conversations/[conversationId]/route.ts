@@ -18,7 +18,7 @@ import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
-import { NullishDateSchema } from "@/lib/schemas";
+import { NullishDateSchema, PriceSchema } from "@/lib/schemas";
 import { Conversation, Message } from "@/lib/types";
 
 export async function GET(
@@ -241,6 +241,7 @@ export async function PATCH(
         description: z.string().max(500),
         startsAt: NullishDateSchema,
         endsAt: NullishDateSchema,
+        priceInCents: PriceSchema,
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
@@ -263,6 +264,7 @@ export async function PATCH(
       description: parsedInputs.data.description,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      priceInCents: parsedInputs.data.priceInCents,
       closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     };
     const updatedConversation = await updateConversationFromId(values);

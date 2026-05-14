@@ -13,6 +13,7 @@ export default async function selectConversations() {
         type: string | null;
         startsAt: string | null;
         endsAt: string | null;
+        priceInCents: number | null;
         isPinned: boolean;
         closedToContributionsAt: string | null;
         reportedAt: string | null;
@@ -32,6 +33,7 @@ export default async function selectConversations() {
       c.type,
       cd.starts_at::text as "startsAt",
       cd.ends_at::text as "endsAt",
+      cd.price_cents as "priceInCents",
       c.is_pinned as "isPinned",
       c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",
@@ -61,7 +63,11 @@ export default async function selectConversations() {
       coverUrl,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,
-      createdBy: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
+      createdBy: {
+        id: userId,
+        pseudo: userPseudo ?? "",
+        bannedAt: userBannedAt,
+      },
     })
   );
 }

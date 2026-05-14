@@ -17,7 +17,7 @@ function getConversationFromRaw(
     reported_at: string | null;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
-  dates: { startsAt: string | null; endsAt: string | null }
+  dates: { startsAt: string | null; endsAt: string | null; priceInCents: number | null }
 ): Conversation {
   return {
     id: raw.id,
@@ -31,6 +31,7 @@ function getConversationFromRaw(
     closedToContributionsAt: raw.closed_to_contributions_at,
     startsAt: dates.startsAt,
     endsAt: dates.endsAt,
+    priceInCents: dates.priceInCents,
     createdAt: raw.created_at,
     createdBy,
     reportedAt: raw.reported_at,
@@ -46,6 +47,7 @@ export default async function insertConversation({
   user,
   startsAt,
   endsAt,
+  priceInCents,
   closedToContributionsAt,
 }: {
   title: string;
@@ -59,10 +61,9 @@ export default async function insertConversation({
   user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt?: string | null;
   endsAt?: string | null;
+  priceInCents?: number | null;
   closedToContributionsAt?: string | null;
 }) {
-  const hasDates = type === "EVENT" || type === "RELEASE";
-
   return sql.begin(async (sql) => {
     const insertedConversation = (
       await sql<
@@ -104,18 +105,17 @@ export default async function insertConversation({
       throw new Error("cannot insert conversation");
     }
 
-    if (hasDates) {
-      await sql`
-        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at)
-        VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null})`;
-    }
+    await sql`
+      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price_cents)
+      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${priceInCents ?? null})`;
 
     return getConversationFromRaw(
       insertedConversation,
       { id: user.id, pseudo: user.pseudo, bannedAt: user.bannedAt },
       {
-        startsAt: hasDates ? (startsAt ?? null) : null,
-        endsAt: hasDates ? (endsAt ?? null) : null,
+        startsAt: startsAt ?? null,
+        endsAt: endsAt ?? null,
+        priceInCents: priceInCents ?? null,
       }
     );
   });

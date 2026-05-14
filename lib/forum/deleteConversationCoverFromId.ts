@@ -48,8 +48,8 @@ export default async function deleteConversationCoverFromId({
     if (!deletedConversation) return undefined;
 
     const dates = (
-      await sql<{ startsAt: string | null; endsAt: string | null }[]>`
-        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt"
+      await sql<{ startsAt: string | null; endsAt: string | null; priceInCents: number | null }[]>`
+        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price_cents AS "priceInCents"
         FROM conversation_dates
         WHERE conversation_id = ${conversationId}`
     ).at(0);
@@ -58,6 +58,7 @@ export default async function deleteConversationCoverFromId({
       ...deletedConversation,
       startsAt: dates?.startsAt ?? null,
       endsAt: dates?.endsAt ?? null,
+      priceInCents: dates?.priceInCents ?? null,
     };
   });
 }
