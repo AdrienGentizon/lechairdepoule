@@ -1,5 +1,3 @@
-"use client";
-
 import { Event } from "@/queries/getEvents";
 
 import EventItem from "./EventItem/EventItem";
