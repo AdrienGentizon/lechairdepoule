@@ -11,6 +11,7 @@ export default async function selectConversationFromId(conversationId: string) {
         startsAt: string | null;
         endsAt: string | null;
         price: string | null;
+        venue: string | null;
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
@@ -30,6 +31,7 @@ export default async function selectConversationFromId(conversationId: string) {
         cd.starts_at::text AS "startsAt",
         cd.ends_at::text AS "endsAt",
         cd.price AS "price",
+        cd.venue AS "venue",
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",

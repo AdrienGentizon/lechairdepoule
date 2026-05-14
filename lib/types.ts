@@ -50,6 +50,7 @@ export type Conversation = {
   startsAt?: string | null;
   endsAt?: string | null;
   price: string | null;
+  venue: string | null;
   isPinned: boolean;
   closedToContributionsAt: string | null;
   reportedAt: string | null;

@@ -66,9 +66,10 @@ export default async function updateConversationCoverFromId({
           startsAt: string | null;
           endsAt: string | null;
           price: string | null;
+          venue: string | null;
         }[]
       >`
-        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price"
+        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"
         FROM conversation_dates
         WHERE conversation_id = ${conversationId}`
     ).at(0);
@@ -79,6 +80,7 @@ export default async function updateConversationCoverFromId({
       startsAt: dates?.startsAt ?? null,
       endsAt: dates?.endsAt ?? null,
       price: dates?.price ?? null,
+      venue: dates?.venue ?? null,
     };
   });
 }

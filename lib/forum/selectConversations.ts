@@ -14,6 +14,7 @@ export default async function selectConversations() {
         startsAt: string | null;
         endsAt: string | null;
         price: string | null;
+        venue: string | null;
         isPinned: boolean;
         closedToContributionsAt: string | null;
         reportedAt: string | null;
@@ -34,6 +35,7 @@ export default async function selectConversations() {
       cd.starts_at::text as "startsAt",
       cd.ends_at::text as "endsAt",
       cd.price AS "price",
+      cd.venue AS "venue",
       c.is_pinned as "isPinned",
       c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",

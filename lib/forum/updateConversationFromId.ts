@@ -8,6 +8,7 @@ export default async function updateConversationFromId({
   startsAt,
   endsAt,
   price,
+  venue,
   closedToContributionsAt,
 }: {
   conversationId: string;
@@ -17,6 +18,7 @@ export default async function updateConversationFromId({
   startsAt: string | null;
   endsAt: string | null;
   price: string | null;
+  venue: string | null;
   closedToContributionsAt: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -62,13 +64,14 @@ export default async function updateConversationFromId({
           startsAt: string | null;
           endsAt: string | null;
           price: string | null;
+          venue: string | null;
         }[]
       >`
-        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price)
-        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price})
+        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price, venue)
+        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price}, ${venue})
         ON CONFLICT (conversation_id) DO UPDATE
-          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price
-        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price"`
+          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price, venue = EXCLUDED.venue
+        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"`
     ).at(0);
 
     return {
@@ -76,6 +79,7 @@ export default async function updateConversationFromId({
       startsAt: upsertedDates?.startsAt ?? null,
       endsAt: upsertedDates?.endsAt ?? null,
       price: upsertedDates?.price ?? null,
+      venue: upsertedDates?.venue ?? null,
     };
   });
 }

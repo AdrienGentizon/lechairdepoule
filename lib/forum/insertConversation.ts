@@ -21,6 +21,7 @@ function getConversationFromRaw(
     startsAt: string | null;
     endsAt: string | null;
     price: string | null;
+    venue: string | null;
   }
 ): Conversation {
   return {
@@ -36,6 +37,7 @@ function getConversationFromRaw(
     startsAt: dates.startsAt,
     endsAt: dates.endsAt,
     price: dates.price,
+    venue: dates.venue,
     createdAt: raw.created_at,
     createdBy,
     reportedAt: raw.reported_at,
@@ -52,6 +54,7 @@ export default async function insertConversation({
   startsAt,
   endsAt,
   price,
+  venue,
   closedToContributionsAt,
 }: {
   title: string;
@@ -66,6 +69,7 @@ export default async function insertConversation({
   startsAt?: string | null;
   endsAt?: string | null;
   price?: string | null;
+  venue?: string | null;
   closedToContributionsAt?: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -110,8 +114,8 @@ export default async function insertConversation({
     }
 
     await sql`
-      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price)
-      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null})`;
+      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price, venue)
+      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null})`;
 
     return getConversationFromRaw(
       insertedConversation,
@@ -120,6 +124,7 @@ export default async function insertConversation({
         startsAt: startsAt ?? null,
         endsAt: endsAt ?? null,
         price: price ?? null,
+        venue: venue ?? null,
       }
     );
   });

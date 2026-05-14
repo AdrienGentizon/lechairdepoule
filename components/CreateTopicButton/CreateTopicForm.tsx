@@ -24,6 +24,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     startsAt: boolean;
     endsAt: boolean;
     price: boolean;
+    venue: boolean;
     closableToContributions: boolean;
   }
 > = {
@@ -32,6 +33,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     startsAt: false,
     endsAt: false,
     price: false,
+    venue: false,
     closableToContributions: false,
   },
   EVENT: {
@@ -39,13 +41,15 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     startsAt: true,
     endsAt: true,
     price: true,
+    venue: true,
     closableToContributions: true,
   },
   RELEASE: {
     cover: true,
     startsAt: true,
     endsAt: false,
-    price: true,
+    price: false,
+    venue: true,
     closableToContributions: true,
   },
 };
@@ -70,6 +74,7 @@ export type ConversationFormValues = {
   startsAt?: Date;
   endsAt?: Date;
   price?: string | null;
+  venue?: string | null;
   cover?: File;
   closedToContributionsAt?: Date | null;
 };
@@ -82,6 +87,7 @@ type Props = {
     startsAt?: Date;
     endsAt?: Date;
     price?: string | null;
+    venue?: string | null;
     closedToContributionsAt?: Date | null;
   };
   onSubmit: (values: ConversationFormValues) => void;
@@ -111,6 +117,7 @@ export default function CreateTopicForm({
     startsAt?: Date;
     endsAt?: Date;
     price?: string;
+    venue?: string;
     closedToContributionsAt?: Date | null;
   }>({
     title: initialValues?.title,
@@ -118,6 +125,7 @@ export default function CreateTopicForm({
     startsAt: initialValues?.startsAt,
     endsAt: initialValues?.endsAt,
     price: initialValues?.price ?? undefined,
+    venue: initialValues?.venue ?? undefined,
     closedToContributionsAt: initialValues?.closedToContributionsAt ?? null,
   });
   const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
@@ -172,6 +180,7 @@ export default function CreateTopicForm({
           startsAt: form.startsAt,
           endsAt: form.endsAt,
           price: form.price,
+          venue: form.venue,
           cover: coverFile,
           closedToContributionsAt: form.closedToContributionsAt,
         });
@@ -298,10 +307,24 @@ export default function CreateTopicForm({
               id="price"
               name="price"
               type="text"
-              placeholder="ex: 12€, prix libre, 12/18€..."
               value={form.price ?? ""}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, price: e.target.value }))
+              }
+            />
+            <FieldError>{null}</FieldError>
+          </FormField>
+        )}
+        {conversationSpecifications.venue && (
+          <FormField>
+            <Label htmlFor="venue">Lieu</Label>
+            <Input
+              id="venue"
+              name="venue"
+              type="text"
+              value={form.venue ?? ""}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, venue: e.target.value }))
               }
             />
             <FieldError>{null}</FieldError>

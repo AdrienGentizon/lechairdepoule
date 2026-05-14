@@ -242,6 +242,7 @@ export async function PATCH(
         startsAt: NullishDateSchema,
         endsAt: NullishDateSchema,
         price: PriceSchema,
+        venue: z.nullable(z.string()),
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
@@ -265,6 +266,7 @@ export async function PATCH(
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
       price: parsedInputs.data.price,
+      venue: parsedInputs.data.venue,
       closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     };
     const updatedConversation = await updateConversationFromId(values);

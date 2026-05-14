@@ -80,6 +80,11 @@ export default async function AgendaPage() {
                   <span className="text-xl leading-none font-medium uppercase">
                     {conversation.title}
                   </span>
+                  {conversation.venue && (
+                    <span className="text-sm font-light">
+                      {conversation.venue}
+                    </span>
+                  )}
                   <span className="flex items-center text-sm leading-none font-light text-purple-300">
                     {conversation.startsAt && (
                       <time dateTime={conversation.startsAt ?? undefined}>

@@ -98,6 +98,7 @@ export default function CreateTopicButton() {
                   startsAt: values.startsAt?.toISOString(),
                   endsAt: values.endsAt?.toISOString(),
                   price: values.price,
+                  venue: values.venue,
                   closedToContributionsAt:
                     values.closedToContributionsAt?.toISOString() ?? null,
                 },
