@@ -17,6 +17,7 @@ export default function useUpdateConversation(options?: {
       description,
       startsAt,
       endsAt,
+      price,
       closedToContributionsAt,
     }: {
       id: string;
@@ -24,6 +25,7 @@ export default function useUpdateConversation(options?: {
       description: string;
       startsAt?: string | null;
       endsAt?: string | null;
+      price?: string | null;
       closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
@@ -31,6 +33,7 @@ export default function useUpdateConversation(options?: {
       body.set("description", description);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
+      if (price) body.set("price", price);
       body.set("closedToContributionsAt", closedToContributionsAt ?? "");
 
       const response = await fetch(`/api/conversations/${conversationId}`, {
@@ -65,6 +68,7 @@ export default function useUpdateConversation(options?: {
                 coverHeight: data.coverHeight,
                 startsAt: data.startsAt,
                 endsAt: data.endsAt,
+                price: data.price,
                 closedToContributionsAt: data.closedToContributionsAt,
               },
             ];
@@ -83,6 +87,7 @@ export default function useUpdateConversation(options?: {
             coverHeight: data.coverHeight,
             startsAt: data.startsAt,
             endsAt: data.endsAt,
+            price: data.price,
             closedToContributionsAt: data.closedToContributionsAt,
           };
         }

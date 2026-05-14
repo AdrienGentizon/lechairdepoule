@@ -14,10 +14,8 @@ export const ConversationTypeEnum = z.enum(["TOPIC", "EVENT", "RELEASE"]);
 
 export const PriceSchema = z.preprocess(
   (v) => (v === "" ? null : v),
-  z.coerce
-    .number()
-    .int()
-    .nonnegative()
+  z
+    .string()
     .nullable()
     .optional()
     .transform((v) => v ?? null)

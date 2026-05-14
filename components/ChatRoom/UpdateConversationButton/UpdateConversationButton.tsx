@@ -67,6 +67,7 @@ export default function UpdateConversationButton({
             endsAt: conversation.endsAt
               ? new Date(conversation.endsAt)
               : undefined,
+            price: conversation.price,
             closedToContributionsAt: conversation.closedToContributionsAt
               ? new Date(conversation.closedToContributionsAt)
               : null,
@@ -84,6 +85,7 @@ export default function UpdateConversationButton({
               description: values.description,
               startsAt: values.startsAt?.toISOString(),
               endsAt: values.endsAt?.toISOString(),
+              price: values.price,
               closedToContributionsAt:
                 values.closedToContributionsAt?.toISOString() ?? null,
             });

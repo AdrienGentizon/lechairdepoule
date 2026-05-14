@@ -17,6 +17,7 @@ export default function usePostConversation() {
       cover,
       startsAt,
       endsAt,
+      price,
       closedToContributionsAt,
     }: {
       title: string;
@@ -25,6 +26,7 @@ export default function usePostConversation() {
       cover?: File;
       startsAt?: string | null;
       endsAt?: string | null;
+      price?: string | null;
       closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
@@ -33,6 +35,7 @@ export default function usePostConversation() {
       body.set("type", type);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
+      if (price) body.set("price", price);
       if (closedToContributionsAt)
         body.set("closedToContributionsAt", closedToContributionsAt);
       if (cover) {

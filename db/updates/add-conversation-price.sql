@@ -1,1 +1,1 @@
-ALTER TABLE conversation_dates ADD COLUMN price_cents INTEGER;
+ALTER TABLE conversation_dates ADD COLUMN price TEXT;

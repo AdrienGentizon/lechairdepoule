@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
         type: ConversationTypeEnum,
         startsAt: NullishDateSchema,
         endsAt: NullishDateSchema,
-        priceInCents: PriceSchema,
+        price: PriceSchema,
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
-      priceInCents: parsedInputs.data.priceInCents,
+      price: parsedInputs.data.price,
       closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     });
 

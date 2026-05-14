@@ -49,7 +49,7 @@ export type Conversation = {
   type: ({} & string) | z.infer<typeof ConversationTypeEnum> | null;
   startsAt?: string | null;
   endsAt?: string | null;
-  priceInCents: number | null;
+  price: string | null;
   isPinned: boolean;
   closedToContributionsAt: string | null;
   reportedAt: string | null;

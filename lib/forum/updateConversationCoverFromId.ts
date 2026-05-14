@@ -65,10 +65,10 @@ export default async function updateConversationCoverFromId({
         {
           startsAt: string | null;
           endsAt: string | null;
-          priceInCents: number | null;
+          price: string | null;
         }[]
       >`
-        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price_cents AS "priceInCents"
+        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price"
         FROM conversation_dates
         WHERE conversation_id = ${conversationId}`
     ).at(0);
@@ -78,7 +78,7 @@ export default async function updateConversationCoverFromId({
       previousCoverUrl,
       startsAt: dates?.startsAt ?? null,
       endsAt: dates?.endsAt ?? null,
-      priceInCents: dates?.priceInCents ?? null,
+      price: dates?.price ?? null,
     };
   });
 }

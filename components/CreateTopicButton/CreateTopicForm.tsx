@@ -23,6 +23,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     cover: boolean;
     startsAt: boolean;
     endsAt: boolean;
+    price: boolean;
     closableToContributions: boolean;
   }
 > = {
@@ -30,18 +31,21 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     cover: false,
     startsAt: false,
     endsAt: false,
+    price: false,
     closableToContributions: false,
   },
   EVENT: {
     cover: true,
     startsAt: true,
     endsAt: true,
+    price: true,
     closableToContributions: true,
   },
   RELEASE: {
     cover: true,
     startsAt: true,
     endsAt: false,
+    price: true,
     closableToContributions: true,
   },
 };
@@ -65,6 +69,7 @@ export type ConversationFormValues = {
   description: string;
   startsAt?: Date;
   endsAt?: Date;
+  price?: string | null;
   cover?: File;
   closedToContributionsAt?: Date | null;
 };
@@ -76,6 +81,7 @@ type Props = {
     description?: string;
     startsAt?: Date;
     endsAt?: Date;
+    price?: string | null;
     closedToContributionsAt?: Date | null;
   };
   onSubmit: (values: ConversationFormValues) => void;
@@ -104,12 +110,14 @@ export default function CreateTopicForm({
     description?: string;
     startsAt?: Date;
     endsAt?: Date;
+    price?: string;
     closedToContributionsAt?: Date | null;
   }>({
     title: initialValues?.title,
     description: initialValues?.description,
     startsAt: initialValues?.startsAt,
     endsAt: initialValues?.endsAt,
+    price: initialValues?.price ?? undefined,
     closedToContributionsAt: initialValues?.closedToContributionsAt ?? null,
   });
   const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
@@ -163,6 +171,7 @@ export default function CreateTopicForm({
           description,
           startsAt: form.startsAt,
           endsAt: form.endsAt,
+          price: form.price,
           cover: coverFile,
           closedToContributionsAt: form.closedToContributionsAt,
         });
@@ -279,6 +288,22 @@ export default function CreateTopicForm({
                 }
               />
             </div>
+            <FieldError>{null}</FieldError>
+          </FormField>
+        )}
+        {conversationSpecifications.price && (
+          <FormField>
+            <Label htmlFor="price">Prix</Label>
+            <Input
+              id="price"
+              name="price"
+              type="text"
+              placeholder="ex: 12€, prix libre, 12/18€..."
+              value={form.price ?? ""}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, price: e.target.value }))
+              }
+            />
             <FieldError>{null}</FieldError>
           </FormField>
         )}

@@ -88,7 +88,7 @@ export default function CreateTopicButton() {
         {step === "CONVERSATION_INPUTS" && (
           <CreateTopicForm
             conversationType={selectedConversationType ?? "TOPIC"}
-            onSubmit={(values) =>
+            onSubmit={(values) => {
               postConversation(
                 {
                   title: values.title,
@@ -97,6 +97,7 @@ export default function CreateTopicButton() {
                   cover: values.cover,
                   startsAt: values.startsAt?.toISOString(),
                   endsAt: values.endsAt?.toISOString(),
+                  price: values.price,
                   closedToContributionsAt:
                     values.closedToContributionsAt?.toISOString() ?? null,
                 },
@@ -106,8 +107,8 @@ export default function CreateTopicButton() {
                     router.push(`/forum/${data.id}`);
                   },
                 }
-              )
-            }
+              );
+            }}
             isPending={isPending}
             error={error as Error | null}
             submitLabel={

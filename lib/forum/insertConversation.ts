@@ -20,7 +20,7 @@ function getConversationFromRaw(
   dates: {
     startsAt: string | null;
     endsAt: string | null;
-    priceInCents: number | null;
+    price: string | null;
   }
 ): Conversation {
   return {
@@ -35,7 +35,7 @@ function getConversationFromRaw(
     closedToContributionsAt: raw.closed_to_contributions_at,
     startsAt: dates.startsAt,
     endsAt: dates.endsAt,
-    priceInCents: dates.priceInCents,
+    price: dates.price,
     createdAt: raw.created_at,
     createdBy,
     reportedAt: raw.reported_at,
@@ -51,7 +51,7 @@ export default async function insertConversation({
   user,
   startsAt,
   endsAt,
-  priceInCents,
+  price,
   closedToContributionsAt,
 }: {
   title: string;
@@ -65,7 +65,7 @@ export default async function insertConversation({
   user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt?: string | null;
   endsAt?: string | null;
-  priceInCents?: number | null;
+  price?: string | null;
   closedToContributionsAt?: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -110,8 +110,8 @@ export default async function insertConversation({
     }
 
     await sql`
-      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price_cents)
-      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${priceInCents ?? null})`;
+      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price)
+      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null})`;
 
     return getConversationFromRaw(
       insertedConversation,
@@ -119,7 +119,7 @@ export default async function insertConversation({
       {
         startsAt: startsAt ?? null,
         endsAt: endsAt ?? null,
-        priceInCents: priceInCents ?? null,
+        price: price ?? null,
       }
     );
   });

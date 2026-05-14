@@ -13,7 +13,7 @@ export default async function selectConversations() {
         type: string | null;
         startsAt: string | null;
         endsAt: string | null;
-        priceInCents: number | null;
+        price: string | null;
         isPinned: boolean;
         closedToContributionsAt: string | null;
         reportedAt: string | null;
@@ -33,7 +33,7 @@ export default async function selectConversations() {
       c.type,
       cd.starts_at::text as "startsAt",
       cd.ends_at::text as "endsAt",
-      cd.price_cents as "priceInCents",
+      cd.price AS "price",
       c.is_pinned as "isPinned",
       c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",
