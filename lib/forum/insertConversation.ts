@@ -17,7 +17,11 @@ function getConversationFromRaw(
     reported_at: string | null;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
-  dates: { startsAt: string | null; endsAt: string | null; priceInCents: number | null }
+  dates: {
+    startsAt: string | null;
+    endsAt: string | null;
+    priceInCents: number | null;
+  }
 ): Conversation {
   return {
     id: raw.id,

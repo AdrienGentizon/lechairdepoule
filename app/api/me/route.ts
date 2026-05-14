@@ -67,7 +67,13 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
     }
 
-    logger.append({ updatedUser: { id: updatedUser.id, role: updatedUser.role, bannedAt: updatedUser.bannedAt } });
+    logger.append({
+      updatedUser: {
+        id: updatedUser.id,
+        role: updatedUser.role,
+        bannedAt: updatedUser.bannedAt,
+      },
+    });
     logger.flush();
     return NextResponse.json<User>(updatedUser, { status: 200 });
   } catch (error) {

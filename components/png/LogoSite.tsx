@@ -8,7 +8,7 @@ export default function LogoSite() {
       src={LogoPNG}
       alt="logo Chair de Poule"
       priority
-      className="mx-auto w-1/2 pb-2 pt-4"
+      className="mx-auto w-1/2 pt-4 pb-2"
       sizes="(max-width: 640px) 50dvw, 320px"
     />
   );

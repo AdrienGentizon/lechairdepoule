@@ -60,7 +60,11 @@ export default async function updateMessageAsReported({
         return {
           ...message,
           body: reportedMessageBodyReplacement,
-          user: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
+          user: {
+            id: userId,
+            pseudo: userPseudo ?? "",
+            bannedAt: userBannedAt,
+          },
         };
       }
       return {

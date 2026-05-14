@@ -61,7 +61,13 @@ export default async function updateConversationCoverFromId({
     if (!updatedConversation) return undefined;
 
     const dates = (
-      await sql<{ startsAt: string | null; endsAt: string | null; priceInCents: number | null }[]>`
+      await sql<
+        {
+          startsAt: string | null;
+          endsAt: string | null;
+          priceInCents: number | null;
+        }[]
+      >`
         SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price_cents AS "priceInCents"
         FROM conversation_dates
         WHERE conversation_id = ${conversationId}`

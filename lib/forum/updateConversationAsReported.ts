@@ -40,11 +40,13 @@ export default async function updateConversationAsReported({
       u.pseudo AS "userPseudo",
       u.banned_at::text AS "userBannedAt";`
   )
-    .map(
-      ({ userId, userPseudo, userBannedAt, ...conversation }) => ({
+    .map(({ userId, userPseudo, userBannedAt, ...conversation }) => ({
       ...conversation,
-      createdBy: { id: userId, pseudo: userPseudo ?? "", bannedAt: userBannedAt },
-    })
-    )
+      createdBy: {
+        id: userId,
+        pseudo: userPseudo ?? "",
+        bannedAt: userBannedAt,
+      },
+    }))
     .at(0);
 }

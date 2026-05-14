@@ -57,7 +57,13 @@ export default async function updateConversationFromId({
     if (!updatedConversation) return undefined;
 
     const upsertedDates = (
-      await sql<{ startsAt: string | null; endsAt: string | null; priceInCents: number | null }[]>`
+      await sql<
+        {
+          startsAt: string | null;
+          endsAt: string | null;
+          priceInCents: number | null;
+        }[]
+      >`
         INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price_cents)
         VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${priceInCents})
         ON CONFLICT (conversation_id) DO UPDATE

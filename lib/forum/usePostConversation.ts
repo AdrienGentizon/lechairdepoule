@@ -33,7 +33,8 @@ export default function usePostConversation() {
       body.set("type", type);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
-      if (closedToContributionsAt) body.set("closedToContributionsAt", closedToContributionsAt);
+      if (closedToContributionsAt)
+        body.set("closedToContributionsAt", closedToContributionsAt);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {

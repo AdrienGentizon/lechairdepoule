@@ -15,14 +15,33 @@ async function isValidImageMagicBytes(file: File): Promise<boolean> {
   // JPEG: FF D8 FF
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return true;
   // PNG: 89 50 4E 47 0D 0A 1A 0A
-  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return true;
+  if (
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47
+  )
+    return true;
   // GIF87a / GIF89a
-  if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x38) return true;
+  if (
+    bytes[0] === 0x47 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x38
+  )
+    return true;
   // WebP: RIFF....WEBP
   if (
-    bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
-    bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
-  ) return true;
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  )
+    return true;
   return false;
 }
 
@@ -33,10 +52,8 @@ export async function getImageFileWithMetadata(
   | { success: false; error: string }
 > {
   const file = formData.get("coverFile");
-  if (!(file instanceof File))
-    return { success: false, error: `invalid file` };
-  if (file.size === 0)
-    return { success: false, error: `empty file` };
+  if (!(file instanceof File)) return { success: false, error: `invalid file` };
+  if (file.size === 0) return { success: false, error: `empty file` };
   if (!(await isValidImageMagicBytes(file)))
     return { success: false, error: `file is not a valid image` };
 

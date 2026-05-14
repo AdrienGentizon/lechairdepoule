@@ -6,8 +6,8 @@ export default function Loader({ position }: { position?: "relative" }) {
   return (
     <Icon
       className={cn(
-        "absolute left-1/2 top-1/2 -ml-5 -mt-2 size-5 animate-spin",
-        position === "relative" && "relative left-auto top-auto m-0 size-4"
+        "absolute top-1/2 left-1/2 -mt-2 -ml-5 size-5 animate-spin",
+        position === "relative" && "relative top-auto left-auto m-0 size-4"
       )}
     />
   );
