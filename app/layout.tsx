@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 
 import type { Metadata } from "next";
-import { Courier_Prime, Quicksand } from "next/font/google";
+import { Courier_Prime, Manrope } from "next/font/google";
 
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
@@ -12,9 +12,9 @@ import getRandomBackground from "@/queries/getRandomBackground";
 
 import "./globals.css";
 
-const sans = Quicksand({
+const sans = Manrope({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-family-body",
 });
 
 const mono = Courier_Prime({

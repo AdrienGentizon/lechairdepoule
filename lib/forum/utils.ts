@@ -13,5 +13,5 @@ export function getConversationMetadataAsString(
 }
 
 export function getMessageMetadataAsString(message: Message) {
-  return `${new Date(message.createdAt).toLocaleDateString()} ${new Date(message.createdAt).toLocaleTimeString()}`;
+  return `${new Date(message.createdAt).toLocaleDateString()} ${new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 }

@@ -3,6 +3,9 @@ const ONE_HOUR_IN_MS = 60 * ONE_MINUTE_IN_MS;
 const ONE_DAY_IN_MS = 24 * ONE_HOUR_IN_MS;
 const ONE_WEEK_IN_MS = 7 * ONE_DAY_IN_MS;
 
+export const LOCALE = "fr-FR";
+export const TZ = "Europe/Paris";
+
 function getTimeSince(date: Date) {
   const diffMs = Date.now() - date.getTime();
   const minutes = Math.floor(diffMs / 60_000);
@@ -66,4 +69,18 @@ export function getMonthSpan(date?: Date | null) {
     firstDay: getDateSpan(firstMonthDay).from,
     lastDay: new Date(getDateSpan(firstDayOfNextMonth).from.getTime() - 1),
   };
+}
+
+export function getEventTime(dateStr: string) {
+  const date = new Date(dateStr);
+  const hours = parseInt(
+    date.toLocaleString(LOCALE, { timeZone: TZ, hour: "numeric" })
+  );
+  const minutes = parseInt(
+    date.toLocaleString(LOCALE, { timeZone: TZ, minute: "numeric" })
+  );
+  if (hours === 0 && minutes === 0) return "minuit";
+  return minutes === 0
+    ? `${hours.toString().padStart(2, "0")}H`
+    : `${hours.toString().padStart(2, "0")}H${minutes.toString().padStart(2, "0")}`;
 }

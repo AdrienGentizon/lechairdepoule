@@ -9,6 +9,9 @@ import PeinePerdue from "@/components/png/PeinePerdue";
 import { cn } from "@/lib/utils";
 import { Event } from "@/queries/getEvents";
 
+const LOCALE = "fr-FR";
+const TZ = "Europe/Paris";
+
 type Props = {
   event: Event;
 };
@@ -16,9 +19,6 @@ type Props = {
 export default function EventItem({ event }: Props) {
   const [open, setOpen] = useState(false);
   const top = useRef(0);
-  const month = event.date.toLocaleString("fr", {
-    month: "short",
-  });
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -47,7 +47,7 @@ export default function EventItem({ event }: Props) {
         );
       }}
       value={event.sys.id}
-      className="relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden border-b border-white p-2 first:border-t"
+      className="relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden border-b border-white py-2 first:border-t"
     >
       <button
         className="relative z-10 cursor-pointer p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
@@ -77,26 +77,47 @@ export default function EventItem({ event }: Props) {
       >
         <header
           role="button"
-          className="grid w-full cursor-pointer grid-cols-[1fr_9fr] place-items-center justify-items-start gap-x-4 transition-all"
+          className="grid w-full cursor-pointer grid-cols-[5rem_1fr] place-items-center gap-x-4 transition-all"
         >
-          <div className="flex w-full flex-col items-center justify-center">
-            <span className="text-sm font-light">
-              {event.date
-                .toLocaleDateString("fr-FR", { weekday: "short" })
-                .replace(".", "")}
+          <span className="sr-only">
+            {[
+              new Date(event.date).toLocaleDateString(LOCALE, {
+                timeZone: TZ,
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              }),
+              event.title,
+              event.shortDescription,
+            ]
+              .filter(Boolean)
+              .join(", ")}
+          </span>
+          <time
+            aria-hidden
+            dateTime={event.date.toISOString()}
+            className="flex h-full min-h-16 flex-col items-center justify-center leading-none uppercase"
+          >
+            <span className="text-xs leading-none font-light">
+              {new Date(event.date).toLocaleDateString(LOCALE, {
+                timeZone: TZ,
+                weekday: "short",
+              })}
             </span>
-            <span className="text-3xl font-semibold">
-              {event.date.getDate().toString().padStart(2, "0")}
+            <span className="text-4xl leading-none font-black">
+              {new Date(event.date).toLocaleDateString(LOCALE, {
+                timeZone: TZ,
+                day: "2-digit",
+              })}
             </span>
-            <span className="flex origin-center pl-1 text-sm font-light uppercase">
-              {!month.endsWith(".") && (
-                <span className="text-transparent">{`\u2024`}</span>
-              )}
-              {month}
-              {!month.endsWith(".") && <span>{`\u2024`}</span>}
+            <span className="text-sm leading-none font-black">
+              {new Date(event.date).toLocaleDateString(LOCALE, {
+                timeZone: TZ,
+                month: "short",
+              })}
             </span>
-          </div>
-          <div className="flex w-full flex-col items-start">
+          </time>
+          <div aria-hidden className="flex w-full flex-col items-start">
             <h2 className="text-left text-xl font-light uppercase">
               {event.title}
             </h2>

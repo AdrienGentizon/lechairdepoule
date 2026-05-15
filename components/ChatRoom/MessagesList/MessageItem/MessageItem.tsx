@@ -13,15 +13,18 @@ import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 function Header({ me, message }: { me: Me; message: Message }) {
   return (
     <header className="flex items-center gap-2">
-      <div className="flex w-full text-xs font-medium">
+      <div className="flex w-full">
         <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
           <h3
-            className={cn("text-sm", message.user.bannedAt && "line-through")}
+            className={cn(
+              "font-mono text-xs font-medium",
+              message.user.bannedAt && "line-through"
+            )}
           >
             {message.user.pseudo}{" "}
             <time
               dateTime={new Date(message.createdAt).toLocaleString()}
-              className="pl-2 font-mono text-xs text-gray-500"
+              className="pl-2 font-mono text-xs font-medium text-gray-500"
             >
               {getMessageMetadataAsString(message)}
             </time>

@@ -28,7 +28,7 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         >
           {conversation.title}
           {conversation.startsAt && (
-            <em className="text-xs leading-4 font-light whitespace-nowrap text-purple-300 not-italic">{`${new Date(
+            <em className="font-base text-xs leading-4 whitespace-nowrap text-purple-300 not-italic">{`${new Date(
               conversation.startsAt
             ).toLocaleDateString(undefined, {
               weekday: "short",

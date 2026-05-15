@@ -1,27 +1,11 @@
 import Image from "next/image";
 
+import { LOCALE, TZ, getEventTime } from "@/lib/date";
 import { PublicConversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import ConversationUrl from "../ConversationsList/ConversationUrl";
 import TextParser from "../TextParser";
-
-const LOCALE = "fr-FR";
-const TZ = "Europe/Paris";
-
-function formatTime(dateStr: string) {
-  const date = new Date(dateStr);
-  const hours = parseInt(
-    date.toLocaleString(LOCALE, { timeZone: TZ, hour: "numeric" })
-  );
-  const minutes = parseInt(
-    date.toLocaleString(LOCALE, { timeZone: TZ, minute: "numeric" })
-  );
-  if (hours === 0 && minutes === 0) return "minuit";
-  return minutes === 0
-    ? `${hours.toString().padStart(2, "0")}H`
-    : `${hours.toString().padStart(2, "0")}H${minutes.toString().padStart(2, "0")}`;
-}
 
 export default function PublicEventsList({
   conversations,
@@ -34,7 +18,7 @@ export default function PublicEventsList({
   return (
     <ul
       className={cn(
-        "flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm py-4",
+        "flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm pt-6 pb-4",
         "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
       )}
     >
@@ -44,7 +28,7 @@ export default function PublicEventsList({
           className="border-foreground border-b py-2 first:border-t"
         >
           <details className="cursor-pointer">
-            <summary className="grid grid-cols-[100px_1fr] gap-2 pr-6">
+            <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-6">
               <span className="sr-only">
                 {[
                   conversation.title,
@@ -55,7 +39,7 @@ export default function PublicEventsList({
                     day: "numeric",
                     month: "long",
                   }),
-                  formatTime(conversation.startsAt),
+                  getEventTime(conversation.startsAt),
                   conversation.price,
                 ]
                   .filter(Boolean)
@@ -72,39 +56,47 @@ export default function PublicEventsList({
                     weekday: "short",
                   })}
                 </span>
-                <span className="text-3xl leading-none font-black">
+                <span className="text-4xl leading-none font-black">
                   {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
                     timeZone: TZ,
                     day: "2-digit",
                   })}
                 </span>
-                <span className="text-sm leading-none font-bold">
+                <span className="text-sm leading-none font-black">
                   {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
                     timeZone: TZ,
                     month: "short",
                   })}
                 </span>
               </time>
-              <div aria-hidden className="flex flex-col justify-center gap-1">
-                <span className="text-xl leading-none font-medium uppercase">
+              <div
+                aria-hidden
+                className="flex flex-col justify-center gap-1.5 leading-none"
+              >
+                <span className="text-xl leading-none font-semibold uppercase">
                   {conversation.title}
                 </span>
-                {conversation.venue && (
-                  <span className="text-sm font-light">
-                    {conversation.venue}
+
+                <div className="flex flex-col gap-0.5">
+                  {conversation.venue && (
+                    <span className="leading-none font-light">
+                      {conversation.venue}
+                    </span>
+                  )}
+                  <span className="flex items-center leading-none text-purple-300">
+                    {conversation.startsAt && (
+                      <time dateTime={conversation.startsAt ?? undefined}>
+                        {getEventTime(conversation.startsAt)}
+                      </time>
+                    )}
+                    {conversation.startsAt && conversation.price && (
+                      <>&nbsp;&middot;&nbsp;</>
+                    )}
+                    {conversation.price && (
+                      <span className="leading-none">{conversation.price}</span>
+                    )}
                   </span>
-                )}
-                <span className="flex items-center text-sm leading-none font-light text-purple-300">
-                  {conversation.startsAt && (
-                    <time dateTime={conversation.startsAt ?? undefined}>
-                      {formatTime(conversation.startsAt)}
-                    </time>
-                  )}
-                  {conversation.startsAt && conversation.price && (
-                    <>&nbsp;&middot;&nbsp;</>
-                  )}
-                  {conversation.price && <span>{conversation.price}</span>}
-                </span>
+                </div>
               </div>
             </summary>
             <div className="flex flex-col gap-4 p-4">

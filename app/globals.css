@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-body: var(--font-family-body);
   --font-courier: var(--font-family-courier);
   --font-mono: monospace;
   --color-background: hsl(var(--background));
@@ -88,7 +89,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
   }
   *:focus-visible {
     @apply ring-2 ring-purple-300 outline-none ring-inset;

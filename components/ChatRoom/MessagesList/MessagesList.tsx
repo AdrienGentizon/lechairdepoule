@@ -2,6 +2,7 @@ import { RefObject, useEffect } from "react";
 
 import Image from "next/image";
 
+import TextParser from "@/components/TextParser";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -33,10 +34,20 @@ export default function MessagesList({
   return (
     <ul
       className={cn(
-        "flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-8 pb-4 sm:gap-6",
+        "flex min-h-0 scroll-pb-16 flex-col gap-4 overflow-y-auto rounded-sm pt-6 pb-4 sm:gap-6",
         "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
       )}
     >
+      {conversation.description && (
+        <p
+          className={cn(
+            "font-courier rounded-sm border border-neutral-500 bg-neutral-800 p-2 font-light whitespace-pre-wrap",
+            conversation.reportedAt && "text-neutral-400 line-through"
+          )}
+        >
+          <TextParser text={conversation.description ?? ""} />
+        </p>
+      )}
       {conversation.coverUrl &&
         conversation.coverWidth &&
         conversation.coverHeight && (
