@@ -44,15 +44,21 @@ export default function PublicEventsList({
             <summary className="grid grid-cols-[100px_1fr] gap-2 pr-6">
               <time
                 dateTime={conversation.startsAt}
-                className="flex h-full min-h-16 flex-col items-center text-3xl leading-none font-black uppercase"
+                className="flex h-full min-h-16 flex-col items-center justify-center leading-none uppercase"
               >
-                <span>
+                <span className="text-xs leading-none font-light">
+                  {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
+                    timeZone: TZ,
+                    weekday: "short",
+                  })}
+                </span>
+                <span className="text-3xl leading-none font-black">
                   {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
                     timeZone: TZ,
                     day: "2-digit",
                   })}
                 </span>
-                <span>
+                <span className="text-sm leading-none font-bold">
                   {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
                     timeZone: TZ,
                     month: "short",
