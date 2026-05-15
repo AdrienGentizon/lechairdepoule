@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
         startsAt: NullishDateSchema,
         endsAt: NullishDateSchema,
         price: PriceSchema,
-        venue: z.nullable(z.string()),
-        url: z.nullable(z.string().url()),
+        venue: z.string().nullish(),
+        url: z.string().url().nullish(),
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
