@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -19,7 +20,7 @@ import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { NullishDateSchema, PriceSchema } from "@/lib/schemas";
-import { Conversation, Message } from "@/lib/types";
+import { CacheKey, Conversation, Message } from "@/lib/types";
 
 export async function GET(
   req: NextRequest,
@@ -207,6 +208,7 @@ export async function DELETE(
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
     logger.flush();
     return NextResponse.json<{ conversationId: string }>(
       { conversationId: conversation.id },
@@ -281,6 +283,7 @@ export async function PATCH(
         { status: 500 }
       );
     }
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
 
     logger.append({ updatedConversation });
     logger.flush();

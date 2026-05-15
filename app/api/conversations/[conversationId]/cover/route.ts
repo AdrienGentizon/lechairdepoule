@@ -1,5 +1,6 @@
 import { del } from "@vercel/blob";
 
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
@@ -8,7 +9,7 @@ import deleteConversationCoverFromId from "@/lib/forum/deleteConversationCoverFr
 import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import updateConversationCoverFromId from "@/lib/forum/updateConversationCoverFromId";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import { SimpleConversation } from "@/lib/types";
+import { CacheKey, SimpleConversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(
@@ -66,6 +67,7 @@ export async function POST(
       await del(updatedConversation.previousCoverUrl);
     }
 
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
     logger.append({ updatedConversation });
     logger.flush();
     return NextResponse.json<SimpleConversation>(updatedConversation, {
@@ -116,6 +118,7 @@ export async function DELETE(
       await del(conversation.coverUrl);
     }
 
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
     logger.append({ conversationId: updatedConversation.id });
     logger.flush();
     return NextResponse.json<SimpleConversation>(updatedConversation, {

@@ -4,6 +4,7 @@ import PublicEventsList from "@/components/PublicEventsList/PublicEventsList";
 import RefreshOnFocus from "@/components/RefreshOnFocus/RefreshOnFocus";
 import selectConversationsByTypes from "@/lib/forum/selectConversationsByTypes";
 import { getLogger } from "@/lib/logger";
+import { CacheKey } from "@/lib/types";
 
 const getCachedAgendaConversations = unstable_cache(
   async () => {
@@ -22,7 +23,7 @@ const getCachedAgendaConversations = unstable_cache(
     }
   },
   ["cachedAgenda"],
-  { tags: ["cachedAgenda"], revalidate: 43200 }
+  { tags: ["cachedAgenda"] satisfies CacheKey[], revalidate: 43200 }
 );
 
 export default async function AgendaPage() {

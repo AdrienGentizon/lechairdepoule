@@ -100,7 +100,8 @@ export type CacheKey =
   | "conversations"
   | "reported-messages"
   | "users"
-  | "banned-users";
+  | "banned-users"
+  | "cachedAgenda";
 
 export type BroadCastKey =
   | "new_message"

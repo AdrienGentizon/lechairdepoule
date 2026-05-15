@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -11,7 +12,7 @@ import {
   NullishDateSchema,
   PriceSchema,
 } from "@/lib/schemas";
-import { Conversation } from "@/lib/types";
+import { CacheKey, Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
@@ -81,6 +82,7 @@ export async function POST(req: NextRequest) {
     if (!insertedConversation)
       throw new Error(`cannot insert conversation ${parsedInputs.data}`);
 
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
     logger.append({ insertedConversation });
     logger.flush();
     return NextResponse.json<Conversation>(insertedConversation, {

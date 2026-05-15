@@ -11,6 +11,7 @@ export default async function updateUserAsBanned({
   bannedBy: { id: string };
 }) {
   revalidateTag("users" satisfies CacheKey, {});
+  revalidateTag("cachedAgenda" satisfies CacheKey, "max");
 
   return (
     await sql<

@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
@@ -5,6 +6,7 @@ import getUser from "@/lib/auth/getUser";
 import updateConversationAsReported from "@/lib/forum/updateConversationAsReported";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
+import { CacheKey } from "@/lib/types";
 
 export async function POST(
   req: NextRequest,
@@ -37,6 +39,7 @@ export async function POST(
       reportedConversation
     );
 
+    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
     logger.append({ reportedConversation });
     logger.flush();
     return NextResponse.json(reportedConversation, { status: 200 });
