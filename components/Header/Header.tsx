@@ -20,9 +20,24 @@ function Title() {
 
 const navItems = [
   { href: "/", src: AgendaPNG, alt: "Agenda", "data-nav-link-overlay": "/" },
-  { href: "/contact", src: ContactPNG, alt: "Contact", "data-nav-link-overlay": "/contact" },
-  { href: "/forum", src: ForumPNG, alt: "Forum", "data-nav-link-overlay": "/forum" },
-  { href: "/agenda", src: HorsLesMursPNG, alt: "Hors les murs", "data-nav-link-overlay": "/agenda" },
+  {
+    href: "/contact",
+    src: ContactPNG,
+    alt: "Contact",
+    "data-nav-link-overlay": "/contact",
+  },
+  {
+    href: "/forum",
+    src: ForumPNG,
+    alt: "Forum",
+    "data-nav-link-overlay": "/forum",
+  },
+  {
+    href: "/agenda",
+    src: HorsLesMursPNG,
+    alt: "Hors les murs",
+    "data-nav-link-overlay": "/agenda",
+  },
 ];
 
 export default function Header({ variant }: { variant?: "relative" }) {
@@ -38,7 +53,9 @@ export default function Header({ variant }: { variant?: "relative" }) {
       </Link>
       <HeaderClientLogic />
       <nav aria-labelledby="nav-main-label">
-        <span id="nav-main-label" className="sr-only">Navigation principale</span>
+        <span id="nav-main-label" className="sr-only">
+          Navigation principale
+        </span>
         <ul className="flex items-center justify-center gap-4 pt-4 text-sm font-light uppercase">
           {navItems.map((item) => (
             <li key={item.href}>
