@@ -3,10 +3,17 @@ import Image from "next/image";
 import { PublicConversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+const LOCALE = "fr-FR";
+const TZ = "Europe/Paris";
+
 function formatTime(dateStr: string) {
   const date = new Date(dateStr);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  const hours = parseInt(
+    date.toLocaleString(LOCALE, { timeZone: TZ, hour: "numeric" })
+  );
+  const minutes = parseInt(
+    date.toLocaleString(LOCALE, { timeZone: TZ, minute: "numeric" })
+  );
   if (hours === 0 && minutes === 0) return "minuit";
   return minutes === 0
     ? `${hours.toString().padStart(2, "0")}H`
@@ -40,12 +47,14 @@ export default function PublicEventsList({
                 className="flex h-full min-h-16 flex-col items-center text-3xl leading-none font-black uppercase"
               >
                 <span>
-                  {new Date(conversation.startsAt).toLocaleDateString("fr-FR", {
+                  {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
+                    timeZone: TZ,
                     day: "2-digit",
                   })}
                 </span>
                 <span>
-                  {new Date(conversation.startsAt).toLocaleDateString("fr-FR", {
+                  {new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
+                    timeZone: TZ,
                     month: "short",
                   })}
                 </span>
