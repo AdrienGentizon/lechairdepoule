@@ -3,6 +3,8 @@ import Image from "next/image";
 import { PublicConversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import TextParser from "../TextParser";
+
 const LOCALE = "fr-FR";
 const TZ = "Europe/Paris";
 
@@ -103,7 +105,7 @@ export default function PublicEventsList({
                     />
                   )}
                 <p className="font-courier leading-tight font-light whitespace-pre-wrap">
-                  {conversation.description}
+                  <TextParser text={conversation.description ?? ""} />
                 </p>
               </div>
             </div>
