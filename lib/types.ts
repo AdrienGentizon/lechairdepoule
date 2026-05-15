@@ -63,6 +63,19 @@ export type Conversation = {
   messages: Message[];
 };
 
+export type PublicConversation = Omit<
+  Conversation,
+  | "messages"
+  | "closedToContributionsAt"
+  | "reportedAt"
+  | "isPinned"
+  | "createdBy"
+  | " startsAt"
+> & {
+  createdBy: Omit<Conversation["createdBy"], "bannedAt">;
+  startsAt: string;
+};
+
 export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
 
 export type UserMention = {
