@@ -25,6 +25,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     endsAt: boolean;
     price: boolean;
     venue: boolean;
+    url: boolean;
     closableToContributions: boolean;
   }
 > = {
@@ -34,6 +35,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     endsAt: false,
     price: false,
     venue: false,
+    url: false,
     closableToContributions: false,
   },
   EVENT: {
@@ -42,6 +44,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     endsAt: true,
     price: true,
     venue: true,
+    url: true,
     closableToContributions: true,
   },
   RELEASE: {
@@ -50,6 +53,7 @@ const CONVERSATION_TYPE_SPECIFICATIONS: Record<
     endsAt: false,
     price: false,
     venue: true,
+    url: true,
     closableToContributions: true,
   },
 };
@@ -75,6 +79,7 @@ export type ConversationFormValues = {
   endsAt?: Date;
   price?: string | null;
   venue?: string | null;
+  url?: string | null;
   cover?: File;
   closedToContributionsAt?: Date | null;
 };
@@ -88,6 +93,7 @@ type Props = {
     endsAt?: Date;
     price?: string | null;
     venue?: string | null;
+    url?: string | null;
     closedToContributionsAt?: Date | null;
   };
   onSubmit: (values: ConversationFormValues) => void;
@@ -118,6 +124,7 @@ export default function CreateTopicForm({
     endsAt?: Date;
     price?: string;
     venue?: string;
+    url?: string;
     closedToContributionsAt?: Date | null;
   }>({
     title: initialValues?.title,
@@ -126,6 +133,7 @@ export default function CreateTopicForm({
     endsAt: initialValues?.endsAt,
     price: initialValues?.price ?? undefined,
     venue: initialValues?.venue ?? undefined,
+    url: initialValues?.url ?? undefined,
     closedToContributionsAt: initialValues?.closedToContributionsAt ?? null,
   });
   const [coverFile, setCoverFile] = useState<File | undefined>(undefined);
@@ -181,6 +189,7 @@ export default function CreateTopicForm({
           endsAt: form.endsAt,
           price: form.price,
           venue: form.venue,
+          url: form.url,
           cover: coverFile,
           closedToContributionsAt: form.closedToContributionsAt,
         });
@@ -220,86 +229,89 @@ export default function CreateTopicForm({
           />
           <FieldError>{errors.description}</FieldError>
         </FormField>
-        {conversationSpecifications.startsAt && (
-          <FormField>
-            <Label htmlFor="startsAtDate">
-              {conversationType === "EVENT"
-                ? "Date de début"
-                : "Date de sortie"}
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="startsAtDate"
-                type="date"
-                value={getDateTimeAsInputValue(form.startsAt).date}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    startsAt: getDateTime(
-                      e.target.value,
-                      getDateTimeAsInputValue(prev.startsAt).time
-                    ),
-                  }))
-                }
-              />
-              {conversationType === "EVENT" && (
+        <div className="grid grid-cols-2">
+          {conversationSpecifications.startsAt && (
+            <FormField>
+              <Label htmlFor="startsAtDate" aria-required>
+                {conversationType === "EVENT"
+                  ? "Date de début"
+                  : "Date de sortie"}
+              </Label>
+              <div className="flex gap-2">
                 <Input
-                  id="startsAtTime"
-                  type="time"
-                  disabled={!form.startsAt}
-                  value={getDateTimeAsInputValue(form.startsAt).time}
+                  id="startsAtDate"
+                  type="date"
+                  value={getDateTimeAsInputValue(form.startsAt).date}
+                  required
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
                       startsAt: getDateTime(
-                        getDateTimeAsInputValue(prev.startsAt).date,
+                        e.target.value,
+                        getDateTimeAsInputValue(prev.startsAt).time
+                      ),
+                    }))
+                  }
+                />
+                {conversationType === "EVENT" && (
+                  <Input
+                    id="startsAtTime"
+                    type="time"
+                    disabled={!form.startsAt}
+                    value={getDateTimeAsInputValue(form.startsAt).time}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        startsAt: getDateTime(
+                          getDateTimeAsInputValue(prev.startsAt).date,
+                          e.target.value
+                        ),
+                      }))
+                    }
+                  />
+                )}
+              </div>
+              <FieldError>{null}</FieldError>
+            </FormField>
+          )}
+          {conversationSpecifications.endsAt && (
+            <FormField>
+              <Label htmlFor="endsAtDate">Date de fin</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="endsAtDate"
+                  type="date"
+                  value={getDateTimeAsInputValue(form.endsAt).date}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      endsAt: getDateTime(
+                        e.target.value,
+                        getDateTimeAsInputValue(prev.endsAt).time
+                      ),
+                    }))
+                  }
+                />
+                <Input
+                  id="endsAtTime"
+                  type="time"
+                  disabled={!form.endsAt}
+                  value={getDateTimeAsInputValue(form.endsAt).time}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      endsAt: getDateTime(
+                        getDateTimeAsInputValue(prev.endsAt).date,
                         e.target.value
                       ),
                     }))
                   }
                 />
-              )}
-            </div>
-            <FieldError>{null}</FieldError>
-          </FormField>
-        )}
-        {conversationSpecifications.endsAt && (
-          <FormField>
-            <Label htmlFor="endsAtDate">Date de fin</Label>
-            <div className="flex gap-2">
-              <Input
-                id="endsAtDate"
-                type="date"
-                value={getDateTimeAsInputValue(form.endsAt).date}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    endsAt: getDateTime(
-                      e.target.value,
-                      getDateTimeAsInputValue(prev.endsAt).time
-                    ),
-                  }))
-                }
-              />
-              <Input
-                id="endsAtTime"
-                type="time"
-                disabled={!form.endsAt}
-                value={getDateTimeAsInputValue(form.endsAt).time}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    endsAt: getDateTime(
-                      getDateTimeAsInputValue(prev.endsAt).date,
-                      e.target.value
-                    ),
-                  }))
-                }
-              />
-            </div>
-            <FieldError>{null}</FieldError>
-          </FormField>
-        )}
+              </div>
+              <FieldError>{null}</FieldError>
+            </FormField>
+          )}
+        </div>
         {conversationSpecifications.price && (
           <FormField>
             <Label htmlFor="price">Tarif(s)</Label>
@@ -325,6 +337,27 @@ export default function CreateTopicForm({
               value={form.venue ?? ""}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, venue: e.target.value }))
+              }
+            />
+            <FieldError>{null}</FieldError>
+          </FormField>
+        )}
+        {conversationSpecifications.url && (
+          <FormField>
+            <Label htmlFor="url">
+              Lien{" "}
+              <em className="font-light text-neutral-100">
+                (billeterie, site internet...)
+              </em>
+            </Label>
+            <Input
+              id="url"
+              name="url"
+              type="url"
+              value={form.url ?? ""}
+              placeholder="https://"
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, url: e.target.value }))
               }
             />
             <FieldError>{null}</FieldError>

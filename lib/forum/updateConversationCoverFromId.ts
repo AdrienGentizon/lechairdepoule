@@ -67,9 +67,15 @@ export default async function updateConversationCoverFromId({
           endsAt: string | null;
           price: string | null;
           venue: string | null;
+          url: string | null;
         }[]
       >`
-        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"
+        SELECT
+          starts_at::text AS "startsAt",
+          ends_at::text AS "endsAt",
+          price AS "price",
+          venue AS "venue",
+          url AS "url"
         FROM event_metadata
         WHERE conversation_id = ${conversationId}`
     ).at(0);
@@ -81,6 +87,7 @@ export default async function updateConversationCoverFromId({
       endsAt: metadata?.endsAt ?? null,
       price: metadata?.price ?? null,
       venue: metadata?.venue ?? null,
+      url: metadata?.url ?? null,
     };
   });
 }

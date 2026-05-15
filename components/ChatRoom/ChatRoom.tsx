@@ -10,6 +10,7 @@ import useConversation from "@/lib/forum/useConversation";
 import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { cn } from "@/lib/utils";
 
+import ConversationUrl from "../ConversationsList/ConversationUrl";
 import Loader from "../Loader/Loader";
 import TextParser from "../TextParser";
 import { ChatRoomProvider } from "./ChatRoomContext";
@@ -64,6 +65,11 @@ function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
             >
               <TextParser text={conversation.description ?? ""} />
             </p>
+            <ConversationUrl
+              className="mt-2"
+              conversation={conversation}
+              hideIfInDescription
+            />
           </div>
           <div className="ml-auto flex items-center gap-2 self-start pr-2">
             <UpdateConversationButton me={me} conversation={conversation} />

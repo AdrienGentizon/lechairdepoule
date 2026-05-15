@@ -15,6 +15,7 @@ export default async function selectConversations() {
         endsAt: string | null;
         price: string | null;
         venue: string | null;
+        url: string | null;
         isPinned: boolean;
         closedToContributionsAt: string | null;
         reportedAt: string | null;
@@ -36,6 +37,7 @@ export default async function selectConversations() {
       em.ends_at::text as "endsAt",
       em.price AS "price",
       em.venue AS "venue",
+      em.url AS "url",
       c.is_pinned as "isPinned",
       c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",

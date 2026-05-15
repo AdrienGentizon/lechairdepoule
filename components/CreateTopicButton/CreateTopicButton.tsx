@@ -99,6 +99,7 @@ export default function CreateTopicButton() {
                   endsAt: values.endsAt?.toISOString(),
                   price: values.price,
                   venue: values.venue,
+                  url: values.url,
                   closedToContributionsAt:
                     values.closedToContributionsAt?.toISOString() ?? null,
                 },

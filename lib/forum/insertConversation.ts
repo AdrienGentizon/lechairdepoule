@@ -17,11 +17,12 @@ function getConversationFromRaw(
     reported_at: string | null;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
-  dates: {
+  metadata: {
     startsAt: string | null;
     endsAt: string | null;
     price: string | null;
     venue: string | null;
+    url: string | null;
   }
 ): Conversation {
   return {
@@ -34,10 +35,11 @@ function getConversationFromRaw(
     type: raw.type,
     isPinned: raw.is_pinned,
     closedToContributionsAt: raw.closed_to_contributions_at,
-    startsAt: dates.startsAt,
-    endsAt: dates.endsAt,
-    price: dates.price,
-    venue: dates.venue,
+    startsAt: metadata.startsAt,
+    endsAt: metadata.endsAt,
+    price: metadata.price,
+    venue: metadata.venue,
+    url: metadata.url,
     createdAt: raw.created_at,
     createdBy,
     reportedAt: raw.reported_at,
@@ -55,6 +57,7 @@ export default async function insertConversation({
   endsAt,
   price,
   venue,
+  url,
   closedToContributionsAt,
 }: {
   title: string;
@@ -70,6 +73,7 @@ export default async function insertConversation({
   endsAt?: string | null;
   price?: string | null;
   venue?: string | null;
+  url?: string | null;
   closedToContributionsAt?: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -114,8 +118,8 @@ export default async function insertConversation({
     }
 
     await sql`
-      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue)
-      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null})`;
+      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue, url)
+      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null}, ${url ?? null})`;
 
     return getConversationFromRaw(
       insertedConversation,
@@ -125,6 +129,7 @@ export default async function insertConversation({
         endsAt: endsAt ?? null,
         price: price ?? null,
         venue: venue ?? null,
+        url: url ?? null,
       }
     );
   });

@@ -9,6 +9,7 @@ export default async function updateConversationFromId({
   endsAt,
   price,
   venue,
+  url,
   closedToContributionsAt,
 }: {
   conversationId: string;
@@ -19,6 +20,7 @@ export default async function updateConversationFromId({
   endsAt: string | null;
   price: string | null;
   venue: string | null;
+  url: string | null;
   closedToContributionsAt: string | null;
 }) {
   return sql.begin(async (sql) => {
@@ -65,13 +67,14 @@ export default async function updateConversationFromId({
           endsAt: string | null;
           price: string | null;
           venue: string | null;
+          url: string | null;
         }[]
       >`
-        INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue)
-        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price}, ${venue})
+        INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue, url)
+        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price}, ${venue}, ${url})
         ON CONFLICT (conversation_id) DO UPDATE
-          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price, venue = EXCLUDED.venue
-        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"`
+          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price, venue = EXCLUDED.venue, url = EXCLUDED.url
+        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue", url AS "url"`
     ).at(0);
 
     return {
@@ -80,6 +83,7 @@ export default async function updateConversationFromId({
       endsAt: metadata?.endsAt ?? null,
       price: metadata?.price ?? null,
       venue: metadata?.venue ?? null,
+      url: metadata?.url ?? null,
     };
   });
 }

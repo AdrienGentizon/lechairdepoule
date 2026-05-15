@@ -51,6 +51,7 @@ export type Conversation = {
   endsAt?: string | null;
   price: string | null;
   venue: string | null;
+  url: string | null;
   isPinned: boolean;
   closedToContributionsAt: string | null;
   reportedAt: string | null;

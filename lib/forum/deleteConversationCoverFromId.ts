@@ -54,9 +54,15 @@ export default async function deleteConversationCoverFromId({
           endsAt: string | null;
           price: string | null;
           venue: string | null;
+          url: string | null;
         }[]
       >`
-        SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"
+        SELECT
+          starts_at::text AS "startsAt",
+          ends_at::text AS "endsAt",
+          price AS "price",
+          venue AS "venue",
+          url AS "url"
         FROM event_metadata
         WHERE conversation_id = ${conversationId}`
     ).at(0);
@@ -67,6 +73,7 @@ export default async function deleteConversationCoverFromId({
       endsAt: dates?.endsAt ?? null,
       price: dates?.price ?? null,
       venue: dates?.venue ?? null,
+      url: dates?.url ?? null,
     };
   });
 }

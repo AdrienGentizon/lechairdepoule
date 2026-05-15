@@ -3,6 +3,7 @@ import Image from "next/image";
 import { PublicConversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import ConversationUrl from "../ConversationsList/ConversationUrl";
 import TextParser from "../TextParser";
 
 const LOCALE = "fr-FR";
@@ -42,9 +43,26 @@ export default function PublicEventsList({
           key={conversation.id}
           className="border-foreground border-b py-2 first:border-t"
         >
-          <details className="group cursor-pointer">
+          <details className="cursor-pointer">
             <summary className="grid grid-cols-[100px_1fr] gap-2 pr-6">
+              <span className="sr-only">
+                {[
+                  conversation.title,
+                  conversation.venue,
+                  new Date(conversation.startsAt).toLocaleDateString(LOCALE, {
+                    timeZone: TZ,
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  }),
+                  formatTime(conversation.startsAt),
+                  conversation.price,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </span>
               <time
+                aria-hidden
                 dateTime={conversation.startsAt}
                 className="flex h-full min-h-16 flex-col items-center justify-center leading-none uppercase"
               >
@@ -67,7 +85,7 @@ export default function PublicEventsList({
                   })}
                 </span>
               </time>
-              <div className="flex flex-col justify-center gap-1">
+              <div aria-hidden className="flex flex-col justify-center gap-1">
                 <span className="text-xl leading-none font-medium uppercase">
                   {conversation.title}
                 </span>
@@ -89,25 +107,29 @@ export default function PublicEventsList({
                 </span>
               </div>
             </summary>
-            <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 group-open:grid-rows-[1fr]">
-              <div className="flex flex-col gap-4 overflow-hidden p-4">
-                {conversation.coverUrl &&
-                  conversation.coverWidth &&
-                  conversation.coverHeight && (
-                    <Image
-                      src={conversation.coverUrl}
-                      width={conversation.coverWidth}
-                      height={conversation.coverHeight}
-                      alt=""
-                      aria-hidden
-                      className="mx-auto w-full object-cover"
-                      sizes="(max-width: 640px) 100dvw, 600px"
-                    />
-                  )}
+            <div className="flex flex-col gap-4 p-4">
+              {conversation.coverUrl &&
+                conversation.coverWidth &&
+                conversation.coverHeight && (
+                  <Image
+                    src={conversation.coverUrl}
+                    width={conversation.coverWidth}
+                    height={conversation.coverHeight}
+                    alt=""
+                    aria-hidden
+                    className="mx-auto w-full object-cover"
+                    sizes="(max-width: 640px) 100dvw, 600px"
+                  />
+                )}
+              {conversation.description && (
                 <p className="font-courier leading-tight font-light whitespace-pre-wrap">
-                  <TextParser text={conversation.description ?? ""} />
+                  <TextParser text={conversation.description} />
                 </p>
-              </div>
+              )}
+              <ConversationUrl
+                conversation={conversation}
+                hideIfInDescription
+              />
             </div>
           </details>
         </li>

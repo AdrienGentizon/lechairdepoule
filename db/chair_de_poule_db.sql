@@ -38,6 +38,7 @@ CREATE TABLE event_metadata (
     ends_at TIMESTAMPTZ,
     price TEXT,
     venue TEXT,
+    url TEXT,
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
 

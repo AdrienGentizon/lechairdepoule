@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
         endsAt: NullishDateSchema,
         price: PriceSchema,
         venue: z.nullable(z.string()),
+        url: z.nullable(z.string().url()),
         closedToContributionsAt: NullishDateSchema,
       })
       .safeParse(payload);
@@ -73,6 +74,7 @@ export async function POST(req: NextRequest) {
       endsAt: parsedInputs.data.endsAt,
       price: parsedInputs.data.price,
       venue: parsedInputs.data.venue,
+      url: parsedInputs.data.url,
       closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     });
 

@@ -19,6 +19,7 @@ export default function useUpdateConversation(options?: {
       endsAt,
       price,
       venue,
+      url,
       closedToContributionsAt,
     }: {
       id: string;
@@ -28,6 +29,7 @@ export default function useUpdateConversation(options?: {
       endsAt?: string | null;
       price?: string | null;
       venue?: string | null;
+      url?: string | null;
       closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
@@ -37,6 +39,7 @@ export default function useUpdateConversation(options?: {
       if (endsAt) body.set("endsAt", endsAt);
       if (price) body.set("price", price);
       if (venue) body.set("venue", venue);
+      if (url) body.set("url", url);
       body.set("closedToContributionsAt", closedToContributionsAt ?? "");
 
       const response = await fetch(`/api/conversations/${conversationId}`, {
@@ -73,6 +76,7 @@ export default function useUpdateConversation(options?: {
                 endsAt: data.endsAt,
                 price: data.price,
                 venue: data.venue,
+                url: data.url,
                 closedToContributionsAt: data.closedToContributionsAt,
               },
             ];

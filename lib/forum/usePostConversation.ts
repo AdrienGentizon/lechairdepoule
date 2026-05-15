@@ -19,6 +19,7 @@ export default function usePostConversation() {
       endsAt,
       price,
       venue,
+      url,
       closedToContributionsAt,
     }: {
       title: string;
@@ -29,6 +30,7 @@ export default function usePostConversation() {
       endsAt?: string | null;
       price?: string | null;
       venue?: string | null;
+      url?: string | null;
       closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
@@ -39,6 +41,7 @@ export default function usePostConversation() {
       if (endsAt) body.set("endsAt", endsAt);
       if (price) body.set("price", price);
       if (venue) body.set("venue", venue);
+      if (url) body.set("url", url);
       if (closedToContributionsAt)
         body.set("closedToContributionsAt", closedToContributionsAt);
       if (cover) {
