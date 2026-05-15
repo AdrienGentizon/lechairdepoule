@@ -28,7 +28,7 @@ export default function PublicEventsList({
           className="border-foreground border-b py-2 first:border-t"
         >
           <details className="cursor-pointer">
-            <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-6">
+            <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
               <span className="sr-only">
                 {[
                   conversation.title,
@@ -73,7 +73,7 @@ export default function PublicEventsList({
                 aria-hidden
                 className="flex flex-col justify-center gap-1.5 leading-none"
               >
-                <span className="text-xl leading-none font-semibold uppercase">
+                <span className="text-xl leading-none font-semibold text-balance uppercase">
                   {conversation.title}
                 </span>
 

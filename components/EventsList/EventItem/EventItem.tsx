@@ -77,7 +77,7 @@ export default function EventItem({ event }: Props) {
       >
         <header
           role="button"
-          className="grid w-full cursor-pointer grid-cols-[5rem_1fr] place-items-center gap-x-4 transition-all"
+          className="grid w-full cursor-pointer grid-cols-[5rem_1fr] place-items-center gap-x-4 pr-4 transition-all"
         >
           <span className="sr-only">
             {[
@@ -118,7 +118,7 @@ export default function EventItem({ event }: Props) {
             </span>
           </time>
           <div aria-hidden className="flex w-full flex-col items-start">
-            <h2 className="text-left text-xl font-light uppercase">
+            <h2 className="text-left text-xl font-light text-balance uppercase">
               {event.title}
             </h2>
             {event.shortDescription ? (
