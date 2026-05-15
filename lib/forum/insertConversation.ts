@@ -114,7 +114,7 @@ export default async function insertConversation({
     }
 
     await sql`
-      INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price, venue)
+      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue)
       VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null})`;
 
     return getConversationFromRaw(

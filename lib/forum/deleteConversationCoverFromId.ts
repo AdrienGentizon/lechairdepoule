@@ -57,7 +57,7 @@ export default async function deleteConversationCoverFromId({
         }[]
       >`
         SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"
-        FROM conversation_dates
+        FROM event_metadata
         WHERE conversation_id = ${conversationId}`
     ).at(0);
 

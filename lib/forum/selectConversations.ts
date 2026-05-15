@@ -32,10 +32,10 @@ export default async function selectConversations() {
       c.image_width as "coverWidth",
       c.image_height as "coverHeight",
       c.type,
-      cd.starts_at::text as "startsAt",
-      cd.ends_at::text as "endsAt",
-      cd.price AS "price",
-      cd.venue AS "venue",
+      em.starts_at::text as "startsAt",
+      em.ends_at::text as "endsAt",
+      em.price AS "price",
+      em.venue AS "venue",
       c.is_pinned as "isPinned",
       c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",
@@ -46,7 +46,7 @@ export default async function selectConversations() {
     FROM
       public.conversations c
       JOIN public.users u ON c.created_by = u.id
-      LEFT JOIN public.conversation_dates cd ON cd.conversation_id = c.id
+      LEFT JOIN public.event_metadata em ON em.conversation_id = c.id
     WHERE
       c.deleted_at IS NULL
     ORDER BY

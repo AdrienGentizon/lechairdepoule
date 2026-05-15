@@ -32,7 +32,7 @@ CREATE TABLE conversations (
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
-CREATE TABLE conversation_dates (
+CREATE TABLE event_metadata (
     conversation_id INTEGER PRIMARY KEY,
     starts_at TIMESTAMPTZ,
     ends_at TIMESTAMPTZ,

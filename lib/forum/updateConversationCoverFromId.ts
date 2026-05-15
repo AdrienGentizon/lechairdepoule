@@ -60,7 +60,7 @@ export default async function updateConversationCoverFromId({
 
     if (!updatedConversation) return undefined;
 
-    const dates = (
+    const metadata = (
       await sql<
         {
           startsAt: string | null;
@@ -70,17 +70,17 @@ export default async function updateConversationCoverFromId({
         }[]
       >`
         SELECT starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue"
-        FROM conversation_dates
+        FROM event_metadata
         WHERE conversation_id = ${conversationId}`
     ).at(0);
 
     return {
       ...updatedConversation,
       previousCoverUrl,
-      startsAt: dates?.startsAt ?? null,
-      endsAt: dates?.endsAt ?? null,
-      price: dates?.price ?? null,
-      venue: dates?.venue ?? null,
+      startsAt: metadata?.startsAt ?? null,
+      endsAt: metadata?.endsAt ?? null,
+      price: metadata?.price ?? null,
+      venue: metadata?.venue ?? null,
     };
   });
 }

@@ -58,7 +58,7 @@ export default async function updateConversationFromId({
 
     if (!updatedConversation) return undefined;
 
-    const upsertedDates = (
+    const metadata = (
       await sql<
         {
           startsAt: string | null;
@@ -67,7 +67,7 @@ export default async function updateConversationFromId({
           venue: string | null;
         }[]
       >`
-        INSERT INTO conversation_dates (conversation_id, starts_at, ends_at, price, venue)
+        INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue)
         VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price}, ${venue})
         ON CONFLICT (conversation_id) DO UPDATE
           SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price, venue = EXCLUDED.venue
@@ -76,10 +76,10 @@ export default async function updateConversationFromId({
 
     return {
       ...updatedConversation,
-      startsAt: upsertedDates?.startsAt ?? null,
-      endsAt: upsertedDates?.endsAt ?? null,
-      price: upsertedDates?.price ?? null,
-      venue: upsertedDates?.venue ?? null,
+      startsAt: metadata?.startsAt ?? null,
+      endsAt: metadata?.endsAt ?? null,
+      price: metadata?.price ?? null,
+      venue: metadata?.venue ?? null,
     };
   });
 }

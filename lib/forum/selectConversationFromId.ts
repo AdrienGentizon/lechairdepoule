@@ -28,10 +28,10 @@ export default async function selectConversationFromId(conversationId: string) {
         c.title,
         c.description,
         c.type,
-        cd.starts_at::text AS "startsAt",
-        cd.ends_at::text AS "endsAt",
-        cd.price AS "price",
-        cd.venue AS "venue",
+        em.starts_at::text AS "startsAt",
+        em.ends_at::text AS "endsAt",
+        em.price AS "price",
+        em.venue AS "venue",
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
@@ -45,7 +45,7 @@ export default async function selectConversationFromId(conversationId: string) {
       FROM
         public.conversations c
         JOIN public.users u ON c.created_by = u.id
-        LEFT JOIN public.conversation_dates cd ON cd.conversation_id = c.id
+        LEFT JOIN public.event_metadata em ON em.conversation_id = c.id
       WHERE
         c.id = ${conversationId}
         AND c.deleted_at IS NULL;`
