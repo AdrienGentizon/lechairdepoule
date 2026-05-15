@@ -302,7 +302,7 @@ export default function CreateTopicForm({
         )}
         {conversationSpecifications.price && (
           <FormField>
-            <Label htmlFor="price">Prix</Label>
+            <Label htmlFor="price">Tarif(s)</Label>
             <Input
               id="price"
               name="price"
