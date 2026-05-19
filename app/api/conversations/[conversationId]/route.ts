@@ -19,7 +19,7 @@ import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
-import { NullishDateSchema, PriceSchema } from "@/lib/schemas";
+import { ConversationFormSchema } from "@/lib/schemas";
 import { CacheKey, Conversation, Message } from "@/lib/types";
 
 export async function GET(
@@ -237,18 +237,7 @@ export async function PATCH(
 
     const payload = Object.fromEntries((await req.formData()).entries());
 
-    const parsedInputs = z
-      .object({
-        title: z.string().min(1).max(100),
-        description: z.string().max(500),
-        startsAt: NullishDateSchema,
-        endsAt: NullishDateSchema,
-        price: PriceSchema,
-        venue: z.string().nullish(),
-        url: z.string().url().nullish(),
-        closedToContributionsAt: NullishDateSchema,
-      })
-      .safeParse(payload);
+    const parsedInputs = ConversationFormSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
       logger.append({ payload });

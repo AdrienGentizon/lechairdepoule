@@ -85,13 +85,12 @@ export default function UpdateConversationButton({
               id: conversation.id,
               title: values.title,
               description: values.description,
-              startsAt: values.startsAt?.toISOString(),
-              endsAt: values.endsAt?.toISOString(),
+              startsAt: values.startsAt,
+              endsAt: values.endsAt,
               price: values.price,
               venue: values.venue,
               url: values.url,
-              closedToContributionsAt:
-                values.closedToContributionsAt?.toISOString() ?? null,
+              closedToContributionsAt: values.closedToContributionsAt,
             });
           }}
           isPending={isPending}

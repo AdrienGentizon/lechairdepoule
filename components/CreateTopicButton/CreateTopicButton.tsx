@@ -95,13 +95,12 @@ export default function CreateTopicButton() {
                   description: values.description,
                   type: selectedConversationType ?? "TOPIC",
                   cover: values.cover,
-                  startsAt: values.startsAt?.toISOString(),
-                  endsAt: values.endsAt?.toISOString(),
+                  startsAt: values.startsAt,
+                  endsAt: values.endsAt,
                   price: values.price,
                   venue: values.venue,
                   url: values.url,
-                  closedToContributionsAt:
-                    values.closedToContributionsAt?.toISOString() ?? null,
+                  closedToContributionsAt: values.closedToContributionsAt,
                 },
                 {
                   onSuccess: (data) => {

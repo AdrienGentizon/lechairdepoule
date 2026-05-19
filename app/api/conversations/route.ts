@@ -1,17 +1,12 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import {
-  ConversationTypeEnum,
-  NullishDateSchema,
-  PriceSchema,
-} from "@/lib/schemas";
+import { ConversationFormSchema, ConversationTypeEnum } from "@/lib/schemas";
 import { CacheKey, Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -29,19 +24,9 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const payload = Object.fromEntries(formData.entries());
 
-    const parsedInputs = z
-      .object({
-        title: z.string().min(1).max(100),
-        description: z.string().max(500),
-        type: ConversationTypeEnum,
-        startsAt: NullishDateSchema,
-        endsAt: NullishDateSchema,
-        price: PriceSchema,
-        venue: z.string().nullish(),
-        url: z.string().url().nullish(),
-        closedToContributionsAt: NullishDateSchema,
-      })
-      .safeParse(payload);
+    const parsedInputs = ConversationFormSchema.extend({
+      type: ConversationTypeEnum,
+    }).safeParse(payload);
 
     if (!parsedInputs.success) {
       logger.append({ payload });

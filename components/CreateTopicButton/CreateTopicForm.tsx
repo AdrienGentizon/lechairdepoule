@@ -4,6 +4,7 @@ import { Loader, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ConversationFormSchema } from "@/lib/schemas";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -75,13 +76,13 @@ function getDateTime(dateStr: string, timeStr: string): Date {
 export type ConversationFormValues = {
   title: string;
   description: string;
-  startsAt?: Date;
-  endsAt?: Date;
+  startsAt?: string | null;
+  endsAt?: string | null;
   price?: string | null;
   venue?: string | null;
   url?: string | null;
   cover?: File;
-  closedToContributionsAt?: Date | null;
+  closedToContributionsAt?: string | null;
 };
 
 type Props = {
@@ -140,6 +141,7 @@ export default function CreateTopicForm({
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
+    url?: string;
     rules?: string;
   }>({});
   const [previewSrc, setPreviewSrc] = useState<string | undefined>(undefined);
@@ -150,6 +152,7 @@ export default function CreateTopicForm({
   return (
     <Form
       id="conversation-form"
+      noValidate
       className="grid max-h-[80dvh] grid-cols-1 grid-rows-[1fr_auto] overflow-hidden"
       onChange={(e) => {
         if (!(e.target instanceof HTMLInputElement) || e.target.type !== "file")
@@ -169,36 +172,52 @@ export default function CreateTopicForm({
         e.preventDefault();
         setErrors({});
 
-        const title = form.title ?? "";
-        const description = form.description ?? "";
         const rulesNotAccepted = !initialValues && !rulesAccepted;
+        const parsed = ConversationFormSchema.safeParse({
+          title: form.title ?? "",
+          description: form.description ?? "",
+          startsAt: form.startsAt?.toISOString(),
+          endsAt: form.endsAt?.toISOString(),
+          price: form.price,
+          venue: form.venue || undefined,
+          url: form.url || undefined,
+          closedToContributionsAt: form.closedToContributionsAt?.toISOString(),
+        });
 
-        if (!title || !description || rulesNotAccepted)
+        if (!parsed.success || rulesNotAccepted) {
+          const fieldErrors = parsed.success
+            ? {}
+            : parsed.error.flatten().fieldErrors;
           return setErrors({
-            title: !title ? "Titre obligatoire" : undefined,
-            description: !description ? "Description obligatoire" : undefined,
+            title: fieldErrors.title?.[0],
+            description: fieldErrors.description?.[0],
+            url: fieldErrors.url?.[0],
             rules: rulesNotAccepted
               ? "Veuillez accepter les règles du forum"
               : undefined,
           });
+        }
 
         onSubmit({
-          title,
-          description,
-          startsAt: form.startsAt,
-          endsAt: form.endsAt,
-          price: form.price,
-          venue: form.venue,
-          url: form.url,
+          title: parsed.data.title,
+          description: parsed.data.description,
+          startsAt: parsed.data.startsAt,
+          endsAt: parsed.data.endsAt,
+          price: parsed.data.price,
+          venue: parsed.data.venue,
+          url: parsed.data.url,
           cover: coverFile,
-          closedToContributionsAt: form.closedToContributionsAt,
+          closedToContributionsAt: parsed.data.closedToContributionsAt,
         });
       }}
     >
       <div className="overflow-y-scroll">
         <FormField>
           <Label htmlFor="title" aria-required>
-            Titre
+            Titre{" "}
+            <em className="font-light text-neutral-300 not-italic">
+              (100 caractères max.)
+            </em>
           </Label>
           <Input
             id="title"
@@ -215,7 +234,10 @@ export default function CreateTopicForm({
         </FormField>
         <FormField>
           <Label htmlFor="description" aria-required>
-            Description
+            Description{" "}
+            <em className="font-light text-neutral-300 not-italic">
+              (500 caractères max.)
+            </em>
           </Label>
           <AugmentedTextarea
             id="description"
@@ -360,7 +382,7 @@ export default function CreateTopicForm({
                 setForm((prev) => ({ ...prev, url: e.target.value }))
               }
             />
-            <FieldError>{null}</FieldError>
+            <FieldError>{errors.url}</FieldError>
           </FormField>
         )}
         {conversationSpecifications.cover && (

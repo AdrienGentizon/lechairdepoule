@@ -20,3 +20,20 @@ export const PriceSchema = z.preprocess(
     .optional()
     .transform((v) => v ?? null)
 );
+
+export const ConversationFormSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Titre obligatoire")
+    .max(100, "Titre trop long (100 caractères max)"),
+  description: z
+    .string()
+    .min(1, "Description obligatoire")
+    .max(500, "Description trop longue (500 caractères max)"),
+  startsAt: NullishDateSchema,
+  endsAt: NullishDateSchema,
+  price: PriceSchema,
+  venue: z.string().nullish(),
+  url: z.string().url("URL invalide").nullish(),
+  closedToContributionsAt: NullishDateSchema,
+});

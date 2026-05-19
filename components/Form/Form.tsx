@@ -26,11 +26,11 @@ export function FieldError({
 }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("min-h-4 text-red-600", className)}
+      className={cn("min-h-4 text-sm font-medium text-red-600", className)}
       aria-disabled={!children}
       {...props}
     >
-      {children}
+      {children ?? <>&nbsp;</>}
     </p>
   );
 }
