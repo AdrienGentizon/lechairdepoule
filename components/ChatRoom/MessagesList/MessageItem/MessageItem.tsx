@@ -2,7 +2,7 @@ import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
 
 import TextParser from "@/components/TextParser";
 import useMe, { Me } from "@/lib/auth/useMe";
-import { getMessageMetadataAsString } from "@/lib/forum/utils";
+import { formatTimestampAsString } from "@/lib/forum/utils";
 import { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +26,7 @@ function Header({ me, message }: { me: Me; message: Message }) {
               dateTime={new Date(message.createdAt).toLocaleString()}
               className="pl-2 font-mono text-xs font-medium text-gray-500"
             >
-              {getMessageMetadataAsString(message)}
+              {formatTimestampAsString(message)}
             </time>
           </h3>
         </div>

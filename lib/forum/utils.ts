@@ -1,5 +1,5 @@
 import { getSinceAsString } from "../date";
-import { Conversation, Message } from "../types";
+import { Conversation } from "../types";
 
 export function getConversationMetadataAsString(
   conversation: Omit<Conversation, "messages">
@@ -12,6 +12,8 @@ export function getConversationMetadataAsString(
   return showSince ? [author, since].join(" ") : author;
 }
 
-export function getMessageMetadataAsString(message: Message) {
-  return `${new Date(message.createdAt).toLocaleDateString()} ${new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+export function formatTimestampAsString(timestampedItem: {
+  createdAt: string;
+}) {
+  return `${new Date(timestampedItem.createdAt).toLocaleDateString()} ${new Date(timestampedItem.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 }

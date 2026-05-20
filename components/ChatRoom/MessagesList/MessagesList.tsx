@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import TextParser from "@/components/TextParser";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
+import { formatTimestampAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -39,14 +40,30 @@ export default function MessagesList({
       )}
     >
       {conversation.description && (
-        <p
-          className={cn(
-            "font-courier rounded-sm border border-neutral-500 bg-neutral-800 p-2 font-light whitespace-pre-wrap",
-            conversation.reportedAt && "text-neutral-400 line-through"
-          )}
-        >
-          <TextParser text={conversation.description ?? ""} />
-        </p>
+        <li>
+          <header className="flex items-center gap-2">
+            <div className="flex w-full">
+              <div className="flex items-center gap-2 rounded-t-sm bg-white px-2 text-black">
+                <h3 className={cn("font-mono text-xs font-medium")}>
+                  {conversation.createdBy.pseudo}{" "}
+                  <time
+                    dateTime={new Date(conversation.createdAt).toLocaleString()}
+                    className="pl-2 font-mono text-xs font-medium text-gray-500"
+                  >
+                    {formatTimestampAsString(conversation)}
+                  </time>
+                </h3>
+              </div>
+            </div>
+          </header>
+          <p
+            className={cn(
+              "font-courier rounded-b-sm border border-white p-2 font-light whitespace-pre-wrap"
+            )}
+          >
+            <TextParser text={conversation.description ?? ""} />
+          </p>
+        </li>
       )}
       {conversation.coverUrl &&
         conversation.coverWidth &&
