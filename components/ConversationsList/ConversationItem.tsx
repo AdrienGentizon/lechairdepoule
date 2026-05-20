@@ -1,7 +1,7 @@
 import { Skull } from "lucide-react";
 import Link from "next/link";
 
-import BanUserTrigger from "@/components/ChatRoom/MessagesList/MessageItem/BanUserTrigger/BanUserTrigger";
+import BanUserTrigger from "@/components/BanUserTrigger/BanUserTrigger";
 import { Me } from "@/lib/auth/useMe";
 import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
