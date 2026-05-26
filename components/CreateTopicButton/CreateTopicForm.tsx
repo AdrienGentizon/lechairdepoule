@@ -121,8 +121,10 @@ export default function CreateTopicForm({
   const [form, setForm] = useState<{
     title?: string;
     description?: string;
-    startsAt?: Date;
-    endsAt?: Date;
+    startsAtDate?: string;
+    startsAtTime?: string;
+    endsAtDate?: string;
+    endsAtTime?: string;
     price?: string;
     venue?: string;
     url?: string;
@@ -130,8 +132,14 @@ export default function CreateTopicForm({
   }>({
     title: initialValues?.title,
     description: initialValues?.description,
-    startsAt: initialValues?.startsAt,
-    endsAt: initialValues?.endsAt,
+    startsAtDate:
+      getDateTimeAsInputValue(initialValues?.startsAt).date || undefined,
+    startsAtTime:
+      getDateTimeAsInputValue(initialValues?.startsAt).time || undefined,
+    endsAtDate:
+      getDateTimeAsInputValue(initialValues?.endsAt).date || undefined,
+    endsAtTime:
+      getDateTimeAsInputValue(initialValues?.endsAt).time || undefined,
     price: initialValues?.price ?? undefined,
     venue: initialValues?.venue ?? undefined,
     url: initialValues?.url ?? undefined,
@@ -176,8 +184,15 @@ export default function CreateTopicForm({
         const parsed = ConversationFormSchema.safeParse({
           title: form.title ?? "",
           description: form.description ?? "",
-          startsAt: form.startsAt?.toISOString(),
-          endsAt: form.endsAt?.toISOString(),
+          startsAt: form.startsAtDate
+            ? getDateTime(
+                form.startsAtDate,
+                form.startsAtTime ?? ""
+              ).toISOString()
+            : undefined,
+          endsAt: form.endsAtDate
+            ? getDateTime(form.endsAtDate, form.endsAtTime ?? "").toISOString()
+            : undefined,
           price: form.price,
           venue: form.venue || undefined,
           url: form.url || undefined,
@@ -263,15 +278,12 @@ export default function CreateTopicForm({
                 <Input
                   id="startsAtDate"
                   type="date"
-                  value={getDateTimeAsInputValue(form.startsAt).date}
+                  value={form.startsAtDate ?? ""}
                   required
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
-                      startsAt: getDateTime(
-                        e.target.value,
-                        getDateTimeAsInputValue(prev.startsAt).time
-                      ),
+                      startsAtDate: e.target.value,
                     }))
                   }
                 />
@@ -279,15 +291,12 @@ export default function CreateTopicForm({
                   <Input
                     id="startsAtTime"
                     type="time"
-                    disabled={!form.startsAt}
-                    value={getDateTimeAsInputValue(form.startsAt).time}
+                    disabled={!form.startsAtDate}
+                    value={form.startsAtTime ?? ""}
                     onChange={(e) =>
                       setForm((prev) => ({
                         ...prev,
-                        startsAt: getDateTime(
-                          getDateTimeAsInputValue(prev.startsAt).date,
-                          e.target.value
-                        ),
+                        startsAtTime: e.target.value,
                       }))
                     }
                   />
@@ -303,30 +312,18 @@ export default function CreateTopicForm({
                 <Input
                   id="endsAtDate"
                   type="date"
-                  value={getDateTimeAsInputValue(form.endsAt).date}
+                  value={form.endsAtDate ?? ""}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      endsAt: getDateTime(
-                        e.target.value,
-                        getDateTimeAsInputValue(prev.endsAt).time
-                      ),
-                    }))
+                    setForm((prev) => ({ ...prev, endsAtDate: e.target.value }))
                   }
                 />
                 <Input
                   id="endsAtTime"
                   type="time"
-                  disabled={!form.endsAt}
-                  value={getDateTimeAsInputValue(form.endsAt).time}
+                  disabled={!form.endsAtDate}
+                  value={form.endsAtTime ?? ""}
                   onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      endsAt: getDateTime(
-                        getDateTimeAsInputValue(prev.endsAt).date,
-                        e.target.value
-                      ),
-                    }))
+                    setForm((prev) => ({ ...prev, endsAtTime: e.target.value }))
                   }
                 />
               </div>
