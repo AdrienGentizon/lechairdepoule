@@ -1,0 +1,124 @@
+"use client";
+
+import { ComponentRef, useEffect, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
+
+import { Mail, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import sendEmail from "@/actions/sendEmail";
+import { cn } from "@/lib/utils";
+
+import Button from "../Button/Button";
+import { Input, Label, inputClassName } from "../Form/Form";
+
+function SubmitMessageButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button aria-disabled={pending} className="w-full" type="submit">
+      Envoyer
+    </Button>
+  );
+}
+
+export default function ContactForm() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const formRef = useRef<ComponentRef<"form">>(null);
+
+  const [actionResult, setActionResult] = useState<
+    { status: number; message: string } | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (open)
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [open]);
+
+  return (
+    <>
+      <button
+        className="flex cursor-pointer items-center gap-2 font-extralight"
+        onClick={() => {
+          setOpen((prev) => !prev);
+        }}
+      >
+        <Mail className="size-4" />
+        <span className="cursor-pointer hover:underline">
+          Envoyer un message ?
+        </span>
+      </button>
+      {open && (
+        <form
+          ref={formRef}
+          className="relative flex w-full max-w-md flex-col gap-4 bg-black px-4 pb-8 pt-4 sm:px-0"
+          action={async (formData) => {
+            const actionResult = await sendEmail(undefined, formData);
+            setActionResult(actionResult);
+            if (actionResult.status === 200)
+              setTimeout(() => {
+                router.push(`/`);
+              }, 2000);
+          }}
+        >
+          <button
+            className="absolute right-4 top-0 cursor-pointer rounded-full bg-white p-1 sm:right-0"
+            onClick={() => setOpen(false)}
+          >
+            <span className="sr-only">Fermer le formulaire</span>
+            <X className="size-5 stroke-black sm:size-4" />
+          </button>
+
+          <fieldset className="flex flex-col gap-2">
+            <Label htmlFor="email" className="font-sm font-semibold">
+              Email
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="nanani@nanana.com"
+              className="font-courier"
+              required
+            />
+          </fieldset>
+          <fieldset className="flex flex-col gap-2">
+            <Label htmlFor="subject" className="font-sm font-semibold">
+              Objet
+            </Label>
+            <Input
+              id="subject"
+              name="subject"
+              type="text"
+              defaultValue={`Demande d'informations`}
+              className="font-courier"
+            />
+          </fieldset>
+          <fieldset className="flex flex-col gap-2">
+            <Label htmlFor="message" className="font-sm font-semibold">
+              Message
+            </Label>
+            <textarea
+              id="message"
+              name="message"
+              className={inputClassName("font-courier min-h-56 p-2")}
+              placeholder="Nanani nanana..."
+              required
+            />
+          </fieldset>
+          <SubmitMessageButton />
+          {actionResult && (
+            <p
+              className={cn(
+                "text-center font-light text-green-400",
+                actionResult.status > 200 && "text-red-400"
+              )}
+            >
+              {actionResult.message}
+            </p>
+          )}
+        </form>
+      )}
+    </>
+  );
+}

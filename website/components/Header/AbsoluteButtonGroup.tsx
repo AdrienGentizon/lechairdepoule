@@ -1,0 +1,13 @@
+import { ReactNode } from "react";
+
+export default function AbsoluteButtonGroup({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <div className="fixed right-4 top-4 z-20 flex items-center gap-2">
+      {children}
+    </div>
+  );
+}
