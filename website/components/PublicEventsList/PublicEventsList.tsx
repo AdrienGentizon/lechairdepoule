@@ -8,6 +8,15 @@ import ConversationUrl from "../ConversationsList/ConversationUrl";
 import TextParser from "../TextParser";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
+function EmptyMessage({ heading, body }: { heading: string; body: string }) {
+  return (
+    <div className="mx-auto max-w-sm bg-black p-4 pt-32 text-center text-white">
+      <h2 className="text-lg font-bold leading-8">{heading}</h2>
+      <p className="font-light">{body}</p>
+    </div>
+  );
+}
+
 export default function PublicEventsList({
   conversations,
 }: {
@@ -16,6 +25,16 @@ export default function PublicEventsList({
   const sortedConversations = conversations.toSorted((a, b) => {
     return a.startsAt.localeCompare(b.startsAt);
   });
+
+  if (sortedConversations.length === 0) {
+    return (
+      <EmptyMessage
+        heading="Programme à venir"
+        body="Les prochaines animations seront annoncées bientôt."
+      />
+    );
+  }
+
   return (
     <ul
       className={cn(
