@@ -16,7 +16,7 @@ function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   );
 }
 
-export default function DeprecatedEventsList({ events }: Props) {
+export default function EventsList({ events }: Props) {
   if (events.length === 0) {
     return (
       <EmptyMessage

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import DeprecatedEventsList from "@/components/DeprecatedEventsList/DeprecatedEventsList";
+import EventsList from "@/components/EventsList/EventsList";
 
 import getEvents from "../../queries/getEvents";
 
@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <Suspense>
       <h1 className="sr-only">Agenda des animations</h1>
-      <DeprecatedEventsList events={events} />
+      <EventsList events={events} />
     </Suspense>
   );
 }
