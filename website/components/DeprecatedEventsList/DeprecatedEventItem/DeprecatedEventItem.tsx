@@ -50,7 +50,7 @@ export default function DeprecatedEventItem({ event }: Props) {
       className="relative flex w-full cursor-pointer flex-col gap-2 overflow-hidden border-b border-white py-2 first:border-t"
     >
       <button
-        className="relative z-10 cursor-pointer p-0 hover:no-underline [&[data-state=open]>header+div]:opacity-0"
+        className="relative z-10 cursor-pointer p-0 hover:no-underline"
         onClick={() => {
           if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
             window.dispatchEvent(
