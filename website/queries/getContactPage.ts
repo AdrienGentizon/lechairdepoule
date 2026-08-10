@@ -3,25 +3,34 @@ import { fetchEntryGraphQL } from "@/lib/contentful";
 export type ContactPage = {
   sys: { id: string };
   pageTitle: string;
-  messageDeLaPatronne: string;
-  chairdepouleOpeningHours: string;
-  peineperdueOpeningHours: string;
+  description: string;
+  openingHours: string;
   contactNumbers: string;
+  pauseMessage?: string;
+  pauseStartsAt?: string;
+  pauseEndsAt?: string;
 };
 
-export default async function getContactPage() {
+const IDS = {
+  CDP: "s7FASABDHFgqVs10Nb02Z",
+  PP: "6LvuhqG588tmge2jbpXBM7",
+};
+
+export default async function getContactPage(key: "CDP" | "PP") {
   return (
     await fetchEntryGraphQL<ContactPage>(
       "contact",
       `query {
-      contact(id: "s7FASABDHFgqVs10Nb02Z") {
+      contact(id: "${IDS[key]}") {
       sys {
         id
         }
-      messageDeLaPatronne
-      chairdepouleOpeningHours
-      peineperdueOpeningHours
+      description
+      openingHours
       contactNumbers
+      pauseMessage
+      pauseStartsAt
+      pauseEndsAt
       }
     }`
     )

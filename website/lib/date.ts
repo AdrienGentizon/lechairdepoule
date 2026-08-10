@@ -84,3 +84,9 @@ export function getEventTime(dateStr: string) {
     ? `${hours.toString().padStart(2, "0")}H`
     : `${hours.toString().padStart(2, "0")}H${minutes.toString().padStart(2, "0")}`;
 }
+
+export function getValidDate(dateStr: string) {
+  if (isNaN(new Date(dateStr).getTime())) return;
+
+  return new Date(dateStr);
+}
