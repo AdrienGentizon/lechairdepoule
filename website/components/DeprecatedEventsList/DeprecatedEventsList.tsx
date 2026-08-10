@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Event } from "@/queries/getEvents";
 
-import EventItem from "./EventItem/EventItem";
+import DeprecatedEventItem from "./DeprecatedEventItem/DeprecatedEventItem";
 
 type Props = {
   events: Event[];
@@ -16,7 +16,7 @@ function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   );
 }
 
-export default function EventsList({ events }: Props) {
+export default function DeprecatedEventsList({ events }: Props) {
   if (events.length === 0) {
     return (
       <EmptyMessage
@@ -34,7 +34,7 @@ export default function EventsList({ events }: Props) {
       )}
     >
       {events.map((event) => (
-        <EventItem key={`item-${event.sys.id}`} event={event} />
+        <DeprecatedEventItem key={`item-${event.sys.id}`} event={event} />
       ))}
     </ul>
   );

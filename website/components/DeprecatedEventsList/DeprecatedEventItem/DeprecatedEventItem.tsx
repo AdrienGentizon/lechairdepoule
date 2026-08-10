@@ -16,7 +16,7 @@ type Props = {
   event: Event;
 };
 
-export default function EventItem({ event }: Props) {
+export default function DeprecatedEventItem({ event }: Props) {
   const [open, setOpen] = useState(false);
   const top = useRef(0);
 
