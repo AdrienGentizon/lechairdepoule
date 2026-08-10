@@ -23,34 +23,49 @@ export type Event = {
 };
 
 function getStartingDate() {
-  const date = new Date();
-  date.setUTCHours(0);
-  date.setUTCMinutes(0);
-  date.setUTCSeconds(0);
-  date.setUTCMilliseconds(0);
+  const queryExecutionDate = new Date();
+
+  queryExecutionDate.setUTCHours(0);
+  queryExecutionDate.setUTCMinutes(0);
+  queryExecutionDate.setUTCSeconds(0);
+  queryExecutionDate.setUTCMilliseconds(0);
+
   const showCurrentWeek = false;
   if (showCurrentWeek) {
     const days = [1, 2, 3, 4, 5, 6, 0];
     const oneDayInMs = 24 * 60 * 60 * 1000;
-    return new Date(date.getTime() - days.indexOf(date.getDay()) * oneDayInMs);
+    return new Date(
+      queryExecutionDate.getTime() -
+        days.indexOf(queryExecutionDate.getDay()) * oneDayInMs
+    );
   }
-  return new Date(date.getTime() - 2 * 60 * 60 * 1000);
+  return new Date(queryExecutionDate.getTime() - 2 * 60 * 60 * 1000);
 }
 
-export default async function getEvents() {
-  const date = new Date();
-  const monthLastDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+function getEndingDate() {
+  const queryExecutionDate = new Date();
+
+  const monthLastDate = new Date(
+    queryExecutionDate.getFullYear(),
+    queryExecutionDate.getMonth() + 2,
+    0
+  );
+
   const seeOneMoreMonth = true;
   if (seeOneMoreMonth) {
     monthLastDate.setMonth(monthLastDate.getMonth() + 1);
   }
 
+  return monthLastDate;
+}
+
+export default async function getEvents() {
   return (
     (
       await fetchCollectionGraphQL<Event>(
         "eventCollection",
         `query {
-    eventCollection(where: {date_gte: "${getStartingDate().toISOString()}", date_lte : "${monthLastDate.toISOString()}"} ,order: date_DESC) {
+    eventCollection(where: {date_gte: "${getStartingDate().toISOString()}", date_lte : "${getEndingDate().toISOString()}"} ,order: date_DESC) {
       items {
         sys {
             id
