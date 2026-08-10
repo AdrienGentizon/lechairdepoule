@@ -4,7 +4,7 @@ import DeprecatedEventsList from "@/components/DeprecatedEventsList/DeprecatedEv
 
 import getEvents from "../../queries/getEvents";
 
-export const revalidate = 24 * 60 * 60;
+export const revalidate = 86400; // 24 * 60 * 60;
 
 export default async function Home() {
   const events = await getEvents();
