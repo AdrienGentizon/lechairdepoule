@@ -17,7 +17,7 @@ export default function EventItem({
   aria,
   variant,
 }: {
-  summary: { title: string; description: string | null };
+  summary: { title: string; description?: string | null };
   image: ReactNode;
   url: string | null;
   details: ReactNode;
@@ -101,9 +101,9 @@ export default function EventItem({
         <div className="relative isolate flex flex-col gap-4 p-4">
           {image}
           {details && (
-            <p className="font-courier whitespace-pre-wrap font-light leading-tight">
+            <div className="font-courier whitespace-pre-wrap font-light leading-tight">
               {details}
-            </p>
+            </div>
           )}
           <EventUrl url={url} />
         </div>
