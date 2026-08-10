@@ -1,7 +1,11 @@
+import Image from "next/image";
+
 import { LOCALE, TZ, getEventTime } from "@/lib/date";
+import { getEventMainUrl } from "@/lib/events";
 import { PublicConversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+import TextParser from "../TextParser";
 import EventItem from "./EventItem";
 import ScrollIntoView from "./ScrollIntoView";
 
@@ -43,6 +47,36 @@ export default function PublicEventsList({
         return (
           <EventItem
             key={conversation.id}
+            summary={{
+              title: conversation.title,
+              description: conversation.venue,
+            }}
+            url={getEventMainUrl({
+              url: conversation.url,
+              description: conversation.description,
+            })}
+            image={
+              conversation.coverUrl &&
+              conversation.coverWidth &&
+              conversation.coverHeight && (
+                <Image
+                  src={conversation.coverUrl}
+                  width={conversation.coverWidth}
+                  height={conversation.coverHeight}
+                  alt=""
+                  aria-hidden
+                  className="mx-auto w-full object-cover"
+                  sizes="(max-width: 640px) 100dvw, 600px"
+                />
+              )
+            }
+            details={
+              conversation.description && (
+                <TextParser text={conversation.description} />
+              )
+            }
+            startsAt={conversation.startsAt}
+            price={conversation.price}
             aria={{
               title: [
                 conversation.title,
@@ -59,13 +93,6 @@ export default function PublicEventsList({
                 .filter(Boolean)
                 .join(", "),
             }}
-            summary={{
-              title: conversation.title,
-              description: conversation.venue,
-            }}
-            startsAt={conversation.startsAt}
-            price={conversation.price}
-            conversation={conversation}
           />
         );
       })}

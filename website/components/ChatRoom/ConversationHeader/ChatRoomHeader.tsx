@@ -1,13 +1,14 @@
 import { ArrowLeft, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 
+import EventUrl from "@/components/ConversationsList/EventUrl";
 import { Me } from "@/lib/auth/useMe";
 import { getEventTime } from "@/lib/date";
+import { getEventMainUrl } from "@/lib/events";
 import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-import ConversationUrl from "../../ConversationsList/ConversationUrl";
 import DeleteConversationButton from "./DeleteConversationButton/DeleteConversationButton";
 import ReportConversationButton from "./ReportConversationButton/ReportConversationButton";
 import UpdateConversationButton from "./UpdateConversationButton/UpdateConversationButton";
@@ -58,11 +59,7 @@ export default function ChatRoomHeader({
             </span>
           </div>
 
-          <ConversationUrl
-            className="mt-2"
-            conversation={conversation}
-            hideIfInDescription
-          />
+          <EventUrl className="mt-2" url={getEventMainUrl(conversation)} />
         </div>
         <div className="ml-auto flex items-center gap-2 self-start pr-2">
           <UpdateConversationButton me={me} conversation={conversation} />
