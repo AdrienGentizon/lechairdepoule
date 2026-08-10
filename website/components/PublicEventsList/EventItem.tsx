@@ -1,24 +1,28 @@
-import Image from "next/image";
+import type { ReactNode } from "react";
 
 import PeinePerdue from "@/components/png/PeinePerdue";
 import { LOCALE, TZ, getEventTime } from "@/lib/date";
-import { PublicConversation } from "@/lib/types";
 
-import ConversationUrl from "../ConversationsList/ConversationUrl";
-import TextParser from "../TextParser";
+import EventUrl from "../ConversationsList/EventUrl";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
 export default function EventItem({
-  conversation,
   summary,
+  image,
+  url,
+  details,
   startsAt,
+  endsAt,
   price,
   aria,
   variant,
 }: {
-  conversation: PublicConversation;
   summary: { title: string; description: string | null };
+  image: ReactNode;
+  url: string | null;
+  details: ReactNode;
   startsAt: string;
+  endsAt?: string | null;
   price: string | null;
   aria: {
     title: string;
@@ -87,27 +91,21 @@ export default function EventItem({
             </div>
           )}
         </summary>
-        <ImportToCalendarButton conversation={conversation} />
+        <ImportToCalendarButton
+          ics={{
+            title: summary.title,
+            startsAt: startsAt,
+            endsAt: endsAt,
+          }}
+        />
         <div className="relative isolate flex flex-col gap-4 p-4">
-          {conversation.coverUrl &&
-            conversation.coverWidth &&
-            conversation.coverHeight && (
-              <Image
-                src={conversation.coverUrl}
-                width={conversation.coverWidth}
-                height={conversation.coverHeight}
-                alt=""
-                aria-hidden
-                className="mx-auto w-full object-cover"
-                sizes="(max-width: 640px) 100dvw, 600px"
-              />
-            )}
-          {conversation.description && (
+          {image}
+          {details && (
             <p className="font-courier whitespace-pre-wrap font-light leading-tight">
-              <TextParser text={conversation.description} />
+              {details}
             </p>
           )}
-          <ConversationUrl conversation={conversation} hideIfInDescription />
+          <EventUrl url={url} />
         </div>
       </details>
     </li>
