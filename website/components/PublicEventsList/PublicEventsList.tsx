@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import ConversationUrl from "../ConversationsList/ConversationUrl";
 import TextParser from "../TextParser";
 import ImportToCalendarButton from "./ImportToCalendarButton";
+import ScrollIntoView from "./ScrollIntoView";
 
 function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   return (
@@ -47,7 +48,10 @@ export default function PublicEventsList({
           key={conversation.id}
           className="border-foreground border-b py-2 first:border-t"
         >
-          <details name="events" className="relative cursor-pointer">
+          <details
+            name="events"
+            className="relative cursor-pointer scroll-mt-6"
+          >
             <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
               <span className="sr-only">
                 {[
@@ -147,6 +151,7 @@ export default function PublicEventsList({
           </details>
         </li>
       ))}
+      <ScrollIntoView />
     </ul>
   );
 }
