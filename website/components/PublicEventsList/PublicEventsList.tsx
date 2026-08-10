@@ -47,7 +47,7 @@ export default function PublicEventsList({
           key={conversation.id}
           className="border-foreground border-b py-2 first:border-t"
         >
-          <details className="relative cursor-pointer">
+          <details name="events" className="relative cursor-pointer">
             <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
               <span className="sr-only">
                 {[
