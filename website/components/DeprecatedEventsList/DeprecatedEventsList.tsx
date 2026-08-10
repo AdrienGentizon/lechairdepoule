@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Event } from "@/queries/getEvents";
 
-import DeprecatedEventItem from "./DeprecatedEventItem/DeprecatedEventItem";
+import ContentfulEventItem from "./ContentfulEventItem";
 
 type Props = {
   events: Event[];
@@ -33,9 +33,9 @@ export default function DeprecatedEventsList({ events }: Props) {
         "mask_[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
       )}
     >
-      {events.map((event) => (
-        <DeprecatedEventItem key={`item-${event.sys.id}`} event={event} />
-      ))}
+      {events.map((event) => {
+        return <ContentfulEventItem key={event.sys.id} event={event} />;
+      })}
     </ul>
   );
 }
