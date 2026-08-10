@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Markdown from "react-markdown";
 
 import ContentfulImage from "@/components/ContentfulImage";
@@ -20,24 +20,6 @@ export default function DeprecatedEventItem({ event }: Props) {
   const [open, setOpen] = useState(false);
   const top = useRef(0);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
-      window.addEventListener(
-        "event:select",
-        (e: CustomEventInit<{ eventId: string }>) => {
-          if (e.detail?.eventId !== event.sys.id) setOpen(false);
-        },
-        { signal: abortController.signal }
-      );
-    }
-
-    return () => {
-      abortController.abort();
-    };
-  }, [event, setOpen]);
-
   return (
     <li
       ref={(el) => {
@@ -53,11 +35,6 @@ export default function DeprecatedEventItem({ event }: Props) {
         className="relative z-10 cursor-pointer p-0 hover:no-underline"
         onClick={() => {
           if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
-            window.dispatchEvent(
-              new CustomEvent("event:select", {
-                detail: { eventId: event.sys.id },
-              })
-            );
             setTimeout(() => {
               window.scrollTo({
                 top: top.current,
