@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Event } from "@/queries/getEvents";
 
+import ScrollIntoView from "../PublicEventsList/ScrollIntoView";
 import ContentfulEventItem from "./ContentfulEventItem";
 
 type Props = {
@@ -36,6 +37,7 @@ export default function EventsList({ events }: Props) {
       {events.map((event) => {
         return <ContentfulEventItem key={event.sys.id} event={event} />;
       })}
+      <ScrollIntoView />
     </ul>
   );
 }
