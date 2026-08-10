@@ -12,11 +12,12 @@ export default function ImportToCalendarButton({
   return (
     <a
       href={`/api/conversations/${conversation.id}/calendar`}
-      className="absolute right-4 top-4 hidden -translate-y-1/2 group-open:block"
-      onClick={(e) => e.stopPropagation()}
+      className="absolute right-4 top-4 -translate-y-1/2"
     >
       <CalendarIcon className="size-5" />
-      <span className="sr-only">Ajouter à mon calendrier</span>
+      <span className="sr-only">
+        Ajouter {conversation.title} à mon calendrier
+      </span>
     </a>
   );
 }
