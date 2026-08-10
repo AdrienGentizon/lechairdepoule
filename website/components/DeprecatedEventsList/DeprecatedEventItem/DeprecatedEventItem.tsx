@@ -34,21 +34,6 @@ export default function DeprecatedEventItem({ event }: Props) {
       <button
         className="relative z-10 cursor-pointer p-0 hover:no-underline"
         onClick={() => {
-          if (process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true") {
-            setTimeout(() => {
-              window.scrollTo({
-                top: top.current,
-                behavior: "smooth",
-              });
-            }, 50);
-          }
-          setTimeout(() => {
-            window.dispatchEvent(
-              new CustomEvent("body:scrollHeight", {
-                detail: { scrollHeight: document.body.scrollHeight },
-              })
-            );
-          }, 100);
           setOpen((prev) => !prev);
         }}
       >
