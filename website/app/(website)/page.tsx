@@ -4,6 +4,8 @@ import EventsList from "@/components/EventsList/EventsList";
 
 import getEvents from "../../queries/getEvents";
 
+export const revalidate = 24 * 60 * 60;
+
 export default async function Home() {
   const events = await getEvents();
   return (
