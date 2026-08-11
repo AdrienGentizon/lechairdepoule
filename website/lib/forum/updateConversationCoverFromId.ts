@@ -43,7 +43,10 @@ export default async function updateConversationCoverFromId({
           image_url = ${cover.url},
           image_width = ${cover.width},
           image_height = ${cover.height}
-        WHERE id = ${conversationId} AND created_by = ${userId}
+        WHERE
+          id = ${conversationId}
+          AND created_by = ${userId}
+          AND reported_at IS NULL
         RETURNING
           id::text,
           title,

@@ -29,7 +29,10 @@ export default async function deleteConversationCoverFromId({
           image_url = NULL,
           image_width = NULL,
           image_height = NULL
-        WHERE id = ${conversationId} AND created_by = ${userId}
+        WHERE
+          id = ${conversationId}
+          AND created_by = ${userId}
+          AND reported_at IS NULL
         RETURNING
           id::text,
           title,

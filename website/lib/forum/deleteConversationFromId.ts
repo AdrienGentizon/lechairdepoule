@@ -17,6 +17,7 @@ export default async function deleteConversationFromId({
       WHERE
         id = ${conversationId}
         AND created_by = ${userId}
+        AND reported_at IS NULL
       RETURNING
         id::text;`
   ).at(0);

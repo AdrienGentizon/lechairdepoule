@@ -25,10 +25,14 @@ export default async function insertMessageIntoConversation({
       reported_by: string | null;
     }[]
   >`
+  WITH target_conversation AS (
+    SELECT id FROM public.conversations WHERE id = ${conversationId} AND reported_at IS NULL
+  )
   INSERT INTO
 	messages (conversation_id, parent_message_id, body, user_id, created_at)
-  VALUES
-    (${conversationId}, ${parentMessageId ?? null}, ${body}, ${user.id}, ${Date.now()})
+  SELECT
+    target_conversation.id, ${parentMessageId ?? null}, ${body}, ${user.id}, ${Date.now()}
+  FROM target_conversation
   RETURNING
     id::text,
     body,
