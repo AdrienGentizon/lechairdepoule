@@ -1,12 +1,9 @@
+import { HTMLAttributes } from "react";
+
 import { cn } from "@/lib/utils";
-import { Event } from "@/queries/getEvents";
 
-import ScrollIntoView from "../PublicEventsList/ScrollIntoView";
-import ContentfulEventItem from "./ContentfulEventItem";
-
-type Props = {
-  events: Event[];
-};
+import RefreshOnFocus from "../RefreshOnFocus/RefreshOnFocus";
+import ScrollIntoView from "./ScrollIntoView";
 
 function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   return (
@@ -17,27 +14,25 @@ function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   );
 }
 
-export default function EventsList({ events }: Props) {
-  if (events.length === 0) {
-    return (
-      <EmptyMessage
-        heading="Programme à venir"
-        body="Les prochaines animations seront annoncées bientôt."
-      />
-    );
-  }
-
+export default function EventsList({
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLUListElement>) {
   return (
     <ul
       className={cn(
-        "grid auto-rows-max grid-cols-1 overflow-y-scroll bg-black pb-4 pt-6",
-        "mask_[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
+        "flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm pb-4 pt-6",
+        "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]",
+        className
       )}
+      {...props}
     >
-      {events.map((event) => {
-        return <ContentfulEventItem key={event.sys.id} event={event} />;
-      })}
+      {children}
       <ScrollIntoView />
+      <RefreshOnFocus />
     </ul>
   );
 }
+
+EventsList.EmptyMessage = EmptyMessage;
