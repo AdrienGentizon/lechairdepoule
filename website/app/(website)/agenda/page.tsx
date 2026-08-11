@@ -3,7 +3,6 @@ import Image from "next/image";
 
 import EventItem from "@/components/EventsList/EventItem";
 import EventsList from "@/components/EventsList/EventsList";
-import RefreshOnFocus from "@/components/RefreshOnFocus/RefreshOnFocus";
 import TextParser from "@/components/TextParser";
 import { LOCALE, TZ, getEventTime } from "@/lib/date";
 import { getEventMainUrl } from "@/lib/events";
@@ -39,7 +38,7 @@ export default async function AgendaPage() {
   );
 
   return (
-    <div className="grid grid-cols-1 grid-rows-1 overflow-hidden">
+    <>
       <h1 className="sr-only">Agenda hors les murs</h1>
       <EventsList>
         {sortedConversations.map((conversation) => {
@@ -96,7 +95,6 @@ export default async function AgendaPage() {
           );
         })}
       </EventsList>
-      <RefreshOnFocus />
-    </div>
+    </>
   );
 }
