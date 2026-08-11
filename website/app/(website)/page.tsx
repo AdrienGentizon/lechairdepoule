@@ -14,7 +14,7 @@ export default async function Home() {
       <h1 className="sr-only">Agenda des animations</h1>
       <EventsList
         emptyMessage={{
-          heading: "Programme à venir",
+          heading: "Rien de prévu en ce moment...",
           body: "Les prochaines animations seront annoncées bientôt.",
         }}
       >

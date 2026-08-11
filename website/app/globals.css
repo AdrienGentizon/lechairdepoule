@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --animate-swing: swing 2.5s ease-in-out infinite;
+  --animate-swing: swing 2.5s cubic-bezier(0.37, 0, 0.63, 1) infinite;
   --font-body: var(--font-family-body);
   --font-courier: var(--font-family-courier);
   --font-mono: monospace;

@@ -20,8 +20,8 @@ function EmptyMessage({ heading, body }: { heading: string; body: string }) {
         className="animate-swing mx-auto w-10 origin-top"
       />
       <div>
-        <h2 className="text-lg font-bold leading-8">{heading}</h2>
-        <p className="font-light">{body}</p>
+        <h2 className="text-xl font-medium leading-8">{heading}</h2>
+        <p className="font-base text-sm">{body}</p>
       </div>
     </div>
   );
