@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import { Children, HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -17,8 +17,20 @@ function EmptyMessage({ heading, body }: { heading: string; body: string }) {
 export default function EventsList({
   className,
   children,
+  emptyMessage,
   ...props
-}: HTMLAttributes<HTMLUListElement>) {
+}: HTMLAttributes<HTMLUListElement> & {
+  emptyMessage: {
+    heading: string;
+    body: string;
+  };
+}) {
+  if (Children.count(children) === 0) {
+    return (
+      <EmptyMessage heading={emptyMessage.heading} body={emptyMessage.body} />
+    );
+  }
+
   return (
     <ul
       className={cn(
@@ -34,5 +46,3 @@ export default function EventsList({
     </ul>
   );
 }
-
-EventsList.EmptyMessage = EmptyMessage;

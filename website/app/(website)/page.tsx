@@ -12,7 +12,12 @@ export default async function Home() {
   return (
     <Suspense>
       <h1 className="sr-only">Agenda des animations</h1>
-      <EventsList>
+      <EventsList
+        emptyMessage={{
+          heading: "Programme à venir",
+          body: "Les prochaines animations seront annoncées bientôt.",
+        }}
+      >
         {events.map((event) => {
           return <ContentfulEventItem key={event.sys.id} event={event} />;
         })}

@@ -40,7 +40,12 @@ export default async function AgendaPage() {
   return (
     <>
       <h1 className="sr-only">Agenda hors les murs</h1>
-      <EventsList>
+      <EventsList
+        emptyMessage={{
+          heading: "Programme à venir",
+          body: "Les prochaines animations seront annoncées bientôt.",
+        }}
+      >
         {sortedConversations.map((conversation) => {
           return (
             <EventItem
