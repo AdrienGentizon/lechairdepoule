@@ -6,13 +6,13 @@ import { LOCALE, TZ } from "@/lib/date";
 import { Event } from "@/queries/getEvents";
 
 import ContentfulImage from "../ContentfulImage";
-import EventItem from "../PublicEventsList/EventItem";
+import EventItem from "../EventsList/EventItem";
 
 export default function ContentfulEventItem({ event }: { event: Event }) {
   return (
     <EventItem
       key={event.sys.id}
-      variant={event.atPeinePerdue ? "PP" : undefined}
+      variant={event.atPeinePerdue ? "PP" : "CDP"}
       summary={{
         title: event.title,
         description: event.shortDescription,

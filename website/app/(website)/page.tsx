@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import ContentfulEventItem from "@/components/EventsList/ContentfulEventItem";
 import EventsList from "@/components/EventsList/EventsList";
 
 import getEvents from "../../queries/getEvents";
@@ -11,7 +12,11 @@ export default async function Home() {
   return (
     <Suspense>
       <h1 className="sr-only">Agenda des animations</h1>
-      <EventsList events={events} />
+      <EventsList>
+        {events.map((event) => {
+          return <ContentfulEventItem key={event.sys.id} event={event} />;
+        })}
+      </EventsList>
     </Suspense>
   );
 }
