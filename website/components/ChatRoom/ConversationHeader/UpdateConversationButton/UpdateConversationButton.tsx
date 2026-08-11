@@ -21,7 +21,7 @@ export default function UpdateConversationButton({
   me,
   conversation,
 }: {
-  me: Me;
+  me?: Me;
   conversation: Conversation;
 }) {
   const [open, setOpen] = useState(false);
@@ -39,7 +39,7 @@ export default function UpdateConversationButton({
   });
   const isPending = isDeletingCover || isUpdatingDetails || isUpdatingCover;
 
-  if (!me.canUpdateConversation(conversation)) return null;
+  if (!me?.canUpdateConversation(conversation)) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

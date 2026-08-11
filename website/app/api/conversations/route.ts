@@ -85,16 +85,11 @@ export async function GET(req: NextRequest) {
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
-      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
-    }
-
     const conversations = await selectConversations();
 
     logger.flush();
     return NextResponse.json<Omit<Conversation, "messages">[]>(
-      user.role === "admin"
+      user?.role === "admin"
         ? conversations
         : conversations.filter(({ reportedAt }) => !reportedAt),
       { status: 200 }

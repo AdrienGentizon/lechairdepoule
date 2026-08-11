@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { SignInButton } from "@clerk/nextjs";
+
+import { ButtonHTMLAttributes, useState } from "react";
 
 import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Button from "@/components/Button/Button";
 import {
   Dialog,
@@ -20,14 +23,49 @@ import {
 import { Me } from "@/lib/auth/useMe";
 import useReportConversation from "@/lib/forum/useReportConversation";
 import { Conversation } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-export default function ReportConversationButton({
-  me,
-  conversation,
-}: {
-  me: Me;
-  conversation: Conversation;
-}) {
+function ReportIconButton({
+  className,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
+  return (
+    <button
+      type="button"
+      disabled={props.disabled}
+      className={cn(
+        "inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-inherit",
+        className
+      )}
+      {...props}
+    >
+      <Ban className="size-5" />
+      <span className="sr-only">Signaler</span>
+    </button>
+  );
+}
+
+function BannedUserReportButton() {
+  return (
+    <BannedUserDialogTrigger asChild>
+      <ReportIconButton />
+    </BannedUserDialogTrigger>
+  );
+}
+
+function UnauthUserReportButton() {
+  return (
+    <SignInButton mode="modal">
+      <ReportIconButton />
+    </SignInButton>
+  );
+}
+
+function DisabledReportButton() {
+  return <ReportIconButton disabled />;
+}
+
+function ActiveReportButton({ conversation }: { conversation: Conversation }) {
   const router = useRouter();
   const { reportConversation, isPending } = useReportConversation({
     onSuccess: () => {
@@ -38,17 +76,12 @@ export default function ReportConversationButton({
 
   const [open, setOpen] = useState(false);
 
-  if (!me.canReportConversation(conversation)) return null;
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
-              <Ban className="size-5" />
-              <span className="sr-only">Signaler</span>
-            </button>
+            <ReportIconButton />
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent className="bg-foreground text-background border-0">
@@ -92,4 +125,21 @@ export default function ReportConversationButton({
       </DialogContent>
     </Dialog>
   );
+}
+
+export default function ReportConversationButton({
+  me,
+  conversation,
+}: {
+  me?: Me;
+  conversation: Conversation;
+}) {
+  if (me?.bannedAt) return <BannedUserReportButton />;
+
+  if (!me) return <UnauthUserReportButton />;
+
+  if (conversation.reportedAt || conversation.createdBy.id === me.id)
+    return <DisabledReportButton />;
+
+  return <ActiveReportButton conversation={conversation} />;
 }

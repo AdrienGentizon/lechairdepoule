@@ -10,7 +10,7 @@ import { useChatRoom } from "../../ChatRoomContext";
 import SubmitMessageForm from "../../SubmitMessageForm/SubmitMessageForm";
 import ReportMessageButton from "./ReportMessageButton/ReportMessageButton";
 
-function Header({ me, message }: { me: Me; message: Message }) {
+function Header({ me, message }: { me?: Me; message: Message }) {
   return (
     <header className="flex items-center gap-2">
       <div className="flex w-full">
@@ -46,7 +46,7 @@ function ReplyInThreadButton({
   showThread,
   updateShowThread,
 }: {
-  me: Me;
+  me?: Me;
   message: Message;
   conversation: Conversation;
   threadedMessages: (Message & { hasMention: boolean })[];
@@ -84,7 +84,7 @@ function ReplyInThreadButton({
         "flex w-full scroll-mb-10 flex-col gap-2 pl-6 pt-2 sm:pl-12"
       )}
     >
-      {showThread && me.canPostMessage(conversation) && (
+      {showThread && me?.canPostMessage(conversation) && (
         <SubmitMessageForm
           me={me}
           conversation={conversation}
@@ -169,8 +169,6 @@ export default function MessageItem({
     },
     [message.id, focusedMessageId]
   );
-
-  if (!me) return null;
 
   return (
     <li ref={scrollRef} data-message-id={message.id} className="relative">

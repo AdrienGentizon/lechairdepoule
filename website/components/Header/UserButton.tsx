@@ -1,6 +1,8 @@
 "use client";
 
-import { UserCircle } from "lucide-react";
+import { SignInButton } from "@clerk/nextjs";
+
+import { LogIn, UserCircle } from "lucide-react";
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
@@ -31,10 +33,25 @@ function UserButton() {
   );
 }
 
-export default function Fetcher() {
-  const { me } = useMe();
+function SignInPrompt() {
+  return (
+    <SignInButton mode="modal">
+      <button
+        type="button"
+        className="text-foreground cursor-pointer hover:text-purple-300"
+      >
+        <LogIn aria-hidden className="size-8" />
+        <span className="sr-only">Se connecter</span>
+      </button>
+    </SignInButton>
+  );
+}
 
-  if (!me) return null;
+export default function Fetcher() {
+  const { me, isFetching } = useMe();
+
+  if (isFetching) return null;
+  if (!me) return <SignInPrompt />;
 
   return <UserButton />;
 }
