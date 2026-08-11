@@ -23,6 +23,7 @@ type Asset = {
 
 type Cell = {
   id: string;
+  assetId: string;
   scale: number;
   translateX: number;
   translateY: number;
@@ -56,6 +57,8 @@ const Poubelle = {
   id: "27Iyxov9VRIRicNHaOVTT5",
 };
 
+const notFlipables = [Blason];
+
 function getRandomPNG(assets: Asset[]) {
   const random = Math.random();
   if (random < 0.0125) return assets.find(({ sys }) => sys.id === Poubelle.id);
@@ -79,8 +82,14 @@ function makeCells(length: number, assets: Asset[]) {
 
   return rows.map((_row, r) => {
     return cols.map((_col, c) => {
+      const asset = getRandomPNG(assets);
+      const canFlip = !notFlipables.find((notFlipable) => {
+        return asset?.sys.id === notFlipable.id;
+      });
+
       return {
         id: `row-${r}-$col-${c}`,
+        assetId: asset?.sys.id ?? "",
         scale: Math.max(0.5, Math.min(Math.random(), 0.75)),
         translateX:
           Math.random() > 0.5
@@ -90,9 +99,9 @@ function makeCells(length: number, assets: Asset[]) {
           Math.random() > 0.5
             ? Math.floor(50 * Math.random())
             : -1 * Math.floor(50 * Math.random()),
-        flip: Math.random() > 0.5,
+        flip: canFlip && Math.random() > 0.5,
         hidden: c > 2 && c < 6,
-        png: getRandomPNG(assets),
+        png: asset,
       };
     });
   });
