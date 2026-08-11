@@ -3,7 +3,6 @@ import { ReactNode, useState } from "react";
 import { z } from "zod";
 
 import Button from "@/components/Button/Button";
-import Loader from "@/components/Loader/Loader";
 import { Me } from "@/lib/auth/useMe";
 import usePostConversationMessage from "@/lib/forum/usePostConversationMessage";
 import { Conversation } from "@/lib/types";
@@ -11,9 +10,10 @@ import { cn } from "@/lib/utils";
 
 import { useChatRoom } from "../ChatRoomContext";
 import AugmentedTextarea from "./AugmentedTextarea/AugmentedTextarea";
+import SubmitMessageButton from "./SubmitMessageButton";
 
 type Props = {
-  me: Me;
+  me?: Me;
   conversation: Conversation;
   formId: string;
   messageId?: string;
@@ -29,7 +29,7 @@ function SubmitMessageForm({
   conversation,
   formId,
   messageId,
-  autoFocus,
+  autoFocus: autoFocusFromProps,
   buttonLabel,
   placeholder,
   withCloseButton = false,
@@ -41,6 +41,8 @@ function SubmitMessageForm({
   const { activeFormId, setActiveFormId } = useChatRoom();
 
   const isActive = activeFormId === formId;
+  const autoFocus =
+    autoFocusFromProps ?? me?.canPostMessage(conversation) ?? false;
 
   return (
     <form
@@ -78,7 +80,7 @@ function SubmitMessageForm({
             "border-foreground bg-background text-foreground min-h-auto border"
         )}
         rows={isActive ? undefined : 1}
-        autoFocus={autoFocus ?? true}
+        autoFocus={autoFocus}
         value={body}
         placeholder={placeholder}
         options={{
@@ -103,12 +105,11 @@ function SubmitMessageForm({
               Annuler
             </Button>
           )}
-          {me.canPostMessage(conversation) && (
-            <Button type="submit" disabled={isPending}>
-              {buttonLabel}
-              {isPending && <Loader position="relative" />}
-            </Button>
-          )}
+          <SubmitMessageButton
+            me={me}
+            buttonLabel={buttonLabel}
+            isPending={isPending}
+          />
         </div>
       )}
     </form>
@@ -118,7 +119,7 @@ function SubmitMessageForm({
 export default function Wrapper({ me, conversation, ...props }: Props) {
   if (
     conversation.closedToContributionsAt !== null &&
-    conversation.createdBy.id !== me.id
+    conversation.createdBy.id !== me?.id
   )
     return (
       <p className="font-courier rounded-sm border border-neutral-500 bg-neutral-800 px-4 py-2 text-sm text-neutral-400">
@@ -126,8 +127,6 @@ export default function Wrapper({ me, conversation, ...props }: Props) {
         désactivée).
       </p>
     );
-
-  if (!me.canPostMessage(conversation)) return <span>&nbsp;</span>;
 
   return <SubmitMessageForm me={me} conversation={conversation} {...props} />;
 }

@@ -32,14 +32,9 @@ export async function GET(
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
-      logger.withError(new Error("unauthorized")).flush();
-      return NextResponse.json({ error: "non autorisé" }, { status: 401 });
-    }
-
     const conversation = await selectConversationFromId(params.conversationId);
 
-    if (!conversation || (conversation.reportedAt && user.role !== "admin")) {
+    if (!conversation || (conversation.reportedAt && user?.role !== "admin")) {
       logger.withError("not found").flush();
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }

@@ -17,7 +17,7 @@ export default function ChatRoomHeader({
   me,
   conversation,
 }: {
-  me: Me;
+  me?: Me;
   conversation: Conversation;
 }) {
   return (

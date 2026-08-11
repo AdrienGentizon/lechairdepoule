@@ -1,3 +1,5 @@
+import { SignInButton } from "@clerk/nextjs";
+
 import { useState } from "react";
 
 import { Plus } from "lucide-react";
@@ -7,6 +9,7 @@ import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
 import { Conversation } from "@/lib/types";
 
+import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
 import {
   Dialog,
   DialogContent,
@@ -30,8 +33,42 @@ const CONVERSATION_TYPE_LABELS: Record<
   RELEASE: { title: "Nouvelle sortie", submit: "Créer une sortie" },
 };
 
-export default function CreateTopicButton() {
-  const { me } = useMe();
+function Content() {
+  return (
+    <div className="flex w-full items-center justify-center gap-2 font-light uppercase">
+      <Plus className="stroke-[1.5px]" aria-hidden="true" />
+      <span className="flex flex-col items-start">
+        <span className="font-semibold">Créer une discussion</span>
+        <span className="text-muted-foreground text-xs normal-case">
+          Topic · Événement · Sortie
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function BannedUserCreateTopicButton() {
+  return (
+    <BannedUserDialogTrigger className="cursor-pointer px-4 py-3">
+      <Content />
+    </BannedUserDialogTrigger>
+  );
+}
+
+function UnauthUserCreateTopicButton() {
+  return (
+    <SignInButton mode="modal">
+      <button
+        type="button"
+        className="flex cursor-pointer flex-col gap-2 px-4 py-3"
+      >
+        <Content />
+      </button>
+    </SignInButton>
+  );
+}
+
+function MultiStepCreateTopicButton() {
   const router = useRouter();
   const [step, setStep] = useState<
     "HIDDEN" | "CONVERSATION_TYPE" | "CONVERSATION_INPUTS"
@@ -41,8 +78,6 @@ export default function CreateTopicButton() {
   >(undefined);
   const { postConversation, isPending, error } = usePostConversation();
 
-  if (!me?.canCreateConversation()) return null;
-
   return (
     <Dialog
       open={step !== "HIDDEN"}
@@ -51,14 +86,8 @@ export default function CreateTopicButton() {
         setStep("CONVERSATION_TYPE");
       }}
     >
-      <DialogTrigger className="flex w-full cursor-pointer items-center justify-center gap-2 px-4 py-3 font-light uppercase">
-        <Plus className="stroke-[1.5px]" aria-hidden="true" />
-        <span className="flex flex-col items-start">
-          <span className="font-semibold">Créer une discussion</span>
-          <span className="text-muted-foreground text-xs normal-case">
-            Topic · Événement · Sortie
-          </span>
-        </span>
+      <DialogTrigger className="flex cursor-pointer flex-col gap-2 px-4 py-3">
+        <Content />
       </DialogTrigger>
       <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
         <DialogHeader>
@@ -121,4 +150,14 @@ export default function CreateTopicButton() {
       </DialogContent>
     </Dialog>
   );
+}
+
+export default function CreateTopicButton() {
+  const { me } = useMe();
+
+  if (me?.bannedAt) return <BannedUserCreateTopicButton />;
+
+  if (!me) return <UnauthUserCreateTopicButton />;
+
+  return <MultiStepCreateTopicButton />;
 }

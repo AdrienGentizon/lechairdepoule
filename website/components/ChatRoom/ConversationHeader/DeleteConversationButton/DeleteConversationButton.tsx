@@ -19,7 +19,7 @@ export default function DeleteConversationButton({
   me,
   conversation,
 }: {
-  me: Me;
+  me?: Me;
   conversation: Conversation;
 }) {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function DeleteConversationButton({
 
   const [open, setOpen] = useState(false);
 
-  if (!me.canDeleteConversation(conversation)) return null;
+  if (!me?.canDeleteConversation(conversation)) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

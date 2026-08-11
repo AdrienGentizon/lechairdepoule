@@ -23,7 +23,7 @@ function ChatRoom({ conversationId, messageIdFromSearchParams }: Props) {
 
   if (isLoading) return <Loader />;
 
-  if (!conversation || !me)
+  if (!conversation)
     return (
       <p className="self-center text-center font-light">
         Conversation introuvable...

@@ -15,7 +15,7 @@ import { Me } from "@/lib/auth/useMe";
 import useReportMessage from "@/lib/forum/useReportMessage";
 import { Message } from "@/lib/types";
 
-type Props = { me: Me; message: Message };
+type Props = { me?: Me; message: Message };
 
 export default function ReportMessageButton({ me, message }: Props) {
   const [openReport, setOpenReport] = useState(false);
@@ -23,7 +23,7 @@ export default function ReportMessageButton({ me, message }: Props) {
   const { reportMessage, isPending: isPendingReportMessage } =
     useReportMessage();
 
-  if (!me.canReportMessage(message)) return null;
+  if (!me?.canReportMessage(message)) return null;
 
   return (
     <Dialog open={openReport} onOpenChange={setOpenReport}>

@@ -1,4 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/nextjs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { useEffect } from "react";
 
 import { CacheKey, Conversation, Message, User } from "../types";
 
@@ -53,7 +56,6 @@ function getPermissions(user: User) {
     canReportConversation(conversation: SimpleConversation) {
       if (user.bannedAt) return false;
       if (conversation.reportedAt) return false;
-      if (user.role !== "admin") return false;
       if (conversation.createdBy.id === user.id) return false;
       return true;
     },
@@ -67,6 +69,13 @@ function getPermissions(user: User) {
 }
 
 export default function useMe() {
+  const { userId } = useAuth();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["me" satisfies CacheKey] });
+  }, [userId, queryClient]);
+
   const {
     data: me,
     isFetching,
