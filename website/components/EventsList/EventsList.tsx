@@ -1,15 +1,28 @@
 import { Children, HTMLAttributes } from "react";
 
+import Image from "next/image";
+
 import { cn } from "@/lib/utils";
+import Ampoule from "@/public/ampoule.png";
 
 import RefreshOnFocus from "../RefreshOnFocus/RefreshOnFocus";
 import ScrollIntoView from "./ScrollIntoView";
 
 function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   return (
-    <div className="mx-auto max-w-sm bg-black p-4 pt-32 text-center text-white">
-      <h2 className="text-lg font-bold leading-8">{heading}</h2>
-      <p className="font-light">{body}</p>
+    <div className="mx-auto flex max-w-sm flex-col gap-6 bg-black p-4 pt-32 text-center text-white">
+      <Image
+        src={Ampoule}
+        alt="ampoule"
+        width={64}
+        height={107}
+        aria-hidden
+        className="animate-swing mx-auto w-10 origin-top"
+      />
+      <div>
+        <h2 className="text-lg font-bold leading-8">{heading}</h2>
+        <p className="font-light">{body}</p>
+      </div>
     </div>
   );
 }

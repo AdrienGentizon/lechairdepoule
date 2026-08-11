@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --animate-swing: swing 2.5s ease-in-out infinite;
   --font-body: var(--font-family-body);
   --font-courier: var(--font-family-courier);
   --font-mono: monospace;
@@ -117,5 +118,15 @@
   #sentry-feedback {
     --inset: auto auto 0 0;
     --page-margin: 0.5rem;
+  }
+}
+
+@keyframes swing {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
   }
 }
