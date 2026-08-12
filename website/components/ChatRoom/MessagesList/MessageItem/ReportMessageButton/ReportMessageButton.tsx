@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { SignInButton } from "@clerk/nextjs";
+
+import { ButtonHTMLAttributes, useState } from "react";
 
 import { Ban } from "lucide-react";
 
+import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Loader from "@/components/Loader/Loader";
 import {
   Dialog,
@@ -12,27 +15,61 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
+import { isReportableMessage } from "@/lib/forum/permissions";
 import useReportMessage from "@/lib/forum/useReportMessage";
 import { Message } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-type Props = { me?: Me; message: Message };
+type Props = {
+  me?: Me;
+  message: Message;
+};
 
-export default function ReportMessageButton({ me, message }: Props) {
+function ReportMessageButtonContent({
+  className,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "disabled:hover:text-foreground inline-flex h-full cursor-pointer items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 text-xs hover:text-purple-300 disabled:cursor-not-allowed disabled:opacity-75",
+        className
+      )}
+      {...props}
+    >
+      <Ban className="size-3" />
+      Molo molo
+    </button>
+  );
+}
+
+function BannedUserReportMessageButton() {
+  return (
+    <BannedUserDialogTrigger asChild>
+      <ReportMessageButtonContent />
+    </BannedUserDialogTrigger>
+  );
+}
+
+function UnauthUserReportMessageButton() {
+  return (
+    <SignInButton mode="modal">
+      <ReportMessageButtonContent />
+    </SignInButton>
+  );
+}
+
+function ActiveReportMessageButton({ message, me }: Props) {
   const [openReport, setOpenReport] = useState(false);
 
   const { reportMessage, isPending: isPendingReportMessage } =
     useReportMessage();
 
-  if (!me?.canReportMessage(message)) return null;
-
   return (
     <Dialog open={openReport} onOpenChange={setOpenReport}>
-      <DialogTrigger
-        disabled={message.reportedAt !== null || message.user.bannedAt !== null}
-        className="inline-flex h-full cursor-pointer items-center gap-1 rounded-t-sm border-l border-r border-t border-white px-2 text-xs hover:text-purple-300 disabled:hidden"
-      >
-        <Ban className="size-3" />
-        Molo molo
+      <DialogTrigger disabled={!isReportableMessage(message, me)} asChild>
+        <ReportMessageButtonContent />
       </DialogTrigger>
       <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-neutral-500 bg-white p-0 text-black landscape:max-w-96">
         <DialogHeader className="bg-black p-4 text-white">
@@ -64,7 +101,7 @@ export default function ReportMessageButton({ me, message }: Props) {
               });
             }}
           >
-            <span className="relative">
+            <span className="relative inline-flex items-center gap-4">
               Dénoncer un message
               {isPendingReportMessage && <Loader position="relative" />}
             </span>
@@ -82,4 +119,10 @@ export default function ReportMessageButton({ me, message }: Props) {
       </DialogContent>
     </Dialog>
   );
+}
+
+export default function ReportMessageButton({ me, message }: Props) {
+  if (me?.bannedAt) return <BannedUserReportMessageButton />;
+  if (!me) return <UnauthUserReportMessageButton />;
+  return <ActiveReportMessageButton message={message} me={me} />;
 }

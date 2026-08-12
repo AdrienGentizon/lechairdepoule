@@ -84,7 +84,7 @@ function ReplyInThreadButton({
         "flex w-full scroll-mb-10 flex-col gap-2 pl-6 pt-2 sm:pl-12"
       )}
     >
-      {showThread && me?.canPostMessage(conversation) && (
+      {showThread && (
         <SubmitMessageForm
           me={me}
           conversation={conversation}
