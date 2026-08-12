@@ -52,10 +52,11 @@ export default async function selectEvents({
       JOIN public.users u ON e.created_by = u.id
     WHERE
       e.deleted_at IS NULL
-      -- started by the window's upper bound (covers events starting today)
-      AND (${to ?? null}::timestamptz IS NULL OR e.starts_at <= ${to ?? null})
-      -- not finished before the window's lower bound (covers ongoing and finishing-today events)
-      AND COALESCE(e.ends_at, e.starts_at) >= ${from}
+      AND (
+        ${to ?? null}::timestamptz IS NULL
+        OR (e.starts_at AT TIME ZONE e.timezone)::date <= (${to ?? null}::timestamptz AT TIME ZONE 'UTC')::date
+      )
+      AND (COALESCE(e.ends_at, e.starts_at) AT TIME ZONE e.timezone)::date >= (${from}::timestamptz AT TIME ZONE 'UTC')::date
     ORDER BY
       e.starts_at ASC;`
   ).map(
