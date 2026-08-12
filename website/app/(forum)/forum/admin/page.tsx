@@ -3,7 +3,7 @@
 import { Skull } from "lucide-react";
 
 import BanUserTrigger from "@/components/BanUserTrigger/BanUserTrigger";
-import MessageItem from "@/components/ChatRoom/MessagesList/MessageItem/MessageItem";
+import AugmentedMessageItem from "@/components/ChatRoom/MessagesList/MessageItem/MessageItem";
 import ConversationItem from "@/components/ConversationsList/ConversationItem";
 import useMe from "@/lib/auth/useMe";
 import useBannedUsers from "@/lib/forum/useBannedUsers";
@@ -90,12 +90,11 @@ export default function AdminPage() {
           </h2>
           <ul className="flex flex-col gap-6">
             {reportedMessages.map((message) => (
-              <MessageItem
+              <AugmentedMessageItem
                 key={message.id}
                 message={message}
                 conversation={undefined}
                 threadedMessages={[]}
-                variant="admin"
               />
             ))}
           </ul>

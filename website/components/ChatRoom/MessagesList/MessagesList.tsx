@@ -8,7 +8,7 @@ import { formatTimestampAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-import MessageItem from "./MessageItem/MessageItem";
+import AugmentedMessageItem from "./MessageItem/MessageItem";
 
 type Props = {
   conversation: Conversation;
@@ -96,7 +96,7 @@ export default function MessagesList({
             });
 
           return (
-            <MessageItem
+            <AugmentedMessageItem
               key={message.id}
               message={message}
               conversation={conversation}

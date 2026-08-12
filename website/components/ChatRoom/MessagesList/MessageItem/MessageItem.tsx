@@ -1,4 +1,11 @@
-import { ComponentRef, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ComponentRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import TextParser from "@/components/TextParser";
 import useMe, { Me } from "@/lib/auth/useMe";
@@ -38,7 +45,7 @@ function Header({ me, message }: { me?: Me; message: Message }) {
   );
 }
 
-function ReplyInThreadButton({
+function ToggleOrReplyIntoThreadButton({
   me,
   message,
   conversation,
@@ -57,6 +64,7 @@ function ReplyInThreadButton({
   const { activeFormId, setActiveFormId } = useChatRoom();
   const formId = `thread-${message.id}`;
   const isFormActive = activeFormId === formId;
+  const closedToContribution = conversation.closedToContributionsAt !== null;
 
   useEffect(() => {
     if (showThread) {
@@ -77,6 +85,8 @@ function ReplyInThreadButton({
     }
   };
 
+  if (closedToContribution) return null;
+
   return (
     <div
       ref={ref}
@@ -96,19 +106,17 @@ function ReplyInThreadButton({
         />
       )}
 
-      {conversation.closedToContributionsAt === null && (
-        <button
-          type="button"
-          className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
-          onClick={toggleThread}
-        >
-          {showThread || isFormActive
-            ? `Fermer le fil de discussion`
-            : threadedMessages.length > 0
-              ? `Rejoindre le fil de discussion (${threadedMessages.length})`
-              : `Répondre dans le fil de discussion`}
-        </button>
-      )}
+      <button
+        type="button"
+        className="ml-auto cursor-pointer text-xs underline hover:text-purple-300"
+        onClick={toggleThread}
+      >
+        {showThread || isFormActive
+          ? `Fermer le fil de discussion`
+          : threadedMessages.length > 0
+            ? `Rejoindre le fil de discussion (${threadedMessages.length})`
+            : `Répondre dans le fil de discussion`}
+      </button>
     </div>
   );
 }
@@ -130,7 +138,7 @@ function Thread({
     <ul className="flex flex-col gap-2 rounded-sm pl-6 pt-6 sm:pl-12">
       {threadedMessages.map((threadedMessage) => {
         return (
-          <MessageItem
+          <AugmentedMessageItem
             key={`message-${message.id}-thread-${threadedMessage.id}`}
             message={threadedMessage}
             conversation={conversation}
@@ -143,25 +151,17 @@ function Thread({
   );
 }
 
-export default function MessageItem({
+function MessageItem({
   message,
-  conversation,
-  threadedMessages,
-  variant,
   focusedMessageId,
+  me,
+  children,
 }: {
   message: Message;
-  conversation: Conversation | undefined;
-  threadedMessages: (Message & { hasMention: boolean })[];
-  variant?: "admin";
   focusedMessageId?: string;
+  me?: Me;
+  children: ReactNode;
 }) {
-  const { me } = useMe();
-
-  const [showThread, setShowThread] = useState(() =>
-    threadedMessages.some((m) => m.id === focusedMessageId)
-  );
-
   const scrollRef = useCallback(
     (node: ComponentRef<"li"> | null) => {
       if (!node || message.id !== focusedMessageId) return;
@@ -183,27 +183,51 @@ export default function MessageItem({
         >
           <TextParser text={message.body} />
         </p>
-        {conversation && showThread && (
+        {children}
+      </div>
+    </li>
+  );
+}
+
+export default function AugmentedMessageItem({
+  message,
+  conversation,
+  threadedMessages,
+  focusedMessageId,
+}: {
+  message: Message;
+  conversation: Conversation | undefined;
+  threadedMessages: (Message & { hasMention: boolean })[];
+  focusedMessageId?: string;
+}) {
+  const { me } = useMe();
+
+  const [showThread, setShowThread] = useState(() =>
+    threadedMessages.some((m) => m.id === focusedMessageId)
+  );
+
+  const disabledThread = !conversation || message.parentMessageId !== null;
+
+  return (
+    <MessageItem message={message} focusedMessageId={focusedMessageId} me={me}>
+      {!disabledThread && (
+        <>
           <Thread
             conversation={conversation}
             message={message}
             threadedMessages={threadedMessages}
             focusedMessageId={focusedMessageId}
           />
-        )}
-        {conversation &&
-          message.parentMessageId === null &&
-          variant !== "admin" && (
-            <ReplyInThreadButton
-              me={me}
-              message={message}
-              conversation={conversation}
-              threadedMessages={threadedMessages}
-              showThread={showThread}
-              updateShowThread={setShowThread}
-            />
-          )}
-      </div>
-    </li>
+          <ToggleOrReplyIntoThreadButton
+            me={me}
+            message={message}
+            conversation={conversation}
+            threadedMessages={threadedMessages}
+            showThread={showThread}
+            updateShowThread={setShowThread}
+          />
+        </>
+      )}
+    </MessageItem>
   );
 }
