@@ -37,3 +37,21 @@ export const ConversationFormSchema = z.object({
   url: z.string().url("URL invalide").nullish(),
   closedToContributionsAt: NullishDateSchema,
 });
+
+export const EventFormSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Titre obligatoire")
+    .max(100, "Titre trop long (100 caractères max)"),
+  description: z
+    .string()
+    .min(1, "Description obligatoire")
+    .max(500, "Description trop longue (500 caractères max)"),
+  startsAt: z
+    .string()
+    .datetime({ offset: true, message: "Date de début obligatoire" }),
+  endsAt: NullishDateSchema,
+  price: PriceSchema,
+  venue: z.string().nullish(),
+  url: z.string().url("URL invalide").nullish(),
+});

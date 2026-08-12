@@ -79,6 +79,27 @@ export type PublicConversation = Omit<
 
 export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
 
+export type Event = {
+  id: string;
+  title: string;
+  description: string | null;
+  coverUrl: string | null;
+  coverWidth: number | null;
+  coverHeight: number | null;
+  startsAt: string;
+  endsAt: string | null;
+  price: string | null;
+  venue: string | null;
+  url: string | null;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    id: string;
+    pseudo: string;
+    bannedAt: string | null;
+  };
+};
+
 export type UserMention = {
   id: string;
   messageId: string;
