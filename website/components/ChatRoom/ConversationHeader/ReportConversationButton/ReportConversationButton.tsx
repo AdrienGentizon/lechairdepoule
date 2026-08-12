@@ -21,18 +21,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Me } from "@/lib/auth/useMe";
+import { isReportableConversation } from "@/lib/forum/permissions";
 import useReportConversation from "@/lib/forum/useReportConversation";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-function ReportIconButton({
+function ReportConversationButtonContent({
   className,
   ...props
 }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
   return (
     <button
       type="button"
-      disabled={props.disabled}
       className={cn(
         "inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-inherit",
         className
@@ -45,27 +45,29 @@ function ReportIconButton({
   );
 }
 
-function BannedUserReportButton() {
+function BannedUserReportConversationButton() {
   return (
     <BannedUserDialogTrigger asChild>
-      <ReportIconButton />
+      <ReportConversationButtonContent />
     </BannedUserDialogTrigger>
   );
 }
 
-function UnauthUserReportButton() {
+function UnauthUserReportConversationButton() {
   return (
     <SignInButton mode="modal">
-      <ReportIconButton />
+      <ReportConversationButtonContent />
     </SignInButton>
   );
 }
 
-function DisabledReportButton() {
-  return <ReportIconButton disabled />;
-}
-
-function ActiveReportButton({ conversation }: { conversation: Conversation }) {
+function ActiveReportConversationButton({
+  conversation,
+  me,
+}: {
+  conversation: Conversation;
+  me?: Me;
+}) {
   const router = useRouter();
   const { reportConversation, isPending } = useReportConversation({
     onSuccess: () => {
@@ -80,8 +82,11 @@ function ActiveReportButton({ conversation }: { conversation: Conversation }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <ReportIconButton />
+          <DialogTrigger
+            asChild
+            disabled={!isReportableConversation(conversation, me)}
+          >
+            <ReportConversationButtonContent />
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent className="bg-foreground text-background border-0">
@@ -134,12 +139,7 @@ export default function ReportConversationButton({
   me?: Me;
   conversation: Conversation;
 }) {
-  if (me?.bannedAt) return <BannedUserReportButton />;
-
-  if (!me) return <UnauthUserReportButton />;
-
-  if (conversation.reportedAt || conversation.createdBy.id === me.id)
-    return <DisabledReportButton />;
-
-  return <ActiveReportButton conversation={conversation} />;
+  if (me?.bannedAt) return <BannedUserReportConversationButton />;
+  if (!me) return <UnauthUserReportConversationButton />;
+  return <ActiveReportConversationButton conversation={conversation} me={me} />;
 }
