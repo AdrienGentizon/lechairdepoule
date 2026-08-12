@@ -78,6 +78,7 @@ export type ConversationFormValues = {
   description: string;
   startsAt?: string | null;
   endsAt?: string | null;
+  timezone: string;
   price?: string | null;
   venue?: string | null;
   url?: string | null;
@@ -193,6 +194,7 @@ export default function CreateTopicForm({
           endsAt: form.endsAtDate
             ? getDateTime(form.endsAtDate, form.endsAtTime ?? "").toISOString()
             : undefined,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           price: form.price,
           venue: form.venue || undefined,
           url: form.url || undefined,
@@ -218,6 +220,7 @@ export default function CreateTopicForm({
           description: parsed.data.description,
           startsAt: parsed.data.startsAt,
           endsAt: parsed.data.endsAt,
+          timezone: parsed.data.timezone,
           price: parsed.data.price,
           venue: parsed.data.venue,
           url: parsed.data.url,

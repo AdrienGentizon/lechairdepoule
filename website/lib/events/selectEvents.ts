@@ -1,6 +1,12 @@
 import sql from "../db";
 
-export default async function selectConversations() {
+export default async function selectEvents({
+  from,
+  to,
+}: {
+  from: string;
+  to?: string;
+}) {
   return (
     await sql<
       {
@@ -10,51 +16,48 @@ export default async function selectConversations() {
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
-        type: string | null;
-        startsAt: string | null;
+        startsAt: string;
         endsAt: string | null;
-        timezone: string | null;
+        timezone: string;
         price: string | null;
         venue: string | null;
         url: string | null;
-        isPinned: boolean;
-        closedToContributionsAt: string | null;
-        reportedAt: string | null;
         createdAt: string;
+        updatedAt: string;
         userId: string;
         userPseudo: string | null;
         userBannedAt: string | null;
       }[]
     >`
     SELECT
-      c.id::text,
-      c.title,
-      c.description,
-      c.image_url as "coverUrl",
-      c.image_width as "coverWidth",
-      c.image_height as "coverHeight",
-      c.type,
-      em.starts_at::text as "startsAt",
-      em.ends_at::text as "endsAt",
-      em.timezone,
-      em.price AS "price",
-      em.venue AS "venue",
-      em.url AS "url",
-      c.is_pinned as "isPinned",
-      c.closed_to_contributions_at::text as "closedToContributionsAt",
-      c.reported_at::text as "reportedAt",
-      c.created_at::text as "createdAt",
+      e.id::text,
+      e.title,
+      e.description,
+      e.image_url as "coverUrl",
+      e.image_width as "coverWidth",
+      e.image_height as "coverHeight",
+      e.starts_at::text as "startsAt",
+      e.ends_at::text as "endsAt",
+      e.timezone,
+      e.price,
+      e.venue,
+      e.url,
+      e.created_at::text as "createdAt",
+      e.updated_at::text as "updatedAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
       u.banned_at::text as "userBannedAt"
     FROM
-      public.conversations c
-      JOIN public.users u ON c.created_by = u.id
-      LEFT JOIN public.event_metadata em ON em.conversation_id = c.id
+      public.events e
+      JOIN public.users u ON e.created_by = u.id
     WHERE
-      c.deleted_at IS NULL
+      e.deleted_at IS NULL
+      -- started by the window's upper bound (covers events starting today)
+      AND (${to ?? null}::timestamptz IS NULL OR e.starts_at <= ${to ?? null})
+      -- not finished before the window's lower bound (covers ongoing and finishing-today events)
+      AND COALESCE(e.ends_at, e.starts_at) >= ${from}
     ORDER BY
-      c.created_at DESC;`
+      e.starts_at ASC;`
   ).map(
     ({
       userId,
@@ -63,9 +66,9 @@ export default async function selectConversations() {
       coverUrl,
       coverWidth,
       coverHeight,
-      ...conversation
+      ...event
     }) => ({
-      ...conversation,
+      ...event,
       coverUrl,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,

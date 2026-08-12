@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import ContactForm from "@/components/ContactForm/ContactForm";
 import ChairDePoule from "@/components/png/ChairDePoule";
 import PeinePerdue from "@/components/png/PeinePerdue";
-import { LOCALE, TZ, getValidDate } from "@/lib/date";
+import { DANGEROUS_FALLBACK_TZ, LOCALE, getValidDate } from "@/lib/date";
 import getContactPage, {
   ContactPage as ContactPageType,
 } from "@/queries/getContactPage";
@@ -59,7 +59,7 @@ function OpeningHours({
       <div className="flex flex-col justify-center text-center font-mono landscape:min-h-40">
         <Markdown>{pauseData ? pauseData.message : data.openingHours}</Markdown>
         {pauseData && pauseData.endsAt && (
-          <p>{`Réouverture le ${pauseData.endsAt.toLocaleDateString(LOCALE, { timeZone: TZ })}`}</p>
+          <p>{`Réouverture le ${pauseData.endsAt.toLocaleDateString(LOCALE, { timeZone: DANGEROUS_FALLBACK_TZ })}`}</p>
         )}
       </div>
     </div>

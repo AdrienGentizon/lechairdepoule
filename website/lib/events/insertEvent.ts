@@ -11,6 +11,7 @@ function getEventFromRaw(
     coverHeight: string | null;
     starts_at: string;
     ends_at: string | null;
+    timezone: string;
     price: string | null;
     venue: string | null;
     url: string | null;
@@ -28,6 +29,7 @@ function getEventFromRaw(
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
     startsAt: raw.starts_at,
     endsAt: raw.ends_at,
+    timezone: raw.timezone,
     price: raw.price,
     venue: raw.venue,
     url: raw.url,
@@ -44,6 +46,7 @@ export default async function insertEvent({
   user,
   startsAt,
   endsAt,
+  timezone,
   price,
   venue,
   url,
@@ -58,6 +61,7 @@ export default async function insertEvent({
   user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt: string;
   endsAt?: string | null;
+  timezone: string;
   price?: string | null;
   venue?: string | null;
   url?: string | null;
@@ -75,6 +79,7 @@ export default async function insertEvent({
         coverHeight: string | null;
         starts_at: string;
         ends_at: string | null;
+        timezone: string;
         price: string | null;
         venue: string | null;
         url: string | null;
@@ -83,9 +88,9 @@ export default async function insertEvent({
       }[]
     >`
     INSERT INTO
-      events (title, description, image_url, image_width, image_height, starts_at, ends_at, price, venue, url, created_by, created_at, updated_at)
+      events (title, description, image_url, image_width, image_height, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
     VALUES
-      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${startsAt}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null}, ${url ?? null}, ${user.id}, ${now}, ${now})
+      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${startsAt}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null}, ${user.id}, ${now}, ${now})
     RETURNING
       id::text,
       title,
@@ -95,6 +100,7 @@ export default async function insertEvent({
       image_height as "coverHeight",
       starts_at::text,
       ends_at::text,
+      timezone,
       price,
       venue,
       url,

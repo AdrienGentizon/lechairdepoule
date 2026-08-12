@@ -7,6 +7,7 @@ export default async function updateConversationFromId({
   description,
   startsAt,
   endsAt,
+  timezone,
   price,
   venue,
   url,
@@ -18,6 +19,7 @@ export default async function updateConversationFromId({
   description: string;
   startsAt: string | null;
   endsAt: string | null;
+  timezone: string;
   price: string | null;
   venue: string | null;
   url: string | null;
@@ -68,22 +70,24 @@ export default async function updateConversationFromId({
         {
           startsAt: string | null;
           endsAt: string | null;
+          timezone: string;
           price: string | null;
           venue: string | null;
           url: string | null;
         }[]
       >`
-        INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue, url)
-        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${price}, ${venue}, ${url})
+        INSERT INTO event_metadata (conversation_id, starts_at, ends_at, timezone, price, venue, url)
+        VALUES (${conversationId}, ${startsAt}, ${endsAt}, ${timezone}, ${price}, ${venue}, ${url})
         ON CONFLICT (conversation_id) DO UPDATE
-          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, price = EXCLUDED.price, venue = EXCLUDED.venue, url = EXCLUDED.url
-        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", price AS "price", venue AS "venue", url AS "url"`
+          SET starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at, timezone = EXCLUDED.timezone, price = EXCLUDED.price, venue = EXCLUDED.venue, url = EXCLUDED.url
+        RETURNING starts_at::text AS "startsAt", ends_at::text AS "endsAt", timezone, price AS "price", venue AS "venue", url AS "url"`
     ).at(0);
 
     return {
       ...updatedConversation,
       startsAt: metadata?.startsAt ?? null,
       endsAt: metadata?.endsAt ?? null,
+      timezone: metadata?.timezone ?? timezone,
       price: metadata?.price ?? null,
       venue: metadata?.venue ?? null,
       url: metadata?.url ?? null,

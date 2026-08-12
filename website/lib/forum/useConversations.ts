@@ -9,7 +9,7 @@ import z from "zod";
 import { usePusher } from "@/contexts/PusherProvider";
 
 import useMe from "../auth/useMe";
-import { getDateSpan, getMonthSpan, getWeekSpan } from "../date";
+import { getDateSpanUTC, getMonthSpanUTC, getWeekSpanUTC } from "../date";
 import { ConversationTypeEnum } from "../schemas";
 import { CacheKey, Conversation, SimpleConversation } from "../types";
 
@@ -141,37 +141,37 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
     {
       label: "Passés",
       from: null,
-      to: getDateSpan().from,
-      active: isActiveTimeframe(null, getDateSpan().from, from, to),
+      to: getDateSpanUTC().from,
+      active: isActiveTimeframe(null, getDateSpanUTC().from, from, to),
     },
     {
       label: "Cette semaine",
-      from: getWeekSpan().monday,
-      to: getWeekSpan().sunday,
+      from: getWeekSpanUTC().monday,
+      to: getWeekSpanUTC().sunday,
       active: isActiveTimeframe(
-        getWeekSpan().monday,
-        getWeekSpan().sunday,
+        getWeekSpanUTC().monday,
+        getWeekSpanUTC().sunday,
         from,
         to
       ),
     },
     {
       label: "Ce mois ci",
-      from: getMonthSpan().firstDay,
-      to: getMonthSpan().lastDay,
+      from: getMonthSpanUTC().firstDay,
+      to: getMonthSpanUTC().lastDay,
       active: isActiveTimeframe(
-        getMonthSpan().firstDay,
-        getMonthSpan().lastDay,
+        getMonthSpanUTC().firstDay,
+        getMonthSpanUTC().lastDay,
         from,
         to
       ),
     },
     {
       label: "Futurs",
-      from: new Date(getMonthSpan().lastDay.getTime() + 1),
+      from: new Date(getMonthSpanUTC().lastDay.getTime() + 1),
       to: null,
       active: isActiveTimeframe(
-        new Date(getMonthSpan().lastDay.getTime() + 1),
+        new Date(getMonthSpanUTC().lastDay.getTime() + 1),
         null,
         from,
         to

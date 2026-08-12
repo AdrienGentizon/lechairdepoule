@@ -20,6 +20,7 @@ function getConversationFromRaw(
   metadata: {
     startsAt: string | null;
     endsAt: string | null;
+    timezone: string;
     price: string | null;
     venue: string | null;
     url: string | null;
@@ -37,6 +38,7 @@ function getConversationFromRaw(
     closedToContributionsAt: raw.closed_to_contributions_at,
     startsAt: metadata.startsAt,
     endsAt: metadata.endsAt,
+    timezone: metadata.timezone,
     price: metadata.price,
     venue: metadata.venue,
     url: metadata.url,
@@ -55,6 +57,7 @@ export default async function insertConversation({
   user,
   startsAt,
   endsAt,
+  timezone,
   price,
   venue,
   url,
@@ -71,6 +74,7 @@ export default async function insertConversation({
   user: { id: string; pseudo: string; bannedAt: string | null };
   startsAt?: string | null;
   endsAt?: string | null;
+  timezone: string;
   price?: string | null;
   venue?: string | null;
   url?: string | null;
@@ -118,8 +122,8 @@ export default async function insertConversation({
     }
 
     await sql`
-      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, price, venue, url)
-      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${price ?? null}, ${venue ?? null}, ${url ?? null})`;
+      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, timezone, price, venue, url)
+      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null})`;
 
     return getConversationFromRaw(
       insertedConversation,
@@ -127,6 +131,7 @@ export default async function insertConversation({
       {
         startsAt: startsAt ?? null,
         endsAt: endsAt ?? null,
+        timezone,
         price: price ?? null,
         venue: venue ?? null,
         url: url ?? null,

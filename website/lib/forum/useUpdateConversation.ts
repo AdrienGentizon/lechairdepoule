@@ -17,6 +17,7 @@ export default function useUpdateConversation(options?: {
       description,
       startsAt,
       endsAt,
+      timezone,
       price,
       venue,
       url,
@@ -27,6 +28,7 @@ export default function useUpdateConversation(options?: {
       description: string;
       startsAt?: string | null;
       endsAt?: string | null;
+      timezone: string;
       price?: string | null;
       venue?: string | null;
       url?: string | null;
@@ -37,6 +39,7 @@ export default function useUpdateConversation(options?: {
       body.set("description", description);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
+      body.set("timezone", timezone);
       if (price) body.set("price", price);
       if (venue) body.set("venue", venue);
       if (url) body.set("url", url);

@@ -49,6 +49,7 @@ export type Conversation = {
   type: ({} & string) | z.infer<typeof ConversationTypeEnum> | null;
   startsAt?: string | null;
   endsAt?: string | null;
+  timezone: string | null;
   price: string | null;
   venue: string | null;
   url: string | null;
@@ -88,6 +89,7 @@ export type Event = {
   coverHeight: number | null;
   startsAt: string;
   endsAt: string | null;
+  timezone: string;
   price: string | null;
   venue: string | null;
   url: string | null;
@@ -96,7 +98,6 @@ export type Event = {
   createdBy: {
     id: string;
     pseudo: string;
-    bannedAt: string | null;
   };
 };
 
@@ -122,7 +123,9 @@ export type CacheKey =
   | "reported-messages"
   | "users"
   | "banned-users"
-  | "cachedAgenda";
+  | "cachedAgenda"
+  | "cachedEvents"
+  | `events-${string}`;
 
 export type BroadCastKey =
   | "new_message"

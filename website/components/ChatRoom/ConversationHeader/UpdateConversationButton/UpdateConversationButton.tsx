@@ -87,6 +87,7 @@ export default function UpdateConversationButton({
               description: values.description,
               startsAt: values.startsAt,
               endsAt: values.endsAt,
+              timezone: values.timezone,
               price: values.price,
               venue: values.venue,
               url: values.url,

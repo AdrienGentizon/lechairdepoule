@@ -252,6 +252,7 @@ export async function PATCH(
       description: parsedInputs.data.description,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      timezone: parsedInputs.data.timezone,
       price: parsedInputs.data.price,
       venue: parsedInputs.data.venue ?? null,
       url: parsedInputs.data.url ?? null,
