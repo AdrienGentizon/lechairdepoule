@@ -10,6 +10,7 @@ export default async function selectConversationFromId(conversationId: string) {
         type: string | null;
         startsAt: string | null;
         endsAt: string | null;
+        timezone: string | null;
         price: string | null;
         venue: string | null;
         url: string | null;
@@ -31,6 +32,7 @@ export default async function selectConversationFromId(conversationId: string) {
         c.type,
         em.starts_at::text AS "startsAt",
         em.ends_at::text AS "endsAt",
+        em.timezone,
         em.price AS "price",
         em.venue AS "venue",
         em.url AS "url",

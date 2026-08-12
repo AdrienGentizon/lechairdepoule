@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      timezone: parsedInputs.data.timezone,
       price: parsedInputs.data.price,
       venue: parsedInputs.data.venue,
       url: parsedInputs.data.url,

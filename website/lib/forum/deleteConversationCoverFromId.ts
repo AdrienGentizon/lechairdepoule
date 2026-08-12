@@ -55,6 +55,7 @@ export default async function deleteConversationCoverFromId({
         {
           startsAt: string | null;
           endsAt: string | null;
+          timezone: string;
           price: string | null;
           venue: string | null;
           url: string | null;
@@ -63,6 +64,7 @@ export default async function deleteConversationCoverFromId({
         SELECT
           starts_at::text AS "startsAt",
           ends_at::text AS "endsAt",
+          timezone,
           price AS "price",
           venue AS "venue",
           url AS "url"
@@ -74,6 +76,7 @@ export default async function deleteConversationCoverFromId({
       ...deletedConversation,
       startsAt: dates?.startsAt ?? null,
       endsAt: dates?.endsAt ?? null,
+      timezone: dates?.timezone ?? null,
       price: dates?.price ?? null,
       venue: dates?.venue ?? null,
       url: dates?.url ?? null,

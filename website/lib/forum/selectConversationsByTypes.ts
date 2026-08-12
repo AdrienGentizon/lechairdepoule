@@ -3,7 +3,8 @@ import { Conversation } from "../types";
 
 export default async function selectConversationsByTypes(
   types: Conversation["type"][],
-  from: Date
+  from: string,
+  to?: string
 ) {
   return (
     await sql<
@@ -17,6 +18,7 @@ export default async function selectConversationsByTypes(
         type: string | null;
         startsAt: string;
         endsAt: string | null;
+        timezone: string | null;
         price: string | null;
         venue: string | null;
         url: string | null;
@@ -35,6 +37,7 @@ export default async function selectConversationsByTypes(
       c.type,
       em.starts_at::text as "startsAt",
       em.ends_at::text as "endsAt",
+      em.timezone,
       em.price::text as "price",
       em.venue::text as "venue",
       em.url AS "url",
@@ -48,7 +51,10 @@ export default async function selectConversationsByTypes(
     WHERE
       c.deleted_at IS NULL
       AND c.type in ${sql(types)}
-      AND em.starts_at >= ${from}
+      -- started by the window's upper bound (covers events starting today)
+      AND (${to ?? null}::timestamptz IS NULL OR em.starts_at <= ${to ?? null})
+      -- not finished before the window's lower bound (covers ongoing and finishing-today events)
+      AND COALESCE(em.ends_at, em.starts_at) >= ${from}
       AND c.reported_at is NULL
       AND u.banned_at is NULL
     ORDER BY

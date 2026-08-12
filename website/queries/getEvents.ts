@@ -1,9 +1,10 @@
 import { fetchCollectionGraphQL } from "@/lib/contentful";
+import { DANGEROUS_FALLBACK_TZ } from "@/lib/date";
 
 // type ExpectedDate =
 //   `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 
-export type Event = {
+type RawEvent = {
   sys: { id: string };
   title: string;
   shortDescription?: string;
@@ -62,7 +63,7 @@ function getEndingDate() {
 export default async function getEvents() {
   return (
     (
-      await fetchCollectionGraphQL<Event>(
+      await fetchCollectionGraphQL<RawEvent>(
         "eventCollection",
         `query {
     eventCollection(where: {date_gte: "${getStartingDate().toISOString()}", date_lte : "${getEndingDate().toISOString()}"} ,order: date_DESC) {
@@ -95,6 +96,7 @@ export default async function getEvents() {
       return {
         ...event,
         date: new Date(new Date(event.date).toUTCString()),
+        timezone: DANGEROUS_FALLBACK_TZ,
       };
     })
     .sort((a, b) => {

@@ -1,13 +1,19 @@
 import type { ReactNode } from "react";
 
 import PeinePerdue from "@/components/png/PeinePerdue";
-import { LOCALE, TZ, getEventTime } from "@/lib/date";
+import { LOCALE, getEventTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
 
 import EventUrl from "../ConversationsList/EventUrl";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
-function Datestamp({ startsAt }: { startsAt: string }) {
+function Datestamp({
+  startsAt,
+  timezone,
+}: {
+  startsAt: string;
+  timezone: string;
+}) {
   return (
     <time
       aria-hidden
@@ -16,19 +22,19 @@ function Datestamp({ startsAt }: { startsAt: string }) {
     >
       <span className="text-xs font-light leading-none">
         {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: TZ,
+          timeZone: timezone,
           weekday: "short",
         })}
       </span>
       <span className="text-4xl font-black leading-none">
         {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: TZ,
+          timeZone: timezone,
           day: "2-digit",
         })}
       </span>
       <span className="text-sm font-black leading-none">
         {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: TZ,
+          timeZone: timezone,
           month: "short",
         })}
       </span>
@@ -66,14 +72,16 @@ function SummaryDescription({
 
 function TimetableAndEntryFee({
   startsAt,
+  timezone,
   price,
 }: {
   startsAt: string;
+  timezone: string;
   price: string | null;
 }) {
   return (
     <span className="flex items-center leading-none text-purple-300">
-      <time dateTime={startsAt}>{getEventTime(startsAt)}</time>
+      <time dateTime={startsAt}>{getEventTime(startsAt, timezone)}</time>
 
       {price && <>&nbsp;&middot;&nbsp;</>}
       {price && <span className="leading-none">{price}</span>}
@@ -87,6 +95,7 @@ export default function EventItem({
   url,
   details,
   startsAt,
+  timezone,
   endsAt,
   price,
   aria,
@@ -97,6 +106,7 @@ export default function EventItem({
   url: string | null;
   details: ReactNode;
   startsAt: string;
+  timezone: string;
   endsAt?: string | null;
   price: string | null;
   aria: {
@@ -114,7 +124,7 @@ export default function EventItem({
       >
         <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
           <span className="sr-only">{aria.title}</span>
-          <Datestamp startsAt={startsAt} />
+          <Datestamp startsAt={startsAt} timezone={timezone} />
           <div
             aria-hidden
             className="flex flex-col justify-center gap-1.5 leading-none"
@@ -127,7 +137,11 @@ export default function EventItem({
                 variant={variant}
               />
               {showTimetableAndEntryFee && (
-                <TimetableAndEntryFee startsAt={startsAt} price={price} />
+                <TimetableAndEntryFee
+                  startsAt={startsAt}
+                  timezone={timezone}
+                  price={price}
+                />
               )}
             </div>
           </div>

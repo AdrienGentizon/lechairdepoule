@@ -68,6 +68,7 @@ export default async function updateConversationCoverFromId({
         {
           startsAt: string | null;
           endsAt: string | null;
+          timezone: string;
           price: string | null;
           venue: string | null;
           url: string | null;
@@ -76,6 +77,7 @@ export default async function updateConversationCoverFromId({
         SELECT
           starts_at::text AS "startsAt",
           ends_at::text AS "endsAt",
+          timezone,
           price AS "price",
           venue AS "venue",
           url AS "url"
@@ -88,6 +90,7 @@ export default async function updateConversationCoverFromId({
       previousCoverUrl,
       startsAt: metadata?.startsAt ?? null,
       endsAt: metadata?.endsAt ?? null,
+      timezone: metadata?.timezone ?? null,
       price: metadata?.price ?? null,
       venue: metadata?.venue ?? null,
       url: metadata?.url ?? null,

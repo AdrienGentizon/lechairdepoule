@@ -1,12 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
+import z from "zod";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
 import insertEvent from "@/lib/events/insertEvent";
+import selectEvents from "@/lib/events/selectEvents";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { EventFormSchema } from "@/lib/schemas";
 import { Event } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
+
+export async function GET(req: NextRequest) {
+  const logger = getRequestLogger(req);
+  try {
+    const { searchParams } = new URL(req.url);
+    const parsedSearchParams = z
+      .object({
+        from: z.string().datetime({ offset: true }),
+        to: z.string().datetime({ offset: true }).optional(),
+      })
+      .safeParse({
+        from: searchParams.get("from"),
+        to: searchParams.get("to") ?? undefined,
+      });
+
+    if (!parsedSearchParams.success) {
+      logger.withError(parsedSearchParams.error).flush();
+      return NextResponse.json(
+        { error: "fenêtre temporelle invalide" },
+        { status: 400 }
+      );
+    }
+
+    const events = await selectEvents(parsedSearchParams.data);
+
+    logger.flush();
+    return NextResponse.json<Event[]>(events, { status: 200 });
+  } catch (error) {
+    logger.withError(error).flush();
+    return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   const logger = getRequestLogger(req);
@@ -53,6 +87,7 @@ export async function POST(req: NextRequest) {
       cover,
       startsAt: parsedInputs.data.startsAt,
       endsAt: parsedInputs.data.endsAt,
+      timezone: parsedInputs.data.timezone,
       price: parsedInputs.data.price,
       venue: parsedInputs.data.venue,
       url: parsedInputs.data.url,

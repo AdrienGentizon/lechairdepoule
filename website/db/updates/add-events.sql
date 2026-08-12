@@ -7,6 +7,7 @@ CREATE TABLE events (
     image_height INTEGER,
     starts_at TIMESTAMPTZ NOT NULL,
     ends_at TIMESTAMPTZ,
+    timezone TEXT NOT NULL,
     price TEXT,
     venue TEXT,
     url TEXT,

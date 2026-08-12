@@ -17,6 +17,7 @@ export default function usePostConversation() {
       cover,
       startsAt,
       endsAt,
+      timezone,
       price,
       venue,
       url,
@@ -28,6 +29,7 @@ export default function usePostConversation() {
       cover?: File;
       startsAt?: string | null;
       endsAt?: string | null;
+      timezone: string;
       price?: string | null;
       venue?: string | null;
       url?: string | null;
@@ -39,6 +41,7 @@ export default function usePostConversation() {
       body.set("type", type);
       if (startsAt) body.set("startsAt", startsAt);
       if (endsAt) body.set("endsAt", endsAt);
+      body.set("timezone", timezone);
       if (price) body.set("price", price);
       if (venue) body.set("venue", venue);
       if (url) body.set("url", url);

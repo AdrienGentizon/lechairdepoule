@@ -2,13 +2,17 @@
 
 import Markdown from "react-markdown";
 
-import { LOCALE, TZ } from "@/lib/date";
-import { Event } from "@/queries/getEvents";
+import { LOCALE } from "@/lib/date";
+import getEvents from "@/queries/getEvents";
 
 import ContentfulImage from "../ContentfulImage";
 import EventItem from "../EventsList/EventItem";
 
-export default function ContentfulEventItem({ event }: { event: Event }) {
+export default function ContentfulEventItem({
+  event,
+}: {
+  event: Awaited<ReturnType<typeof getEvents>>[number];
+}) {
   return (
     <EventItem
       key={event.sys.id}
@@ -18,6 +22,7 @@ export default function ContentfulEventItem({ event }: { event: Event }) {
         description: event.shortDescription,
       }}
       startsAt={event.date.toISOString()}
+      timezone={event.timezone}
       image={
         event.picture && (
           <ContentfulImage
@@ -37,7 +42,7 @@ export default function ContentfulEventItem({ event }: { event: Event }) {
         title: [
           event.title,
           event.date.toLocaleDateString(LOCALE, {
-            timeZone: TZ,
+            timeZone: event.timezone,
             weekday: "long",
             day: "numeric",
             month: "long",

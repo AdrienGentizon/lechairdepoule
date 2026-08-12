@@ -48,9 +48,9 @@ export default function ChatRoomHeader({
             <span className="inline-flex items-center gap-2 text-sm font-light leading-none">
               {conversation.startsAt && <Clock className="size-4" />}
               <span>
-                {conversation.startsAt && (
+                {conversation.startsAt && conversation.timezone && (
                   <time dateTime={conversation.startsAt ?? undefined}>
-                    {getEventTime(conversation.startsAt)}
+                    {getEventTime(conversation.startsAt, conversation.timezone)}
                   </time>
                 )}
                 {conversation.startsAt && conversation.price && <>&middot;</>}
