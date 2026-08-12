@@ -17,13 +17,11 @@ function getPermissions(user: User) {
       return true;
     },
     canReportMessage(message: Message) {
-      if (user.bannedAt) return false;
       if (message.reportedAt) return false;
       if (message.user.id === user.id) return false;
       return true;
     },
     canPostMessage(conversation: SimpleConversation) {
-      if (user.bannedAt) return false;
       if (conversation.reportedAt) return false;
       if (
         conversation.closedToContributionsAt &&
