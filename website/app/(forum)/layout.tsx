@@ -8,7 +8,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
 import AdminButton from "@/components/Header/AdminButton";
 import UserButton from "@/components/Header/UserButton";
-import ForumProvider from "@/contexts/ForumProvider";
+import UpdateUserPseudoDialog from "@/components/UpdateUserPseudoDialog/UpdateUserPseudoDialog";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import UIProvider from "@/contexts/UIProvider";
@@ -29,13 +29,12 @@ export default async function ForumLayout({
           <PusherProvider>
             <ReactQueryProvider>
               <UIProvider>
-                <ForumProvider>
-                  {children}
-                  <AbsoluteButtonGroup>
-                    <AdminButton />
-                    <UserButton />
-                  </AbsoluteButtonGroup>
-                </ForumProvider>
+                {children}
+                <AbsoluteButtonGroup>
+                  <AdminButton />
+                  <UserButton />
+                </AbsoluteButtonGroup>
+                <UpdateUserPseudoDialog />
               </UIProvider>
             </ReactQueryProvider>
           </PusherProvider>
