@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useEffect } from "react";
 
-import { CacheKey, Conversation, Message, User } from "../types";
+import { CacheKey, Conversation, User } from "../types";
 
 type SimpleConversation = Omit<Conversation, "messages">;
 
@@ -14,11 +14,6 @@ function getPermissions(user: User) {
       if (user.bannedAt) return false;
       if (user.role !== "admin") return false;
       if (user.id === targetUser.id) return false;
-      return true;
-    },
-    canReportMessage(message: Message) {
-      if (message.reportedAt) return false;
-      if (message.user.id === user.id) return false;
       return true;
     },
     canPostMessage(conversation: SimpleConversation) {
@@ -42,32 +37,11 @@ function getPermissions(user: User) {
       if (conversation.createdBy.id !== user.id) return false;
       return true;
     },
-    canCreateConversation() {
-      if (user.bannedAt) return false;
-      return true;
-    },
-    canListReportedMessages() {
-      if (user.bannedAt) return false;
-      if (user.role !== "admin") return false;
-      return true;
-    },
-    canReportConversation(conversation: SimpleConversation) {
-      if (user.bannedAt) return false;
-      if (conversation.reportedAt) return false;
-      if (conversation.createdBy.id === user.id) return false;
-      return true;
-    },
-    canBanMessageUser(message: Message) {
-      if (user.role !== "admin") return false;
-      if (message.user.id === user.id) return false;
-      if (message.user.bannedAt) return false;
-      return true;
-    },
   };
 }
 
 export default function useMe() {
-  const { userId } = useAuth();
+  const { isLoaded, userId } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -80,6 +54,7 @@ export default function useMe() {
     error,
   } = useQuery({
     queryKey: ["me" satisfies CacheKey],
+    enabled: isLoaded && userId !== null && userId !== undefined,
     queryFn: async () => {
       const response = await fetch(`/api/me`, {
         method: "GET",
