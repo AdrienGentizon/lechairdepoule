@@ -62,18 +62,40 @@ CREATE TABLE messages (
 );
 
 CREATE TABLE notifications (
-  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  created_at TIMESTAMPTZ NOT NULL,
-  read_at TIMESTAMPTZ,
-  message_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
-  type TEXT NOT NULL DEFAULT 'mention'
-  CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT message_fk FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
-  CONSTRAINT mention_uq UNIQUE(message_id, user_id)
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL,
+    read_at TIMESTAMPTZ,
+    message_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    type TEXT NOT NULL DEFAULT 'mention'
+    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT message_fk FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+    CONSTRAINT mention_uq UNIQUE(message_id, user_id)
 );
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id, read_at) WHERE read_at IS NULL;
+
+CREATE TABLE events (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    image_width INTEGER,
+    image_height INTEGER,
+    starts_at TIMESTAMPTZ NOT NULL,
+    ends_at TIMESTAMPTZ,
+    price TEXT,
+    venue TEXT,
+    url TEXT,
+    created_by INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
+    conversation_id INTEGER,
+    CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE RESTRICT,
+    CONSTRAINT conversation_uq UNIQUE(conversation_id)
+);
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- CREATE INDEX trgm_idx_gist ON users USING GIST (pseudo gist_trgm_ops);
