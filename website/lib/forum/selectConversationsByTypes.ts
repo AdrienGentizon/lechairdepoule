@@ -1,4 +1,5 @@
 import sql from "../db";
+import { DANGEROUS_FALLBACK_TZ } from "../date";
 import { Conversation } from "../types";
 
 export default async function selectConversationsByTypes(
@@ -51,10 +52,13 @@ export default async function selectConversationsByTypes(
     WHERE
       c.deleted_at IS NULL
       AND c.type in ${sql(types)}
-      -- started by the window's upper bound (covers events starting today)
-      AND (${to ?? null}::timestamptz IS NULL OR em.starts_at <= ${to ?? null})
-      -- not finished before the window's lower bound (covers ongoing and finishing-today events)
-      AND COALESCE(em.ends_at, em.starts_at) >= ${from}
+      -- event's own local start day (fallback while timezone is nullable) within the window's upper bound day, if any
+      AND (
+        ${to ?? null}::timestamptz IS NULL
+        OR (em.starts_at AT TIME ZONE COALESCE(em.timezone, ${DANGEROUS_FALLBACK_TZ}))::date <= (${to ?? null}::timestamptz AT TIME ZONE 'UTC')::date
+      )
+      -- event's own local end (or start) day not before the window's lower bound day
+      AND (COALESCE(em.ends_at, em.starts_at) AT TIME ZONE COALESCE(em.timezone, ${DANGEROUS_FALLBACK_TZ}))::date >= (${from}::timestamptz AT TIME ZONE 'UTC')::date
       AND c.reported_at is NULL
       AND u.banned_at is NULL
     ORDER BY
