@@ -22,3 +22,12 @@ button always rendered and active but outcome differs on user status
 - unauth user: sign-in flow
 - happy path
 - disabled: conversation already reported or owned by user
+
+## Report message
+
+button always rendered and active but outcome differs on user status
+
+- banned user: reach moderation team flow
+- unauth user: sign-in flow
+- happy path
+- disabled: message already reported or owned by user
