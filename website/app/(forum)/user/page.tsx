@@ -134,7 +134,10 @@ function UserPage({ me }: { me: User }) {
         </Link>
       </section>
       <div className="pt-4">
-        <Button className="w-full" onClick={() => signOut()}>
+        <Button
+          className="w-full"
+          onClick={() => signOut({ redirectUrl: "/forum" })}
+        >
           Se déconnecter
         </Button>
       </div>

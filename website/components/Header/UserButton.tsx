@@ -2,13 +2,11 @@
 
 import { SignInButton } from "@clerk/nextjs";
 
-import { UserCircle } from "lucide-react";
+import { UserCircle, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
-
-import Button from "../Button/Button";
 
 function UserButton() {
   const { unread } = useUserNotifications();
@@ -38,12 +36,16 @@ function UserButton() {
 function UnauthUserButton() {
   return (
     <SignInButton mode="modal">
-      <Button
+      <button
         type="button"
-        className="text-foreground cursor-pointer hover:text-purple-300"
+        className="scale-100 cursor-pointer rounded-full border-2 border-transparent p-1 transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900"
       >
-        Se connecter
-      </Button>
+        <UserCircle2
+          aria-hidden
+          className="bg-background b size-8 rounded-full stroke-purple-300 stroke-[1.5]"
+        />
+        <span className="sr-only">Se connecter</span>
+      </button>
     </SignInButton>
   );
 }

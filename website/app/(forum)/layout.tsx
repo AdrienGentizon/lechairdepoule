@@ -9,6 +9,7 @@ import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
 import AdminButton from "@/components/Header/AdminButton";
 import UserButton from "@/components/Header/UserButton";
 import UpdateUserPseudoDialog from "@/components/UpdateUserPseudoDialog/UpdateUserPseudoDialog";
+import WelcomeBanner from "@/components/WelcomeBanner/WelcomeBanner";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import UIProvider from "@/contexts/UIProvider";
@@ -34,6 +35,7 @@ export default async function ForumLayout({
                   <AdminButton />
                   <UserButton />
                 </AbsoluteButtonGroup>
+                <WelcomeBanner />
                 <UpdateUserPseudoDialog />
               </UIProvider>
             </ReactQueryProvider>
