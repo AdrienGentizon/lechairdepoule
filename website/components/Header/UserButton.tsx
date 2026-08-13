@@ -2,11 +2,13 @@
 
 import { SignInButton } from "@clerk/nextjs";
 
-import { LogIn, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
+
+import Button from "../Button/Button";
 
 function UserButton() {
   const { unread } = useUserNotifications();
@@ -33,16 +35,15 @@ function UserButton() {
   );
 }
 
-function SignInPrompt() {
+function UnauthUserButton() {
   return (
     <SignInButton mode="modal">
-      <button
+      <Button
         type="button"
         className="text-foreground cursor-pointer hover:text-purple-300"
       >
-        <LogIn aria-hidden className="size-8" />
-        <span className="sr-only">Se connecter</span>
-      </button>
+        Se connecter
+      </Button>
     </SignInButton>
   );
 }
@@ -51,7 +52,7 @@ export default function Fetcher() {
   const { me, isFetching } = useMe();
 
   if (isFetching) return null;
-  if (!me) return <SignInPrompt />;
+  if (!me) return <UnauthUserButton />;
 
   return <UserButton />;
 }

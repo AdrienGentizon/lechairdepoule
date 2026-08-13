@@ -25,6 +25,7 @@ export default async function insertUser({
       }[]
     >`INSERT INTO public.users (email, auth_provider, auth_id, created_at)
         VALUES(${email}, ${auth.provider}, ${auth.userId}, ${new Date().toUTCString()})
+      ON CONFLICT (auth_id) DO NOTHING
       RETURNING
         id::text,
         email,
