@@ -6,7 +6,42 @@ import { NextRequest } from "next/server";
 
 import clerk from "../clerk";
 import { getRequestLogger } from "../getRequestLogger";
+import insertUser from "./insertUser";
 import { selectUserFromAuthId } from "./selectUserFromId";
+
+async function insertNotFoundButAuthenticatedUser(
+  userIdFromAuthProvider: string
+): Promise<
+  | { success: true; data: Awaited<ReturnType<typeof insertUser>> }
+  | { success: false; error: string }
+> {
+  const clerkUser = await clerk.users.getUser(userIdFromAuthProvider);
+  const email = clerkUser.emailAddresses.find(
+    ({ id }) => id === clerkUser.primaryEmailAddressId
+  )?.emailAddress;
+  if (!email) {
+    return {
+      success: false,
+      error: `no primary email for clerk user: ${userIdFromAuthProvider}`,
+    };
+  }
+
+  const insertedUser = await insertUser({
+    email,
+    auth: { provider: "clerk", userId: userIdFromAuthProvider },
+  });
+  if (!insertedUser) {
+    return {
+      success: false,
+      error: `cannot insert user: ${userIdFromAuthProvider}`,
+    };
+  }
+
+  return {
+    success: true,
+    data: insertedUser,
+  };
+}
 
 const getUserCached = cache(async (req: NextRequest) => {
   const logger = getRequestLogger(req);
@@ -35,10 +70,14 @@ const getUserCached = cache(async (req: NextRequest) => {
       provider: "clerk",
       userId: token.userId,
     });
-    if (!user) {
-      logger.withError(`user not found: ${token.userId}`).flush();
+    if (user) return user;
+
+    const newUser = await insertNotFoundButAuthenticatedUser(token.userId);
+
+    if (!newUser.success) {
+      throw new Error(newUser.error);
     }
-    return user;
+    return newUser.data;
   } catch (error) {
     logger.withError(error).flush();
     return;
