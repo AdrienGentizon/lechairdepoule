@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -25,10 +25,10 @@ CREATE TABLE events (
 );
 
 -- default kept (not dropped): prod still inserts/upserts event_metadata without a timezone
-ALTER TABLE event_metadata ADD COLUMN timezone TEXT NOT NULL DEFAULT 'Europe/Paris';
+ALTER TABLE event_metadata ADD COLUMN IF NOT EXISTS timezone TEXT NOT NULL DEFAULT 'Europe/Paris';
 
 -- default kept: prod inserts conversations without setting updated_at
-ALTER TABLE conversations ADD COLUMN updated_at TIMESTAMPTZ;
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;
 UPDATE conversations SET updated_at = created_at WHERE updated_at IS NULL;
 ALTER TABLE conversations ALTER COLUMN updated_at SET DEFAULT now();
 ALTER TABLE conversations ALTER COLUMN updated_at SET NOT NULL;
@@ -45,7 +45,8 @@ SELECT
 FROM conversations c
 JOIN event_metadata em ON em.conversation_id = c.id
 WHERE c.type IN ('EVENT', 'RELEASE')
-  AND em.starts_at IS NOT NULL;
+  AND em.starts_at IS NOT NULL
+ON CONFLICT (conversation_id) DO NOTHING;
 
 UPDATE conversations SET type = 'TOPIC' WHERE type IS NULL;
 ALTER TABLE conversations ALTER COLUMN type SET DEFAULT 'TOPIC';
