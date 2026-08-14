@@ -1,6 +1,5 @@
 packages:
   - website
-  - forum
 allowBuilds:
   '@clerk/shared': true
   '@sentry/cli': true
