@@ -64,7 +64,6 @@ function ToggleOrReplyIntoThreadButton({
   const { activeFormId, setActiveFormId } = useChatRoom();
   const formId = `thread-${message.id}`;
   const isFormActive = activeFormId === formId;
-  const closedToContribution = conversation.closedToContributionsAt !== null;
 
   useEffect(() => {
     if (showThread) {
@@ -84,8 +83,6 @@ function ToggleOrReplyIntoThreadButton({
       setActiveFormId(formId);
     }
   };
-
-  if (closedToContribution) return null;
 
   return (
     <div

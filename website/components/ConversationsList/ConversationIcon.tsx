@@ -2,13 +2,11 @@ import { ComponentProps } from "react";
 
 import { LucideIcon, MessageCircle, MicVocal, Newspaper } from "lucide-react";
 
-import { SimpleConversation } from "@/lib/types";
-
 export default function ConversationIcon({
   type,
   ...props
 }: Omit<ComponentProps<LucideIcon>, "type"> & {
-  type: SimpleConversation["type"];
+  type: "TOPIC" | "EVENT" | "RELEASE";
 }) {
   if (type === "TOPIC") return <MessageCircle {...props} />;
   if (type === "EVENT") return <MicVocal {...props} />;

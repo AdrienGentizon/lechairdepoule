@@ -1,10 +1,7 @@
-import { ArrowLeft, Clock, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-import EventUrl from "@/components/ConversationsList/EventUrl";
 import { Me } from "@/lib/auth/useMe";
-import { getEventTime } from "@/lib/date";
-import { getEventMainUrl } from "@/lib/events";
 import { getConversationMetadataAsString } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -38,28 +35,8 @@ export default function ChatRoomHeader({
             {conversation.title}
           </h1>
           <div className="flex flex-col gap-1 text-neutral-200">
-            {conversation.venue && (
-              <span className="inline-flex items-center gap-2 text-base font-light">
-                <MapPin className="size-4" />
-                {conversation.venue}
-              </span>
-            )}
-
-            <span className="inline-flex items-center gap-2 text-sm font-light leading-none">
-              {conversation.startsAt && <Clock className="size-4" />}
-              <span>
-                {conversation.startsAt && conversation.timezone && (
-                  <time dateTime={conversation.startsAt ?? undefined}>
-                    {getEventTime(conversation.startsAt, conversation.timezone)}
-                  </time>
-                )}
-                {conversation.startsAt && conversation.price && <>&middot;</>}
-                {conversation.price && <span>{conversation.price}</span>}
-              </span>
-            </span>
+            <span className="inline-flex items-center gap-2 text-sm font-light leading-none"></span>
           </div>
-
-          <EventUrl className="mt-2" url={getEventMainUrl(conversation)} />
         </div>
         <div className="ml-auto flex items-center gap-2 self-start pr-2">
           <UpdateConversationButton me={me} conversation={conversation} />

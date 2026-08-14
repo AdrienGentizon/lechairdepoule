@@ -1,5 +1,7 @@
 import sql from "../db";
-import { Conversation } from "../types";
+import { Conversation, isConversationType } from "../types";
+
+const DEFAULT_TYPE = "TOPIC";
 
 function getConversationFromRaw(
   raw: {
@@ -9,41 +11,29 @@ function getConversationFromRaw(
     coverUrl: string | null;
     coverWidth: string | null;
     coverHeight: string | null;
-    type: string | null;
+    type: string;
     is_pinned: boolean;
-    closed_to_contributions_at: string | null;
     created_by: string;
     created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
     reported_at: string | null;
   },
-  createdBy: { id: string; pseudo: string; bannedAt: string | null },
-  metadata: {
-    startsAt: string | null;
-    endsAt: string | null;
-    timezone: string;
-    price: string | null;
-    venue: string | null;
-    url: string | null;
-  }
+  createdBy: { id: string; pseudo: string; bannedAt: string | null }
 ): Conversation {
   return {
     id: raw.id,
+    type: isConversationType(raw.type) ? raw.type : "TOPIC",
     title: raw.title,
     description: raw.description,
     coverUrl: raw.coverUrl,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
-    type: raw.type,
     isPinned: raw.is_pinned,
-    closedToContributionsAt: raw.closed_to_contributions_at,
-    startsAt: metadata.startsAt,
-    endsAt: metadata.endsAt,
-    timezone: metadata.timezone,
-    price: metadata.price,
-    venue: metadata.venue,
-    url: metadata.url,
-    createdAt: raw.created_at,
     createdBy,
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
+    deletedAt: raw.deleted_at,
     reportedAt: raw.reported_at,
     messages: [],
   };
@@ -53,15 +43,7 @@ export default async function insertConversation({
   title,
   description,
   cover,
-  type,
   user,
-  startsAt,
-  endsAt,
-  timezone,
-  price,
-  venue,
-  url,
-  closedToContributionsAt,
 }: {
   title: string;
   description: string;
@@ -70,17 +52,10 @@ export default async function insertConversation({
     width: number;
     height: number;
   };
-  type: string;
   user: { id: string; pseudo: string; bannedAt: string | null };
-  startsAt?: string | null;
-  endsAt?: string | null;
-  timezone: string;
-  price?: string | null;
-  venue?: string | null;
-  url?: string | null;
-  closedToContributionsAt?: string | null;
 }) {
   return sql.begin(async (sql) => {
+    const now = new Date();
     const insertedConversation = (
       await sql<
         {
@@ -90,18 +65,19 @@ export default async function insertConversation({
           coverUrl: string | null;
           coverWidth: string | null;
           coverHeight: string | null;
-          type: string | null;
+          type: string;
           is_pinned: boolean;
-          closed_to_contributions_at: string | null;
           created_by: string;
           created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
           reported_at: string | null;
         }[]
       >`
     INSERT INTO
-      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at, closed_to_contributions_at)
+      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at, updated_at)
     VALUES
-      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${type}, ${user.id}, ${new Date()}, ${closedToContributionsAt ?? null})
+      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${DEFAULT_TYPE}, ${user.id}, ${now}, ${now})
     RETURNING
       id::text,
       title,
@@ -111,9 +87,10 @@ export default async function insertConversation({
       image_height as "coverHeight",
       type,
       is_pinned,
-      closed_to_contributions_at::text,
       created_by::text,
       created_at::text,
+      updated_at::text,
+      deleted_at::text,
       reported_at::text;`
     ).at(0);
 
@@ -121,21 +98,10 @@ export default async function insertConversation({
       throw new Error("cannot insert conversation");
     }
 
-    await sql`
-      INSERT INTO event_metadata (conversation_id, starts_at, ends_at, timezone, price, venue, url)
-      VALUES (${insertedConversation.id}, ${startsAt ?? null}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null})`;
-
-    return getConversationFromRaw(
-      insertedConversation,
-      { id: user.id, pseudo: user.pseudo, bannedAt: user.bannedAt },
-      {
-        startsAt: startsAt ?? null,
-        endsAt: endsAt ?? null,
-        timezone,
-        price: price ?? null,
-        venue: venue ?? null,
-        url: url ?? null,
-      }
-    );
+    return getConversationFromRaw(insertedConversation, {
+      id: user.id,
+      pseudo: user.pseudo,
+      bannedAt: user.bannedAt,
+    });
   });
 }

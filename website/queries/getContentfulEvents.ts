@@ -1,15 +1,21 @@
 import { fetchCollectionGraphQL } from "@/lib/contentful";
 import { DANGEROUS_FALLBACK_TZ } from "@/lib/date";
+import { ContentfulEvent } from "@/lib/types";
 
 // type ExpectedDate =
 //   `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
+const DANGEROUS_FALLBACK_CREATED_BY = {
+  id: "n/a",
+  pseudo: "La Patronne",
+};
 
 type RawEvent = {
   sys: { id: string };
   title: string;
   shortDescription?: string;
   message: string;
-  date: Date;
+  date: string;
   invitationOnly?: boolean;
   soldOut?: boolean;
   atPeinePerdue?: boolean;
@@ -22,6 +28,29 @@ type RawEvent = {
     height: number;
   } | null;
 };
+
+function toEvent(raw: RawEvent) {
+  return {
+    id: raw.sys.id,
+    title: raw.title,
+    shortDescription: raw.shortDescription ?? null,
+    description: raw.message,
+    type: "EVENT",
+    atPeinePerdue: raw.atPeinePerdue ?? false,
+    coverUrl: raw.picture?.url ?? null,
+    coverWidth: raw.picture?.width ?? null,
+    coverHeight: raw.picture?.height ?? null,
+    startsAt: raw.date,
+    endsAt: null,
+    timezone: DANGEROUS_FALLBACK_TZ,
+    price: null,
+    venue: null,
+    url: null,
+    createdBy: DANGEROUS_FALLBACK_CREATED_BY,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  } satisfies ContentfulEvent;
+}
 
 function getStartingDate() {
   const queryExecutionDate = new Date();
@@ -60,7 +89,7 @@ function getEndingDate() {
   return monthLastDate;
 }
 
-export default async function getEvents() {
+export default async function getContentfulEvents() {
   return (
     (
       await fetchCollectionGraphQL<RawEvent>(
@@ -92,14 +121,8 @@ export default async function getEvents() {
       )
     )?.data?.eventCollection.items ?? []
   )
-    .map((event) => {
-      return {
-        ...event,
-        date: new Date(new Date(event.date).toUTCString()),
-        timezone: DANGEROUS_FALLBACK_TZ,
-      };
-    })
+    .map(toEvent)
     .sort((a, b) => {
-      return a.date.getTime() - b.date.getTime();
+      return new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime();
     });
 }

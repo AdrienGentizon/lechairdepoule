@@ -3,17 +3,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ComponentType, useCallback, useEffect } from "react";
 
 import { MessageCircle, MicVocal, Newspaper } from "lucide-react";
-import { parseAsStringEnum, parseAsTimestamp, useQueryState } from "nuqs";
-import z from "zod";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 
 import { usePusher } from "@/contexts/PusherProvider";
 
 import useMe from "../auth/useMe";
-import { getDateSpanUTC, getMonthSpanUTC, getWeekSpanUTC } from "../date";
-import { ConversationTypeEnum } from "../schemas";
 import { CacheKey, Conversation, SimpleConversation } from "../types";
 
-type FilterEnum = Lowercase<z.infer<typeof ConversationTypeEnum> | "ALL">;
+type FilterEnum = Lowercase<"TOPIC" | "EVENT" | "RELEASE" | "ALL">;
 
 export const CONVERSATION_FILTERS: {
   type: ReturnType<typeof useConversations>["activeFilter"];
@@ -38,28 +35,8 @@ export const CONVERSATION_FILTERS: {
   },
 ];
 
-type TimeStampedItem = {
-  createdAt: string;
-  startsAt?: string | null;
-};
-
-function sortByCreatedAtDesc(a: TimeStampedItem, b: TimeStampedItem) {
+function sortByCreatedAtDesc(a: { createdAt: string }, b: { createdAt: string }) {
   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-}
-
-function sortByStartsAtAsc(a: TimeStampedItem, b: TimeStampedItem) {
-  if (a.startsAt && b.startsAt)
-    return (
-      1 * (new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
-    );
-
-  return a.startsAt ? -1 : 1;
-}
-
-function sortByTimeStamp(filter: FilterEnum) {
-  return filter === "event" || filter === "release"
-    ? sortByStartsAtAsc
-    : sortByCreatedAtDesc;
 }
 
 function sortByPinnedFirst(filter: FilterEnum) {
@@ -72,46 +49,17 @@ function sortByPinnedFirst(filter: FilterEnum) {
   };
 }
 
-function isActiveTimeframe(
-  presetFrom: Date | null,
-  presetTo: Date | null,
-  from: Date | null,
-  to: Date | null
-) {
-  return (
-    presetFrom?.getTime() === from?.getTime() &&
-    presetTo?.getTime() === to?.getTime()
-  );
-}
-
-function filterByTimeframe(from: Date | null, to: Date | null) {
-  return (c: Omit<Conversation, "messages">) => {
-    if (!c.startsAt) return false;
-    const startsAt = new Date(c.startsAt);
-    if (from && startsAt < from) return false;
-    if (to && startsAt > to) return false;
-    return true;
-  };
-}
-
 function filterAndSort(
   conversations: Omit<Conversation, "messages">[],
-  filter: FilterEnum,
-  from: Date | null,
-  to: Date | null
+  filter: FilterEnum
 ) {
   const byType =
     filter === "all"
       ? conversations
       : conversations.filter((c) => c.type === filter.toUpperCase());
 
-  const byTimeframe =
-    (filter === "event" || filter === "release") && (from || to)
-      ? byType.filter(filterByTimeframe(from, to))
-      : byType;
-
-  return byTimeframe
-    .toSorted(sortByTimeStamp(filter))
+  return byType
+    .toSorted(sortByCreatedAtDesc)
     .toSorted(sortByPinnedFirst(filter));
 }
 
@@ -128,57 +76,6 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
       "topic",
     ]).withDefault("all")
   );
-  const [from, setFrom] = useQueryState("from", parseAsTimestamp);
-  const [to, setTo] = useQueryState("to", parseAsTimestamp);
-
-  const timeframePresets = [
-    {
-      label: "Tous",
-      from: null,
-      to: null,
-      active: isActiveTimeframe(null, null, from, to),
-    },
-    {
-      label: "Passés",
-      from: null,
-      to: getDateSpanUTC().from,
-      active: isActiveTimeframe(null, getDateSpanUTC().from, from, to),
-    },
-    {
-      label: "Cette semaine",
-      from: getWeekSpanUTC().monday,
-      to: getWeekSpanUTC().sunday,
-      active: isActiveTimeframe(
-        getWeekSpanUTC().monday,
-        getWeekSpanUTC().sunday,
-        from,
-        to
-      ),
-    },
-    {
-      label: "Ce mois ci",
-      from: getMonthSpanUTC().firstDay,
-      to: getMonthSpanUTC().lastDay,
-      active: isActiveTimeframe(
-        getMonthSpanUTC().firstDay,
-        getMonthSpanUTC().lastDay,
-        from,
-        to
-      ),
-    },
-    {
-      label: "Futurs",
-      from: new Date(getMonthSpanUTC().lastDay.getTime() + 1),
-      to: null,
-      active: isActiveTimeframe(
-        new Date(getMonthSpanUTC().lastDay.getTime() + 1),
-        null,
-        from,
-        to
-      ),
-    },
-  ];
-
   const {
     data: conversations = [],
     error,
@@ -225,23 +122,18 @@ export default function useConversations(options?: { onLoaded?: () => void }) {
   const counts = {
     all: conversations.length,
     topic: conversations.filter((c) => c.type === "TOPIC").length,
-    event: conversations.filter((c) => c.type === "EVENT").length,
-    release: conversations.filter((c) => c.type === "RELEASE").length,
+    event: 0,
+    release: 0,
   };
 
   return {
-    conversations: filterAndSort(conversations, activeFilter, from, to),
+    conversations: filterAndSort(conversations, activeFilter),
     counts,
     error,
     isLoading,
     activeFilter,
     updateActiveFilter: (filter: FilterEnum) => {
       setActiveFilter(filter);
-    },
-    timeframePresets,
-    updateTimeFrame: (params: { from: Date | null; to: Date | null }) => {
-      setFrom(params.from);
-      setTo(params.to);
     },
   };
 }

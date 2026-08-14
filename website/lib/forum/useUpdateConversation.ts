@@ -15,35 +15,14 @@ export default function useUpdateConversation(options?: {
       id: conversationId,
       title,
       description,
-      startsAt,
-      endsAt,
-      timezone,
-      price,
-      venue,
-      url,
-      closedToContributionsAt,
     }: {
       id: string;
       title: string;
       description: string;
-      startsAt?: string | null;
-      endsAt?: string | null;
-      timezone: string;
-      price?: string | null;
-      venue?: string | null;
-      url?: string | null;
-      closedToContributionsAt?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
-      if (startsAt) body.set("startsAt", startsAt);
-      if (endsAt) body.set("endsAt", endsAt);
-      body.set("timezone", timezone);
-      if (price) body.set("price", price);
-      if (venue) body.set("venue", venue);
-      if (url) body.set("url", url);
-      body.set("closedToContributionsAt", closedToContributionsAt ?? "");
 
       const response = await fetch(`/api/conversations/${conversationId}`, {
         method: "PATCH",
@@ -72,15 +51,6 @@ export default function useUpdateConversation(options?: {
                 ...curr,
                 title: data.title,
                 description: data.description,
-                coverUrl: data.coverUrl,
-                coverWidth: data.coverWidth,
-                coverHeight: data.coverHeight,
-                startsAt: data.startsAt,
-                endsAt: data.endsAt,
-                price: data.price,
-                venue: data.venue,
-                url: data.url,
-                closedToContributionsAt: data.closedToContributionsAt,
               },
             ];
           }, []);
@@ -96,11 +66,6 @@ export default function useUpdateConversation(options?: {
             coverUrl: data.coverUrl,
             coverWidth: data.coverWidth,
             coverHeight: data.coverHeight,
-            startsAt: data.startsAt,
-            endsAt: data.endsAt,
-            price: data.price,
-            venue: data.venue,
-            closedToContributionsAt: data.closedToContributionsAt,
           };
         }
       );

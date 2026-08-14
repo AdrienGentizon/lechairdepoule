@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 
 import PeinePerdue from "@/components/png/PeinePerdue";
 import { LOCALE, getEventTime } from "@/lib/date";
+import { Event } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import EventUrl from "../ConversationsList/EventUrl";
+import EventItemActions from "./EventItemActions";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
 function Datestamp({
@@ -55,14 +57,14 @@ function SummaryDescription({
   variant,
 }: {
   description?: string | null;
-  variant?: "CDP" | "PP";
+  variant: "CDP" | "PP" | "HORS_LES_MURS";
 }) {
   if (!description) return null;
   return (
     <span
       className={cn(
         "font-light leading-none",
-        ["CDP", "PP"].includes(variant ?? "") && "text-purple-300"
+        ["CDP", "PP"].includes(variant) && "text-purple-300"
       )}
     >
       {description}
@@ -92,39 +94,31 @@ function TimetableAndEntryFee({
 export default function EventItem({
   summary,
   image,
-  url,
   details,
-  startsAt,
-  timezone,
-  endsAt,
-  price,
+  event,
   aria,
   variant,
 }: {
   summary: { title: string; description?: string | null };
   image: ReactNode;
-  url: string | null;
   details: ReactNode;
-  startsAt: string;
-  timezone: string;
-  endsAt?: string | null;
-  price: string | null;
+  event: Event;
   aria: {
     title: string;
   };
-  variant?: "CDP" | "PP";
+  variant: "CDP" | "PP" | "HORS_LES_MURS";
 }) {
   const showTimetableAndEntryFee = !["CDP", "PP"].includes(variant ?? "");
 
   return (
-    <li className="border-foreground border-b py-2 first:border-t">
+    <li className="border-foreground relative isolate border-b py-2 first:border-t">
       <details
         name="events"
         className="relative isolate cursor-pointer scroll-mt-6"
       >
         <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
           <span className="sr-only">{aria.title}</span>
-          <Datestamp startsAt={startsAt} timezone={timezone} />
+          <Datestamp startsAt={event.startsAt} timezone={event.timezone} />
           <div
             aria-hidden
             className="flex flex-col justify-center gap-1.5 leading-none"
@@ -138,9 +132,9 @@ export default function EventItem({
               />
               {showTimetableAndEntryFee && (
                 <TimetableAndEntryFee
-                  startsAt={startsAt}
-                  timezone={timezone}
-                  price={price}
+                  startsAt={event.startsAt}
+                  timezone={event.timezone}
+                  price={event.price}
                 />
               )}
             </div>
@@ -152,8 +146,8 @@ export default function EventItem({
         <ImportToCalendarButton
           ics={{
             title: summary.title,
-            startsAt: startsAt,
-            endsAt: endsAt,
+            startsAt: event.startsAt,
+            endsAt: event.endsAt,
           }}
         />
         <div className="flex flex-col gap-4 p-4">
@@ -163,9 +157,12 @@ export default function EventItem({
               {details}
             </div>
           )}
-          <EventUrl url={url} />
+          <EventUrl event={event} />
         </div>
       </details>
+      {["HORS_LES_MURS"].includes(variant) && (
+        <EventItemActions event={event} />
+      )}
     </li>
   );
 }

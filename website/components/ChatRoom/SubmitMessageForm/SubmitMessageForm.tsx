@@ -24,7 +24,7 @@ type Props = {
   onSuccess?: () => void;
 };
 
-function SubmitMessageForm({
+export default function SubmitMessageForm({
   me,
   conversation,
   formId,
@@ -114,19 +114,4 @@ function SubmitMessageForm({
       )}
     </form>
   );
-}
-
-export default function Wrapper({ me, conversation, ...props }: Props) {
-  if (
-    conversation.closedToContributionsAt !== null &&
-    conversation.createdBy.id !== me?.id
-  )
-    return (
-      <p className="font-courier rounded-sm border border-neutral-500 bg-neutral-800 px-4 py-2 text-sm text-neutral-400">
-        Retrouvez ici les messages des organisateurs (la section commentaire est
-        désactivée).
-      </p>
-    );
-
-  return <SubmitMessageForm me={me} conversation={conversation} {...props} />;
 }

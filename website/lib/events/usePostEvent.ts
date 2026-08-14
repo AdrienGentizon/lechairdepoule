@@ -3,10 +3,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resizeImage } from "../resizeImage";
 import { CacheKey, Conversation } from "../types";
 
-export default function usePostConversation() {
+export default function usePostEvent() {
   const queryClient = useQueryClient();
   const {
-    mutate: postConversation,
+    mutate: postEvent,
     isPending,
     error,
   } = useMutation({
@@ -15,16 +15,34 @@ export default function usePostConversation() {
       description,
       type,
       cover,
+      startsAt,
+      endsAt,
+      timezone,
+      price,
+      venue,
+      url,
     }: {
       title: string;
       description: string;
       type: string;
       cover?: File;
+      startsAt: string;
+      endsAt?: string | null;
+      timezone: string;
+      price?: string | null;
+      venue?: string | null;
+      url?: string | null;
     }) => {
       const body = new FormData();
       body.set("title", title);
       body.set("description", description);
       body.set("type", type);
+      body.set("startsAt", startsAt);
+      if (endsAt) body.set("endsAt", endsAt);
+      body.set("timezone", timezone);
+      if (price) body.set("price", price);
+      if (venue) body.set("venue", venue);
+      if (url) body.set("url", url);
       if (cover) {
         const resizedImage = await resizeImage(cover);
         if (resizedImage) {
@@ -34,7 +52,7 @@ export default function usePostConversation() {
         }
       }
 
-      const response = await fetch(`/api/conversations`, {
+      const response = await fetch(`/api/events`, {
         method: "POST",
         body,
       });
@@ -48,11 +66,11 @@ export default function usePostConversation() {
 
       return response.json() as Promise<Conversation>;
     },
-    onSuccess: ({ messages: _messages, ...conversation }) => {
+    onSuccess: (event) => {
       queryClient.setQueryData(
-        ["conversations" satisfies CacheKey],
-        (olds: Omit<Conversation, "messages">[] = []) => {
-          return [...olds, conversation];
+        ["cachedEvents" satisfies CacheKey],
+        (olds: Event[] = []) => {
+          return [...olds, event];
         }
       );
     },
@@ -60,7 +78,7 @@ export default function usePostConversation() {
   });
 
   return {
-    postConversation,
+    postEvent,
     error,
     isPending,
   };

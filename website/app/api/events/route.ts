@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
     }
 
     const insertedEvent = await insertEvent({
+      type: parsedInputs.data.type,
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
       user: { id: user.id, pseudo: user.pseudo ?? "", bannedAt: user.bannedAt },

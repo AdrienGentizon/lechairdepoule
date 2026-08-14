@@ -2,35 +2,23 @@ import Button from "../Button/Button";
 import ConversationIcon from "../ConversationsList/ConversationIcon";
 import Form, { FormField, Label } from "../Form/Form";
 
-const CONVERSATION_TYPES = [
-  {
-    value: "TOPIC",
-    label: "Discussion",
-    description: "Sujets divers et variés...",
-  },
-  {
-    value: "EVENT",
-    label: "Evénement",
-    description: "Annoncer un concert, une performance et autres événements...",
-  },
-  {
-    value: "RELEASE",
-    label: "Sortie",
-    description: "Sortie de disque, fanzine, livre, bd...",
-  },
-] as const;
-
-type Props = {
-  onSuccess: (type: "EVENT" | "RELEASE" | "TOPIC") => void;
-};
-
-export default function SelectTopicType({ onSuccess }: Props) {
+export default function SelectItemToBeCreatedType({
+  types,
+  onSuccess,
+}: {
+  types: {
+    value: "TOPIC" | "EVENT" | "RELEASE";
+    label: string;
+    description: string;
+  }[];
+  onSuccess: (type: "TOPIC" | "EVENT" | "RELEASE") => void;
+}) {
   return (
     <Form
       onSubmit={(e) => {
         e.preventDefault();
         const input = new FormData(e.currentTarget).get("conversation_type");
-        const selectedConversationType = CONVERSATION_TYPES.find((type) => {
+        const selectedConversationType = types.find((type) => {
           return type.value === input;
         });
         if (!selectedConversationType) return;
@@ -39,7 +27,7 @@ export default function SelectTopicType({ onSuccess }: Props) {
     >
       <fieldset className="py-4">
         <legend>Choisissez le type de topic à créer</legend>
-        {CONVERSATION_TYPES.map((option, n) => {
+        {types.map((option, n) => {
           return (
             <FormField
               key={n}

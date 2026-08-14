@@ -1,5 +1,6 @@
 CREATE TABLE events (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type TEXT,
     title TEXT NOT NULL,
     description TEXT,
     image_url TEXT,

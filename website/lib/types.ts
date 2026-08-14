@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { ConversationTypeEnum } from "./schemas";
+import { EventTypeEnum } from "./schemas";
 
 export type User = {
   id: string;
@@ -39,49 +39,9 @@ export type Message = {
   };
 };
 
-export type Conversation = {
-  id: string;
-  title: string;
-  description: string | null;
-  coverUrl: string | null;
-  coverWidth: number | null;
-  coverHeight: number | null;
-  type: ({} & string) | z.infer<typeof ConversationTypeEnum> | null;
-  startsAt?: string | null;
-  endsAt?: string | null;
-  timezone: string | null;
-  price: string | null;
-  venue: string | null;
-  url: string | null;
-  isPinned: boolean;
-  closedToContributionsAt: string | null;
-  reportedAt: string | null;
-  createdAt: string;
-  createdBy: {
-    id: string;
-    pseudo: string;
-    bannedAt: string | null;
-  };
-  messages: Message[];
-};
-
-export type PublicConversation = Omit<
-  Conversation,
-  | "messages"
-  | "closedToContributionsAt"
-  | "reportedAt"
-  | "isPinned"
-  | "createdBy"
-  | " startsAt"
-> & {
-  createdBy: Omit<Conversation["createdBy"], "bannedAt">;
-  startsAt: string;
-};
-
-export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
-
 export type Event = {
   id: string;
+  type: ({} & string) | z.infer<typeof EventTypeEnum>;
   title: string;
   description: string | null;
   coverUrl: string | null;
@@ -100,6 +60,50 @@ export type Event = {
     pseudo: string;
   };
 };
+
+export type ContentfulEvent = Event & {
+  shortDescription: string | null;
+  atPeinePerdue: boolean;
+};
+
+export type Conversation = {
+  id: string;
+  type: "TOPIC";
+  title: string;
+  description: string | null;
+  coverUrl: string | null;
+  coverWidth: number | null;
+  coverHeight: number | null;
+  createdBy: {
+    id: string;
+    pseudo: string;
+    bannedAt: string | null;
+  };
+  messages: Message[];
+  isPinned: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  reportedAt: string | null;
+};
+
+export function isConversationType(
+  type: ({} & string) | "TOPIC"
+): type is Conversation["type"] {
+  return (["TOPIC"] satisfies Conversation["type"][]).includes(
+    type as Conversation["type"]
+  );
+}
+
+export type PublicConversation = Omit<
+  Conversation,
+  "messages" | "reportedAt" | "isPinned" | "createdBy"
+> & {
+  createdBy: Omit<Conversation["createdBy"], "bannedAt">;
+  startsAt: string;
+};
+
+export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
 
 export type UserMention = {
   id: string;

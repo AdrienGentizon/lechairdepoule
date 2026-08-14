@@ -1,4 +1,5 @@
 import sql from "../db";
+import { isConversationType } from "../types";
 
 export default async function selectConversations() {
   return (
@@ -10,17 +11,12 @@ export default async function selectConversations() {
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
-        type: string | null;
-        startsAt: string | null;
-        endsAt: string | null;
-        timezone: string | null;
-        price: string | null;
-        venue: string | null;
-        url: string | null;
+        type: string;
         isPinned: boolean;
-        closedToContributionsAt: string | null;
         reportedAt: string | null;
         createdAt: string;
+        updatedAt: string;
+        deletedAt: string | null;
         userId: string;
         userPseudo: string | null;
         userBannedAt: string | null;
@@ -34,29 +30,24 @@ export default async function selectConversations() {
       c.image_width as "coverWidth",
       c.image_height as "coverHeight",
       c.type,
-      em.starts_at::text as "startsAt",
-      em.ends_at::text as "endsAt",
-      em.timezone,
-      em.price AS "price",
-      em.venue AS "venue",
-      em.url AS "url",
       c.is_pinned as "isPinned",
-      c.closed_to_contributions_at::text as "closedToContributionsAt",
       c.reported_at::text as "reportedAt",
       c.created_at::text as "createdAt",
+      c.updated_at::text as "updatedAt",
+      c.deleted_at::text as "deletedAt",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
       u.banned_at::text as "userBannedAt"
     FROM
       public.conversations c
       JOIN public.users u ON c.created_by = u.id
-      LEFT JOIN public.event_metadata em ON em.conversation_id = c.id
     WHERE
       c.deleted_at IS NULL
     ORDER BY
       c.created_at DESC;`
   ).map(
     ({
+      type,
       userId,
       userPseudo,
       userBannedAt,
@@ -66,6 +57,7 @@ export default async function selectConversations() {
       ...conversation
     }) => ({
       ...conversation,
+      type: isConversationType(type) ? type : "TOPIC",
       coverUrl,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,

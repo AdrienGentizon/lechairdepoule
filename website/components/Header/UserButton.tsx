@@ -42,7 +42,7 @@ function UnauthUserButton() {
       >
         <UserCircle2
           aria-hidden
-          className="bg-background b size-8 rounded-full stroke-purple-300 stroke-[1.5]"
+          className="bg-background b size-8 rounded-full stroke-purple-300"
         />
         <span className="sr-only">Se connecter</span>
       </button>

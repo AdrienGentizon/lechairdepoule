@@ -5,16 +5,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import getUser from "@/lib/auth/getUser";
-import deleteConversationCoverFromId from "@/lib/forum/deleteConversationCoverFromId";
-import selectConversationFromId from "@/lib/forum/selectConversationFromId";
-import updateConversationCoverFromId from "@/lib/forum/updateConversationCoverFromId";
+import deleteEventCoverFromId from "@/lib/events/deleteEventCoverFromId";
+import selectEventFromId from "@/lib/events/selectEventFromId";
+import updateEventCoverFromId from "@/lib/events/updateEventCoverFromId";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import { CacheKey, SimpleConversation } from "@/lib/types";
+import { CacheKey, Event } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> }
+  ctx: { params: Promise<{ eventId: string }> }
 ) {
   const params = await ctx.params;
   const logger = getRequestLogger(req);
@@ -49,30 +49,38 @@ export async function POST(
 
     const values = {
       userId: user.id,
-      conversationId: params.conversationId,
+      eventId: params.eventId,
       cover: uploadedImage.data,
     };
-    const updatedConversation = await updateConversationCoverFromId(values);
+    const updatedEvent = await updateEventCoverFromId(values);
 
-    if (!updatedConversation) {
+    if (!updatedEvent) {
       logger.append({ values });
-      logger.withError("cannot update conversation cover").flush();
+      logger.withError("cannot update event cover").flush();
       return NextResponse.json(
         { error: "l'image n'a pas pu être sauvegardée" },
         { status: 500 }
       );
     }
 
-    if (updatedConversation.previousCoverUrl) {
-      await del(updatedConversation.previousCoverUrl);
+    if (updatedEvent.previousCoverUrl) {
+      await del(updatedEvent.previousCoverUrl);
     }
 
-    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
-    logger.append({ updatedConversation });
+    revalidateTag("cachedEvents" satisfies CacheKey, "max");
+    logger.append({ updatedEvent });
     logger.flush();
-    return NextResponse.json<SimpleConversation>(updatedConversation, {
-      status: 200,
-    });
+    return NextResponse.json<
+      Pick<Event, "id" | "coverUrl" | "coverWidth" | "coverHeight">
+    >(
+      {
+        id: updatedEvent.id,
+        coverUrl: updatedEvent.coverUrl,
+        coverWidth: updatedEvent.coverWidth,
+        coverHeight: updatedEvent.coverHeight,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     logger.withError(error).flush();
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
@@ -81,7 +89,7 @@ export async function POST(
 
 export async function DELETE(
   req: NextRequest,
-  ctx: { params: Promise<{ conversationId: string }> }
+  ctx: { params: Promise<{ eventId: string }> }
 ) {
   const params = await ctx.params;
   const logger = getRequestLogger(req);
@@ -94,36 +102,36 @@ export async function DELETE(
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
-    const conversation = await selectConversationFromId(params.conversationId);
+    const event = await selectEventFromId(params.eventId);
 
-    if (!conversation) {
+    if (!event) {
       logger.withError("not found").flush();
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
-    const updatedConversation = await deleteConversationCoverFromId({
-      conversationId: params.conversationId,
+    const updatedEvent = await deleteEventCoverFromId({
+      eventId: params.eventId,
       userId: user.id,
     });
 
-    if (!updatedConversation) {
-      logger.withError("cannot delete conversation cover").flush();
+    if (!updatedEvent) {
+      logger.withError("cannot delete event cover").flush();
       return NextResponse.json(
         { error: "impossible de supprimer l'image" },
         { status: 500 }
       );
     }
 
-    if (conversation.coverUrl) {
-      await del(conversation.coverUrl);
+    if (event.coverUrl) {
+      await del(event.coverUrl);
     }
 
-    revalidateTag("cachedAgenda" satisfies CacheKey, "max");
-    logger.append({ conversationId: updatedConversation.id });
+    revalidateTag("cachedEvents" satisfies CacheKey, "max");
+    logger.append({ eventId: updatedEvent.id });
     logger.flush();
-    return NextResponse.json<SimpleConversation>(updatedConversation, {
-      status: 200,
-    });
+    return NextResponse.json<
+      Pick<Event, "id" | "coverUrl" | "coverWidth" | "coverHeight">
+    >(updatedEvent, { status: 200 });
   } catch (error) {
     logger.withError(error).flush();
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
