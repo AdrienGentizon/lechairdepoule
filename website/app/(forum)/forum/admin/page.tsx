@@ -70,7 +70,7 @@ export default function AdminPage() {
   if (me?.role !== "admin") return null;
 
   return (
-    <div className="no-scrollbar flex flex-col overflow-y-scroll bg-black px-2 sm:max-w-2xl">
+    <div className="no-scrollbar flex flex-col gap-2 overflow-y-scroll bg-black px-2 sm:max-w-2xl">
       <h1 className="bg-foreground text-background rounded-sm px-2 font-semibold">
         Administration du forum
       </h1>
@@ -155,18 +155,33 @@ export default function AdminPage() {
             Utilisateurs bannis
           </h2>
           <ul className="flex flex-col">
-            {bannedUsers.map((user) => (
+            {bannedUsers.map((bannedUser) => (
               <li
-                key={user.id}
+                key={bannedUser.id}
                 className="flex flex-col border-b border-white px-4 py-2 first:border-t"
               >
-                <span className="font-semibold text-neutral-400 line-through">
-                  {user.pseudo}
+                <span>
+                  <span className="font-semibold text-purple-300 line-through">
+                    {bannedUser.pseudo}
+                  </span>
+                  {`, banni le ${new Date(bannedUser.bannedAt!).toLocaleDateString("fr-FR")}`}
                 </span>
-                <span className="text-xs text-neutral-400">
-                  banni le{" "}
-                  {new Date(user.bannedAt!).toLocaleDateString("fr-FR")}
-                </span>
+
+                {bannedUser.appeal && (
+                  <div className="mt-2 flex flex-col rounded-sm border border-neutral-500 bg-neutral-900 p-2">
+                    <p className="text-sm font-light">
+                      {bannedUser.appeal.body}
+                    </p>
+                    <p className="ml-auto text-xs text-neutral-300">
+                      <span className="sr-only">créé par</span>
+                      <span className="font-semibold">{bannedUser.pseudo}</span>
+                      , le
+                      {new Date(bannedUser.appeal.createdAt).toLocaleDateString(
+                        "fr-FR"
+                      )}
+                    </p>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

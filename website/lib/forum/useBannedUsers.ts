@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { CacheKey, User } from "../types";
+import { BannedUser, CacheKey } from "../types";
 
 export default function useBannedUsers() {
   const {
@@ -17,7 +17,7 @@ export default function useBannedUsers() {
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      return response.json() as Promise<User[]>;
+      return response.json() as Promise<BannedUser[]>;
     },
   });
 

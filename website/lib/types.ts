@@ -17,6 +17,10 @@ export type BanAppeal = {
   reviewedBy: string | null;
 };
 
+export type BannedUser = User & {
+  appeal: { id: string; body: string; createdAt: string } | null;
+};
+
 export type RawMessage = {
   id: string;
   body: string;
