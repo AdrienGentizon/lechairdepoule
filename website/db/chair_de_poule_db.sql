@@ -28,20 +28,8 @@ CREATE TABLE conversations (
     reported_by INTEGER,
     type TEXT NOT NULL DEFAULT 'TOPIC',
     is_pinned BOOLEAN NOT NULL DEFAULT false,
-    closed_to_contributions_at TIMESTAMPTZ,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT reported_by_fk FOREIGN KEY (reported_by) REFERENCES users(id) ON DELETE SET NULL
-);
-
-CREATE TABLE event_metadata (
-    conversation_id INTEGER PRIMARY KEY,
-    starts_at TIMESTAMPTZ,
-    ends_at TIMESTAMPTZ,
-    timezone TEXT NOT NULL,
-    price TEXT,
-    venue TEXT,
-    url TEXT,
-    CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
 );
 
 CREATE TABLE messages (
@@ -95,7 +83,7 @@ CREATE TABLE events (
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     conversation_id INTEGER,
-    type TEXT,
+    type TEXT NOT NULL,
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE RESTRICT,
     CONSTRAINT conversation_uq UNIQUE(conversation_id)
