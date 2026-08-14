@@ -12,6 +12,7 @@ export default function useConversation(conversationId: string) {
   const pusher = usePusher()?.pusher;
   const { conversations } = useConversations();
   const lastEmptyLiRef = useRef<ComponentRef<"li">>(null);
+  const hasScrolledOnLoadRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     if (!lastEmptyLiRef.current) return;
@@ -19,6 +20,10 @@ export default function useConversation(conversationId: string) {
       lastEmptyLiRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 250);
   }, []);
+
+  useEffect(() => {
+    hasScrolledOnLoadRef.current = false;
+  }, [conversationId]);
 
   const queryClient = useQueryClient();
   const {
@@ -35,7 +40,10 @@ export default function useConversation(conversationId: string) {
       if (!response.ok)
         throw new Error((await response.json())?.error ?? "erreur inconnue");
 
-      scrollToBottom();
+      if (!hasScrolledOnLoadRef.current) {
+        hasScrolledOnLoadRef.current = true;
+        scrollToBottom();
+      }
       return response.json() as Promise<Conversation>;
     },
   });
