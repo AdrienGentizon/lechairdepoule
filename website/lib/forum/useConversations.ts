@@ -46,7 +46,7 @@ function sortByPinnedFirst(filter: FilterEnum) {
   if (filter !== "all") return () => 0;
 
   return (a: SimpleConversation, b: SimpleConversation) => {
-    if (a.isPinned && b.isPinned) return 0;
+    if (a.isPinned === b.isPinned) return 0;
 
     return a.isPinned ? -1 : 1;
   };
