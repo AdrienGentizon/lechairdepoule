@@ -35,7 +35,10 @@ export const CONVERSATION_FILTERS: {
   },
 ];
 
-function sortByCreatedAtDesc(a: { createdAt: string }, b: { createdAt: string }) {
+function sortByCreatedAtDesc(
+  a: { createdAt: string },
+  b: { createdAt: string }
+) {
   return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
