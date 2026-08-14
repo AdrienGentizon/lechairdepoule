@@ -2,14 +2,15 @@
 
 import { SignInButton } from "@clerk/nextjs";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import useMe from "@/lib/auth/useMe";
-import usePostEvent from "@/lib/events/usePostEvent";
-import { Event } from "@/lib/types";
+import insertEventAction from "@/lib/events/insertEventAction";
+import { resizeImage } from "@/lib/resizeImage";
+import { Event, isEventType } from "@/lib/types";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
 import {
@@ -55,32 +56,44 @@ function Form({
   selectedEventType: Event["type"];
   onSuccess: (data: { id: string }) => void;
 }) {
-  const { postEvent, isPending, error } = usePostEvent();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<Error | null>(null);
 
   return (
     <CreateEventForm
       eventType={selectedEventType}
       onSubmit={(values) => {
-        postEvent(
-          {
-            title: values.title,
-            description: values.description,
-            type: selectedEventType,
-            cover: values.cover,
-            startsAt: values.startsAt,
-            endsAt: values.endsAt,
-            timezone: values.timezone,
-            price: values.price,
-            venue: values.venue,
-            url: values.url,
-          },
-          {
-            onSuccess,
+        setError(null);
+        startTransition(async () => {
+          const body = new FormData();
+          body.set("type", selectedEventType);
+          body.set("title", values.title);
+          body.set("description", values.description);
+          body.set("startsAt", values.startsAt);
+          if (values.endsAt) body.set("endsAt", values.endsAt);
+          body.set("timezone", values.timezone);
+          if (values.price) body.set("price", values.price);
+          if (values.venue) body.set("venue", values.venue);
+          if (values.url) body.set("url", values.url);
+          if (values.cover) {
+            const resized = await resizeImage(values.cover);
+            if (resized) {
+              body.set("coverFile", resized.file);
+              body.set("coverWidth", resized.width.toString());
+              body.set("coverHeight", resized.height.toString());
+            }
           }
-        );
+
+          const result = await insertEventAction(body);
+          if (!result.success) {
+            setError(new Error(result.error));
+            return;
+          }
+          onSuccess({ id: result.data.id });
+        });
       }}
       isPending={isPending}
-      error={error as Error | null}
+      error={error}
       submitLabel={EVENT_TYPE_LABELS[selectedEventType].submit}
     />
   );
@@ -139,7 +152,13 @@ function MultiStepCreateEventButton() {
               },
             ]}
             onSuccess={(eventType) => {
-              setSelectedEventType(eventType);
+              setSelectedEventType(
+                !eventType
+                  ? undefined
+                  : isEventType(eventType)
+                    ? eventType
+                    : "EVENT"
+              );
               setStep("EVENT_INPUTS");
             }}
           />

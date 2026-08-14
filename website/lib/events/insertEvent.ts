@@ -1,5 +1,5 @@
 import sql from "../db";
-import { Event } from "../types";
+import { Event, isEventType } from "../types";
 
 function getEventFromRaw(
   raw: {
@@ -23,7 +23,7 @@ function getEventFromRaw(
 ): Event {
   return {
     id: raw.id,
-    type: raw.type,
+    type: isEventType(raw.type) ? raw.type : "EVENT",
     title: raw.title,
     description: raw.description,
     coverUrl: raw.coverUrl,
