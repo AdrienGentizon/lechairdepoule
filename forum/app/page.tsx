@@ -164,7 +164,6 @@ const initialProgress = {
 } satisfies Progress;
 
 function SigninProgress({ progress }: { progress: Progress }) {
-  console.log(progress);
   return (
     <nav>
       <ol className="grid grid-flow-col p-4">

@@ -3,12 +3,12 @@ import { Suspense } from "react";
 import ContentfulEventItem from "@/components/EventsList/ContentfulEventItem";
 import EventsList from "@/components/EventsList/EventsList";
 
-import getEvents from "../../queries/getEvents";
+import getContentfulEvents from "../../queries/getContentfulEvents";
 
 export const revalidate = 86400; // 24 * 60 * 60;
 
 export default async function Home() {
-  const events = await getEvents();
+  const events = await getContentfulEvents();
   return (
     <Suspense>
       <h1 className="sr-only">Agenda des animations</h1>
@@ -19,7 +19,7 @@ export default async function Home() {
         }}
       >
         {events.map((event) => {
-          return <ContentfulEventItem key={event.sys.id} event={event} />;
+          return <ContentfulEventItem key={event.id} event={event} />;
         })}
       </EventsList>
     </Suspense>

@@ -4,6 +4,7 @@ import { Event } from "../types";
 function getEventFromRaw(
   raw: {
     id: string;
+    type: string;
     title: string;
     description: string | null;
     coverUrl: string | null;
@@ -22,6 +23,7 @@ function getEventFromRaw(
 ): Event {
   return {
     id: raw.id,
+    type: raw.type,
     title: raw.title,
     description: raw.description,
     coverUrl: raw.coverUrl,
@@ -40,6 +42,7 @@ function getEventFromRaw(
 }
 
 export default async function insertEvent({
+  type,
   title,
   description,
   cover,
@@ -51,6 +54,7 @@ export default async function insertEvent({
   venue,
   url,
 }: {
+  type: string;
   title: string;
   description: string;
   cover?: {
@@ -72,6 +76,7 @@ export default async function insertEvent({
     await sql<
       {
         id: string;
+        type: string;
         title: string;
         description: string | null;
         coverUrl: string | null;
@@ -88,11 +93,12 @@ export default async function insertEvent({
       }[]
     >`
     INSERT INTO
-      events (title, description, image_url, image_width, image_height, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
+      events (type, title, description, image_url, image_width, image_height, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
     VALUES
-      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${startsAt}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null}, ${user.id}, ${now}, ${now})
+      (${type}, ${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${startsAt}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null}, ${user.id}, ${now}, ${now})
     RETURNING
       id::text,
+      type,
       title,
       description,
       image_url as "coverUrl",

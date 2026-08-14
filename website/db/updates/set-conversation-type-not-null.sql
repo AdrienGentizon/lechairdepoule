@@ -1,0 +1,3 @@
+UPDATE conversations SET type = 'TOPIC' WHERE type IS NULL;
+ALTER TABLE conversations ALTER COLUMN type SET DEFAULT 'TOPIC';
+ALTER TABLE conversations ALTER COLUMN type SET NOT NULL;

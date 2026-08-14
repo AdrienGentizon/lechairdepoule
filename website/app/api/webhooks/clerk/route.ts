@@ -42,7 +42,10 @@ export async function POST(req: NextRequest) {
         logger.flush();
       }
 
-      return NextResponse.json({ message: "user already created" }, { status: 200 });
+      return NextResponse.json(
+        { message: "user already created" },
+        { status: 200 }
+      );
     }
 
     const user = await insertUser({

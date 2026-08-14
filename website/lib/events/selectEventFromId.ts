@@ -1,12 +1,6 @@
 import sql from "../db";
 
-export default async function selectEvents({
-  from,
-  to,
-}: {
-  from: string;
-  to?: string;
-}) {
+export default async function selectEventFromId(eventId: string) {
   return (
     await sql<
       {
@@ -53,33 +47,29 @@ export default async function selectEvents({
       public.events e
       JOIN public.users u ON e.created_by = u.id
     WHERE
-      e.deleted_at IS NULL
-      AND (
-        ${to ?? null}::timestamptz IS NULL
-        OR (e.starts_at AT TIME ZONE e.timezone)::date <= (${to ?? null}::timestamptz AT TIME ZONE 'UTC')::date
-      )
-      AND (COALESCE(e.ends_at, e.starts_at) AT TIME ZONE e.timezone)::date >= (${from}::timestamptz AT TIME ZONE 'UTC')::date
-    ORDER BY
-      e.starts_at ASC;`
-  ).map(
-    ({
-      userId,
-      userPseudo,
-      userBannedAt,
-      coverUrl,
-      coverWidth,
-      coverHeight,
-      ...event
-    }) => ({
-      ...event,
-      coverUrl,
-      coverWidth: coverWidth ? parseInt(coverWidth) : null,
-      coverHeight: coverHeight ? parseInt(coverHeight) : null,
-      createdBy: {
-        id: userId,
-        pseudo: userPseudo ?? "",
-        bannedAt: userBannedAt,
-      },
-    })
-  );
+      e.id = ${eventId}
+      AND e.deleted_at IS NULL;`
+  )
+    .map(
+      ({
+        userId,
+        userPseudo,
+        userBannedAt,
+        coverUrl,
+        coverWidth,
+        coverHeight,
+        ...event
+      }) => ({
+        ...event,
+        coverUrl,
+        coverWidth: coverWidth ? parseInt(coverWidth) : null,
+        coverHeight: coverHeight ? parseInt(coverHeight) : null,
+        createdBy: {
+          id: userId,
+          pseudo: userPseudo ?? "",
+          bannedAt: userBannedAt,
+        },
+      })
+    )
+    .at(0);
 }

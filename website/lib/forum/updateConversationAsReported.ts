@@ -1,4 +1,5 @@
 import sql from "../db";
+import { isConversationType } from "../types";
 
 export default async function updateConversationAsReported({
   conversationId,
@@ -13,9 +14,11 @@ export default async function updateConversationAsReported({
         id: string;
         title: string;
         description: string | null;
-        type: string | null;
+        type: string;
         reportedAt: string | null;
         createdAt: string;
+        updatedAt: string;
+        deletedAt: string | null;
         userId: string;
         userPseudo: string | null;
         userBannedAt: string | null;
@@ -36,12 +39,15 @@ export default async function updateConversationAsReported({
       c.type,
       c.reported_at::text AS "reportedAt",
       c.created_at::text AS "createdAt",
+      c.updated_at::text AS "updatedAt",
+      c.deleted_at::text AS "deletedAt",
       u.id::text AS "userId",
       u.pseudo AS "userPseudo",
       u.banned_at::text AS "userBannedAt";`
   )
-    .map(({ userId, userPseudo, userBannedAt, ...conversation }) => ({
+    .map(({ type, userId, userPseudo, userBannedAt, ...conversation }) => ({
       ...conversation,
+      type: isConversationType(type) ? type : "TOPIC",
       createdBy: {
         id: userId,
         pseudo: userPseudo ?? "",

@@ -10,8 +10,6 @@ export const NullishDateSchema = z.preprocess(
     .transform((v) => v ?? null)
 );
 
-export const ConversationTypeEnum = z.enum(["TOPIC", "EVENT", "RELEASE"]);
-
 export const TimezoneSchema = z.string().min(1, "Fuseau horaire obligatoire");
 
 export const PriceSchema = z.preprocess(
@@ -32,16 +30,12 @@ export const ConversationFormSchema = z.object({
     .string()
     .min(1, "Description obligatoire")
     .max(500, "Description trop longue (500 caractères max)"),
-  startsAt: NullishDateSchema,
-  endsAt: NullishDateSchema,
-  timezone: TimezoneSchema,
-  price: PriceSchema,
-  venue: z.string().nullish(),
-  url: z.string().url("URL invalide").nullish(),
-  closedToContributionsAt: NullishDateSchema,
 });
 
+export const EventTypeEnum = z.enum(["EVENT", "RELEASE"]);
+
 export const EventFormSchema = z.object({
+  type: EventTypeEnum,
   title: z
     .string()
     .min(1, "Titre obligatoire")
@@ -51,8 +45,8 @@ export const EventFormSchema = z.object({
     .min(1, "Description obligatoire")
     .max(500, "Description trop longue (500 caractères max)"),
   startsAt: z
-    .string()
-    .datetime({ offset: true, message: "Date de début obligatoire" }),
+    .string({ required_error: "Date de début obligatoire" })
+    .datetime({ offset: true, message: "Date de début invalide" }),
   endsAt: NullishDateSchema,
   timezone: TimezoneSchema,
   price: PriceSchema,

@@ -1,15 +1,16 @@
 import { SignInButton } from "@clerk/nextjs";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
-import { Conversation } from "@/lib/types";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
+import SelectItemToBeCreatedType from "../CreateEventButton/SelectItemToBeCreatedType";
 import {
   Dialog,
   DialogContent,
@@ -19,10 +20,9 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import CreateTopicForm from "./CreateTopicForm";
-import SelectTopicType from "./SelectTopicType";
 
 const CONVERSATION_TYPE_LABELS: Record<
-  NonNullable<Conversation["type"]>,
+  "TOPIC" | "EVENT" | "RELEASE",
   {
     title: string;
     submit: string;
@@ -32,6 +32,85 @@ const CONVERSATION_TYPE_LABELS: Record<
   EVENT: { title: "Nouvel événement", submit: "Créer un événement" },
   RELEASE: { title: "Nouvelle sortie", submit: "Créer une sortie" },
 };
+
+function Redirection({
+  selectedConversationType,
+}: {
+  selectedConversationType: "TOPIC" | "EVENT" | "RELEASE";
+}) {
+  const router = useRouter();
+  const [countdown, setCountdown] = useState(5000);
+  const url = `/agenda?create=${selectedConversationType.toLowerCase()}`;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown((prev) => Math.max(0, prev - 1000));
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (countdown > 0) return;
+    router.push(url);
+  }, [countdown, router, url]);
+
+  return (
+    <div className="flex flex-col items-center gap-2 p-4 leading-none">
+      <p>
+        {`La création d'événement a été déplacée sur la page `}
+        <Link href={url} className="text-purple-300 underline">
+          /agenda
+        </Link>
+        .
+      </p>
+      <p className="text-sm font-light text-neutral-200">
+        vous allez être redirigé automatiquement dans {countdown / 1000}s.
+      </p>
+    </div>
+  );
+}
+
+function Form({
+  selectedConversationType,
+  onSuccess,
+}: {
+  selectedConversationType: "TOPIC" | "EVENT" | "RELEASE";
+  onSuccess: (data: { id: string }) => void;
+}) {
+  const { postConversation, isPending, error } = usePostConversation();
+
+  if (
+    selectedConversationType === "EVENT" ||
+    selectedConversationType === "RELEASE"
+  )
+    return <Redirection selectedConversationType={selectedConversationType} />;
+
+  return (
+    <CreateTopicForm
+      conversationType={selectedConversationType ?? "TOPIC"}
+      onSubmit={(values) => {
+        postConversation(
+          {
+            title: values.title,
+            description: values.description,
+            type: selectedConversationType ?? "TOPIC",
+          },
+          {
+            onSuccess,
+          }
+        );
+      }}
+      isPending={isPending}
+      error={error as Error | null}
+      submitLabel={
+        CONVERSATION_TYPE_LABELS[selectedConversationType ?? "TOPIC"].submit
+      }
+    />
+  );
+}
 
 function Content() {
   return (
@@ -74,9 +153,8 @@ function MultiStepCreateTopicButton() {
     "HIDDEN" | "CONVERSATION_TYPE" | "CONVERSATION_INPUTS"
   >("HIDDEN");
   const [selectedConversationType, setSelectedConversationType] = useState<
-    NonNullable<Conversation["type"]> | undefined
+    "TOPIC" | "EVENT" | "RELEASE" | undefined
   >(undefined);
-  const { postConversation, isPending, error } = usePostConversation();
 
   return (
     <Dialog
@@ -107,7 +185,25 @@ function MultiStepCreateTopicButton() {
           </DialogDescription>
         </DialogHeader>
         {step === "CONVERSATION_TYPE" && (
-          <SelectTopicType
+          <SelectItemToBeCreatedType
+            types={[
+              {
+                value: "TOPIC",
+                label: "Discussion",
+                description: "Sujets divers et variés...",
+              },
+              {
+                value: "EVENT",
+                label: "Evénement",
+                description:
+                  "Annoncer un concert, une performance et autres événements...",
+              },
+              {
+                value: "RELEASE",
+                label: "Sortie",
+                description: "Sortie de disque, fanzine, livre, bd...",
+              },
+            ]}
             onSuccess={(conversationType) => {
               setSelectedConversationType(conversationType);
               setStep("CONVERSATION_INPUTS");
@@ -115,37 +211,12 @@ function MultiStepCreateTopicButton() {
           />
         )}
         {step === "CONVERSATION_INPUTS" && (
-          <CreateTopicForm
-            conversationType={selectedConversationType ?? "TOPIC"}
-            onSubmit={(values) => {
-              postConversation(
-                {
-                  title: values.title,
-                  description: values.description,
-                  type: selectedConversationType ?? "TOPIC",
-                  cover: values.cover,
-                  startsAt: values.startsAt,
-                  endsAt: values.endsAt,
-                  timezone: values.timezone,
-                  price: values.price,
-                  venue: values.venue,
-                  url: values.url,
-                  closedToContributionsAt: values.closedToContributionsAt,
-                },
-                {
-                  onSuccess: (data) => {
-                    setStep("HIDDEN");
-                    router.push(`/forum/${data.id}`);
-                  },
-                }
-              );
+          <Form
+            selectedConversationType={selectedConversationType ?? "TOPIC"}
+            onSuccess={(data) => {
+              setStep("HIDDEN");
+              router.push(`/forum/${data.id}`);
             }}
-            isPending={isPending}
-            error={error as Error | null}
-            submitLabel={
-              CONVERSATION_TYPE_LABELS[selectedConversationType ?? "TOPIC"]
-                .submit
-            }
           />
         )}
       </DialogContent>

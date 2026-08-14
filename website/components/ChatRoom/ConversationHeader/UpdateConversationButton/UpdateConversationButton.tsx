@@ -12,9 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
-import useDeleteConversationCover from "@/lib/forum/useDeleteConversationCover";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
-import useUpdateConversationCover from "@/lib/forum/useUpdateConversationCover";
 import { Conversation } from "@/lib/types";
 
 export default function UpdateConversationButton({
@@ -25,19 +23,10 @@ export default function UpdateConversationButton({
   conversation: Conversation;
 }) {
   const [open, setOpen] = useState(false);
-  const [pendingCover, setPendingCover] = useState<File | undefined>(undefined);
-  const { deleteConversationCover, isPending: isDeletingCover } =
-    useDeleteConversationCover();
-  const { updateConversationCover, isPending: isUpdatingCover } =
-    useUpdateConversationCover();
-  const {
-    updateConversation,
-    isPending: isUpdatingDetails,
-    error,
-  } = useUpdateConversation({
+
+  const { updateConversation, isPending, error } = useUpdateConversation({
     onSuccess: () => setOpen(false),
   });
-  const isPending = isDeletingCover || isUpdatingDetails || isUpdatingCover;
 
   if (!me?.canUpdateConversation(conversation)) return null;
 
@@ -55,50 +44,20 @@ export default function UpdateConversationButton({
           </DialogDescription>
         </DialogHeader>
         <CreateTopicForm
-          conversationType={
-            (conversation.type as NonNullable<Conversation["type"]>) ?? "TOPIC"
-          }
+          conversationType={conversation.type}
           initialValues={{
             title: conversation.title,
             description: conversation.description ?? undefined,
-            startsAt: conversation.startsAt
-              ? new Date(conversation.startsAt)
-              : undefined,
-            endsAt: conversation.endsAt
-              ? new Date(conversation.endsAt)
-              : undefined,
-            price: conversation.price,
-            venue: conversation.venue,
-            url: conversation.url,
-            closedToContributionsAt: conversation.closedToContributionsAt
-              ? new Date(conversation.closedToContributionsAt)
-              : null,
           }}
           onSubmit={(values) => {
-            if (pendingCover) {
-              updateConversationCover({
-                id: conversation.id,
-                cover: pendingCover,
-              });
-            }
             updateConversation({
               id: conversation.id,
               title: values.title,
               description: values.description,
-              startsAt: values.startsAt,
-              endsAt: values.endsAt,
-              timezone: values.timezone,
-              price: values.price,
-              venue: values.venue,
-              url: values.url,
-              closedToContributionsAt: values.closedToContributionsAt,
             });
           }}
           isPending={isPending}
           error={error as Error | null}
-          coverUrl={conversation.coverUrl ?? undefined}
-          onDeleteCover={() => deleteConversationCover(conversation.id)}
-          onUpdateCover={setPendingCover}
           submitLabel="Sauver"
         />
       </DialogContent>

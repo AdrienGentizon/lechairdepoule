@@ -6,7 +6,7 @@ import getUser from "@/lib/auth/getUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
-import { ConversationFormSchema, ConversationTypeEnum } from "@/lib/schemas";
+import { ConversationFormSchema } from "@/lib/schemas";
 import { CacheKey, Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -24,9 +24,7 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const payload = Object.fromEntries(formData.entries());
 
-    const parsedInputs = ConversationFormSchema.extend({
-      type: ConversationTypeEnum,
-    }).safeParse(payload);
+    const parsedInputs = ConversationFormSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
       logger.append({ payload });
@@ -53,16 +51,8 @@ export async function POST(req: NextRequest) {
     const insertedConversation = await insertConversation({
       title: parsedInputs.data.title,
       description: parsedInputs.data.description,
-      type: parsedInputs.data.type,
       user: { id: user.id, pseudo: user.pseudo ?? "", bannedAt: user.bannedAt },
       cover,
-      startsAt: parsedInputs.data.startsAt,
-      endsAt: parsedInputs.data.endsAt,
-      timezone: parsedInputs.data.timezone,
-      price: parsedInputs.data.price,
-      venue: parsedInputs.data.venue,
-      url: parsedInputs.data.url,
-      closedToContributionsAt: parsedInputs.data.closedToContributionsAt,
     });
 
     if (!insertedConversation)

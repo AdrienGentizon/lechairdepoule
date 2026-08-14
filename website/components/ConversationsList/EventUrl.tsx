@@ -1,15 +1,17 @@
 import { useId } from "react";
 
+import { getEventMainUrl } from "@/lib/events";
 import { cn } from "@/lib/utils";
 
 export default function EventUrl({
-  url,
+  event,
   className,
 }: {
-  url: string | null;
+  event: { url: string | null; description: string | null };
   className?: string;
 }) {
   const labelId = useId();
+  const url = getEventMainUrl(event);
 
   if (!url) return null;
 

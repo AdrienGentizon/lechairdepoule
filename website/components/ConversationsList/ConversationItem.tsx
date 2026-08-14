@@ -22,25 +22,11 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         <strong
           className={cn(
             "grid w-full grid-cols-[1fr_auto] grid-rows-1 items-start gap-2 pb-2 font-semibold uppercase leading-none",
-            conversation.startsAt && "grid-cols-[1fr_auto_auto]",
             conversation.reportedAt && "text-neutral-400 line-through"
           )}
         >
           {conversation.title}
-          {conversation.startsAt && (
-            <em className="font-base whitespace-nowrap text-xs not-italic leading-4 text-purple-300">{`${new Date(
-              conversation.startsAt
-            ).toLocaleDateString(undefined, {
-              weekday: "short",
-              month: "2-digit",
-              day: "2-digit",
-            })} à ${new Date(conversation.startsAt).toLocaleTimeString(
-              undefined,
-              {
-                timeStyle: "short",
-              }
-            )}`}</em>
-          )}
+
           <ConversationIcon type={conversation.type} className="size-4" />
         </strong>
         <p

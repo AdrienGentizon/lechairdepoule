@@ -1,4 +1,5 @@
 import sql from "../db";
+import { isConversationType } from "../types";
 
 export default async function selectConversationFromId(conversationId: string) {
   return (
@@ -7,19 +8,14 @@ export default async function selectConversationFromId(conversationId: string) {
         id: string;
         title: string;
         description: string | null;
-        type: string | null;
-        startsAt: string | null;
-        endsAt: string | null;
-        timezone: string | null;
-        price: string | null;
-        venue: string | null;
-        url: string | null;
+        type: string;
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
         isPinned: boolean;
-        closedToContributionsAt: string | null;
         createdAt: string;
+        updatedAt: string;
+        deletedAt: string | null;
         reportedAt: string | null;
         userId: string;
         userPseudo: string | null;
@@ -30,18 +26,13 @@ export default async function selectConversationFromId(conversationId: string) {
         c.title,
         c.description,
         c.type,
-        em.starts_at::text AS "startsAt",
-        em.ends_at::text AS "endsAt",
-        em.timezone,
-        em.price AS "price",
-        em.venue AS "venue",
-        em.url AS "url",
         c.image_url AS "coverUrl",
         c.image_width as "coverWidth",
         c.image_height as "coverHeight",
         c.is_pinned AS "isPinned",
-        c.closed_to_contributions_at::text AS "closedToContributionsAt",
         c.created_at::text AS "createdAt",
+        c.updated_at::text AS "updatedAt",
+        c.deleted_at::text AS "deletedAt",
         c.reported_at::text AS "reportedAt",
         u.id::text AS "userId",
         u.pseudo AS "userPseudo",
@@ -49,13 +40,13 @@ export default async function selectConversationFromId(conversationId: string) {
       FROM
         public.conversations c
         JOIN public.users u ON c.created_by = u.id
-        LEFT JOIN public.event_metadata em ON em.conversation_id = c.id
       WHERE
         c.id = ${conversationId}
         AND c.deleted_at IS NULL;`
   )
     .map(
       ({
+        type,
         userId,
         userPseudo,
         userBannedAt,
@@ -65,6 +56,7 @@ export default async function selectConversationFromId(conversationId: string) {
         ...conversation
       }) => ({
         ...conversation,
+        type: isConversationType(type) ? type : "TOPIC",
         coverUrl,
         coverWidth: coverWidth ? parseInt(coverWidth) : null,
         coverHeight: coverHeight ? parseInt(coverHeight) : null,
