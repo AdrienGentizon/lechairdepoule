@@ -9,7 +9,7 @@
     "website:format:write": "pnpm --filter website format:write",
     "website:lint": "pnpm --filter website lint",
     "website:typecheck": "pnpm --filter website typecheck",
-    "website:validate": "pnpm website:format && pnpm website:lint && pnpm website:typecheck",
+    "website:validate": "pnpm website:typecheck && pnpm website:lint && pnpm website:format",
     "format": "pnpm website:format",
     "format:write": "pnpm website:format:write",
     "lint": "pnpm website:lint",
