@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 
 import useMe from "@/lib/auth/useMe";
 import insertEventAction from "@/lib/events/insertEventAction";
@@ -101,18 +102,32 @@ function Form({
 
 function MultiStepCreateEventButton() {
   const router = useRouter();
+  const [createParam, setCreateParam] = useQueryState(
+    "create",
+    parseAsStringEnum(["event", "release"])
+  );
+  const initialEventType: Event["type"] | undefined =
+    createParam === "event"
+      ? "EVENT"
+      : createParam === "release"
+        ? "RELEASE"
+        : undefined;
+
   const [step, setStep] = useState<"HIDDEN" | "EVENT_TYPE" | "EVENT_INPUTS">(
-    "HIDDEN"
+    initialEventType ? "EVENT_INPUTS" : "HIDDEN"
   );
   const [selectedEventType, setSelectedEventType] = useState<
     Event["type"] | undefined
-  >(undefined);
+  >(initialEventType);
 
   return (
     <Dialog
       open={step !== "HIDDEN"}
       onOpenChange={(open) => {
-        if (!open) return setStep("HIDDEN");
+        if (!open) {
+          setCreateParam(null);
+          return setStep("HIDDEN");
+        }
         setStep("EVENT_TYPE");
       }}
     >

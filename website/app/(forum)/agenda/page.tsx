@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { SearchParams } from "nuqs";
 
 import CreateEventButton from "@/components/CreateEventButton/CreateEventButton";
 import EventItem from "@/components/EventsList/EventItem";
@@ -8,20 +7,12 @@ import TextParser from "@/components/TextParser";
 import { LOCALE, getEventTime } from "@/lib/date";
 import getCachedEvents from "@/lib/events/getChachedEvents";
 
-export default async function AgendaPage(
-  {
-    // searchParams,
-  }: {
-    searchParams: Promise<SearchParams>;
-  }
-) {
+export default async function AgendaPage() {
   const events = await getCachedEvents();
 
   const sortedEvents = events.toSorted((a, b) =>
     a.startsAt.localeCompare(b.startsAt)
   );
-
-  // const { create, nanani, event } = await searchParams;
 
   return (
     <>

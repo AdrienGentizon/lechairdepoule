@@ -10,6 +10,7 @@ import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
+import { buttonClassName } from "../Button/Button";
 import SelectItemToBeCreatedType from "../CreateEventButton/SelectItemToBeCreatedType";
 import {
   Dialog,
@@ -69,6 +70,9 @@ function Redirection({
       <p className="text-sm font-light text-neutral-200">
         vous allez être redirigé automatiquement dans {countdown / 1000}s.
       </p>
+      <Link href={url} className={buttonClassName("w-full")}>
+        Y aller maintenant
+      </Link>
     </div>
   );
 }
