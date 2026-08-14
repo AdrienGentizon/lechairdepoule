@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { Me } from "@/lib/auth/useMe";
-import { getConversationMetadataAsString } from "@/lib/forum/utils";
+import { getConversationMetadata } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,8 @@ export default function ChatRoomHeader({
   me?: Me;
   conversation: Conversation;
 }) {
+  const { pseudo, since } = getConversationMetadata(conversation);
+
   return (
     <header className="bg-background text-foreground flex flex-col py-2">
       <div className="flex items-center gap-4">
@@ -44,9 +46,10 @@ export default function ChatRoomHeader({
           <ReportConversationButton me={me} conversation={conversation} />
         </div>
       </div>
-      <div className="flex">
-        <h3 className="ml-auto pr-2 font-mono text-xs">
-          {getConversationMetadataAsString(conversation)}
+      <div className="flex pt-1">
+        <h3 className="ml-auto pr-2 text-xs">
+          <span className="sr-only">créé par </span>
+          <span className="font-semibold">{pseudo}</span>, {since}
         </h3>
       </div>
     </header>

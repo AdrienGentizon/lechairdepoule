@@ -8,6 +8,8 @@ export default function ConversationIcon({
 }: Omit<ComponentProps<LucideIcon>, "type"> & {
   type: "TOPIC" | "EVENT" | "RELEASE";
 }) {
+  const disabledIcon = true;
+  if (disabledIcon) return <></>;
   if (type === "TOPIC") return <MessageCircle {...props} />;
   if (type === "EVENT") return <MicVocal {...props} />;
   if (type === "RELEASE") return <Newspaper {...props} />;

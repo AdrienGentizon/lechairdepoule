@@ -1,13 +1,13 @@
 import { getSinceAsString } from "../date";
 import { Conversation } from "../types";
 
-export function getConversationMetadataAsString(
+export function getConversationMetadata(
   conversation: Omit<Conversation, "messages">
 ) {
-  const author = `créé par ${conversation.createdBy.pseudo}`;
-  const since = `${getSinceAsString(new Date(conversation.createdAt))}`;
-  const showSince = ["EVENT", "RELEASE"].includes(conversation.type ?? "");
-  return showSince ? [author, since].join(" ") : author;
+  return {
+    pseudo: conversation.createdBy.pseudo,
+    since: getSinceAsString(new Date(conversation.createdAt)),
+  };
 }
 
 export function formatTimestampAsString(timestampedItem: {

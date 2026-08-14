@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import BanUserTrigger from "@/components/BanUserTrigger/BanUserTrigger";
 import { Me } from "@/lib/auth/useMe";
-import { getConversationMetadataAsString } from "@/lib/forum/utils";
+import { getConversationMetadata } from "@/lib/forum/utils";
 import { Conversation } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,8 @@ type Props = {
 };
 
 export default function ConversationItem({ conversation, variant, me }: Props) {
+  const { pseudo, since } = getConversationMetadata(conversation);
+
   return (
     <li className="relative flex h-min flex-col border-b border-white px-4 py-2 first:border-t">
       <Link href={`/forum/${conversation.id}`} className="flex flex-col">
@@ -37,8 +39,9 @@ export default function ConversationItem({ conversation, variant, me }: Props) {
         >
           {conversation.description}
         </p>
-        <small className="ml-auto w-fit pt-2 text-xs">
-          {getConversationMetadataAsString(conversation)}
+        <small className="ml-auto text-xs text-neutral-300">
+          <span className="sr-only">créé par </span>
+          <span className="font-semibold">{pseudo}</span>, {since}
         </small>
       </Link>
       {variant === "admin" && me && (
