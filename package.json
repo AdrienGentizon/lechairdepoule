@@ -10,18 +10,11 @@
     "website:lint": "pnpm --filter website lint",
     "website:typecheck": "pnpm --filter website typecheck",
     "website:validate": "pnpm website:format && pnpm website:lint && pnpm website:typecheck",
-    "forum:dev": "pnpm --filter forum dev",
-    "forum:build": "pnpm --filter forum build",
-    "forum:format": "pnpm --filter forum format",
-    "forum:format:write": "pnpm --filter forum format:write",
-    "forum:lint": "pnpm --filter forum lint",
-    "forum:typecheck": "pnpm --filter forum typecheck",
-    "forum:validate": "pnpm forum:format && pnpm forum:lint && pnpm forum:typecheck",
-    "format": "pnpm website:format && pnpm forum:format",
-    "format:write": "pnpm website:format:write && pnpm forum:format:write",
-    "lint": "pnpm website:lint && pnpm forum:lint",
-    "validate": "pnpm website:validate && pnpm forum:validate",
-    "build": "pnpm website:build && pnpm forum:build"
+    "format": "pnpm website:format",
+    "format:write": "pnpm website:format:write",
+    "lint": "pnpm website:lint",
+    "validate": "pnpm website:validate",
+    "build": "pnpm website:build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
