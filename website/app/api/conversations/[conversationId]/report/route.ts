@@ -18,7 +18,7 @@ export async function POST(
     const reportedBy = await getUser(req);
     logger.append({ reportedBy: getLoggableUser(reportedBy) });
 
-    if (!reportedBy || reportedBy.bannedAt || reportedBy.role !== "admin") {
+    if (!reportedBy || reportedBy.bannedAt) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
