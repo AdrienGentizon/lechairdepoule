@@ -145,8 +145,7 @@ export type CacheKey =
   | "users"
   | "banned-users"
   | "cachedAgenda"
-  | "cachedEvents"
-  | `events-${string}`;
+  | "cachedEvents";
 
 export type BroadCastKey =
   | "new_message"

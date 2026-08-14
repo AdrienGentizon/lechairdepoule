@@ -1,7 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { CacheKey, Conversation, User } from "../types";
 
@@ -37,18 +35,13 @@ function getPermissions(user: User) {
 
 export default function useMe() {
   const { isLoaded, userId } = useAuth();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["me" satisfies CacheKey] });
-  }, [userId, queryClient]);
 
   const {
     data: me,
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["me" satisfies CacheKey],
+    queryKey: ["me" satisfies CacheKey, userId],
     enabled: isLoaded && userId !== null && userId !== undefined,
     queryFn: async () => {
       const response = await fetch(`/api/me`, {
@@ -71,7 +64,7 @@ export default function useMe() {
           ...getPermissions(me),
         }
       : undefined,
-    isFetching,
+    isFetching: !isLoaded || isFetching,
     error,
   };
 }
