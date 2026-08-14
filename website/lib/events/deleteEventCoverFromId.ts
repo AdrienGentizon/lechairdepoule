@@ -20,7 +20,8 @@ export default async function deleteEventCoverFromId({
         SET
           image_url = NULL,
           image_width = NULL,
-          image_height = NULL
+          image_height = NULL,
+          updated_at = ${new Date()}
         WHERE
           id = ${eventId}
           AND created_by = ${userId}

@@ -35,7 +35,8 @@ export default async function updateEventCoverFromId({
         SET
           image_url = ${cover.url},
           image_width = ${cover.width},
-          image_height = ${cover.height}
+          image_height = ${cover.height},
+          updated_at = ${new Date()}
         WHERE
           id = ${eventId}
           AND created_by = ${userId}
