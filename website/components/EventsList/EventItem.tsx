@@ -113,6 +113,7 @@ export default function EventItem({
   return (
     <li className="border-foreground relative isolate border-b py-2 first:border-t">
       <details
+        id={event.id}
         name="events"
         className="relative isolate cursor-pointer scroll-mt-6"
       >

@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import Ampoule from "@/public/ampoule.png";
 
 import RefreshOnFocus from "../RefreshOnFocus/RefreshOnFocus";
-import ScrollIntoView from "./ScrollIntoView";
+import OpenEventFromSearchParam from "./OpenEventFromSearchParam";
+import ScrollOpenedEventIntoView from "./ScrollOpenedEventIntoView";
 
 function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   return (
@@ -54,7 +55,8 @@ export default function EventsList({
       {...props}
     >
       {children}
-      <ScrollIntoView />
+      <ScrollOpenedEventIntoView />
+      <OpenEventFromSearchParam />
       <RefreshOnFocus />
     </ul>
   );
