@@ -1,4 +1,5 @@
 import sql from "../db";
+import { isEventType } from "../types";
 
 export default async function selectEvents({
   from,
@@ -63,6 +64,7 @@ export default async function selectEvents({
       e.starts_at ASC;`
   ).map(
     ({
+      type,
       userId,
       userPseudo,
       userBannedAt,
@@ -72,6 +74,7 @@ export default async function selectEvents({
       ...event
     }) => ({
       ...event,
+      type: isEventType(type) ? type : "EVENT",
       coverUrl,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,

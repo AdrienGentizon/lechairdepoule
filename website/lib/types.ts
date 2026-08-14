@@ -1,7 +1,3 @@
-import z from "zod";
-
-import { EventTypeEnum } from "./schemas";
-
 export type User = {
   id: string;
   pseudo: string | null;
@@ -41,7 +37,7 @@ export type Message = {
 
 export type Event = {
   id: string;
-  type: ({} & string) | z.infer<typeof EventTypeEnum>;
+  type: "EVENT" | "RELEASE";
   title: string;
   description: string | null;
   coverUrl: string | null;
@@ -60,6 +56,14 @@ export type Event = {
     pseudo: string;
   };
 };
+
+export function isEventType(
+  type: ({} & string) | "EVENT" | "RELEASE"
+): type is Event["type"] {
+  return (["EVENT", "RELEASE"] satisfies Event["type"][]).includes(
+    type as Event["type"]
+  );
+}
 
 export type ContentfulEvent = Event & {
   shortDescription: string | null;

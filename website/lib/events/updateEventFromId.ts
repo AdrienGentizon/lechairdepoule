@@ -1,4 +1,5 @@
 import sql from "../db";
+import { Event, isEventType } from "../types";
 
 export default async function updateEventFromId({
   eventId,
@@ -15,7 +16,7 @@ export default async function updateEventFromId({
 }: {
   eventId: string;
   userId: string;
-  type: string;
+  type: Event["type"];
   title: string;
   description: string;
   startsAt: string;
@@ -83,6 +84,7 @@ export default async function updateEventFromId({
 
   return {
     ...updatedEvent,
+    type: isEventType(updatedEvent.type) ? updatedEvent.type : "EVENT",
     coverWidth: updatedEvent.coverWidth
       ? parseInt(updatedEvent.coverWidth)
       : null,
