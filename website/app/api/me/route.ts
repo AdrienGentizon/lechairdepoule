@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const user = await getUser(req);
     logger.append(getLoggableUser(user));
 
-    if (!user || user.bannedAt) {
+    if (!user) {
       logger.withError("unauthorized").flush();
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }

@@ -8,6 +8,15 @@ export type User = {
   tosAcceptedAt: string | null;
 };
 
+export type BanAppeal = {
+  id: string;
+  userId: string;
+  body: string;
+  createdAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+};
+
 export type RawMessage = {
   id: string;
   body: string;

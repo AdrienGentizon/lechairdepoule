@@ -32,6 +32,13 @@ export const ConversationFormSchema = z.object({
     .max(500, "Description trop longue (500 caractères max)"),
 });
 
+export const BanAppealFormSchema = z.object({
+  body: z
+    .string()
+    .min(10, "Message trop court (10 caractères min)")
+    .max(1000, "Message trop long (1000 caractères max)"),
+});
+
 export const EventFormSchema = z.object({
   type: z.enum(["EVENT", "RELEASE"]),
   title: z
