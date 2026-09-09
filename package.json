@@ -9,6 +9,8 @@
     "website:format:write": "pnpm --filter website format:write",
     "website:lint": "pnpm --filter website lint",
     "website:typecheck": "pnpm --filter website typecheck",
+    "website:db:dump": "pnpm --filter website db:dump",
+    "website:db:restore": "pnpm --filter website db:restore",
     "website:validate": "pnpm website:typecheck && pnpm website:lint && pnpm website:format",
     "format": "pnpm website:format",
     "format:write": "pnpm website:format:write",

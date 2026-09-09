@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "format": "prettier . --check",
     "format:write": "prettier . --write",
-    "typecheck": "tsc --noEmit --skipLibCheck"
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "db:dump": "set -a && source .env.local && set +a && pg_dump -Fc -d \"$PG_BACKUP_FROM_CONNECTION_STRING\" -f ../backup.dump",
+    "db:restore": "set -a && source .env.local && set +a && pg_restore --no-owner --no-privileges --clean --if-exists -d \"$PG_RESTORE_TO_CONNECTION_STRING\" ../backup.dump"
   },
   "dependencies": {
     "@clerk/backend": "^2.33.5",
