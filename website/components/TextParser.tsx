@@ -19,7 +19,7 @@ export default function TextParser({ text }: { text: string }) {
               href={part}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-purple-300 underline transition-colors hover:text-purple-400"
+              className="break-all text-purple-300 underline transition-colors hover:text-purple-400"
             >
               {part}
             </a>
