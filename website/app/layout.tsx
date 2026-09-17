@@ -52,7 +52,12 @@ export default async function RootLayout({
         </a>
         <RandomBackground assets={assets} />
         <Header />
-        <Main>{children}</Main>
+        <Main>
+          <noscript className="flex items-center justify-center text-center align-middle text-sm font-medium text-purple-300">
+            Ce site nécessite JavaScript pour fonctionner correctement.
+          </noscript>
+          {children}
+        </Main>
         <Footer />
       </body>
       <Analytics />
