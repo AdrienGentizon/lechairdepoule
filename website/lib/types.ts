@@ -148,10 +148,7 @@ export type CacheKey =
   | "cachedEvents";
 
 export type BroadCastKey =
-  | "new_message"
-  | "reported_message"
-  | "banned_user"
-  | "reported_conversation";
+  "new_message" | "reported_message" | "banned_user" | "reported_conversation";
 
 export type BroadcastPayload<K = BroadCastKey, T = Record<string, unknown>> = {
   type: "broadcast";
