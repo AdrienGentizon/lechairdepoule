@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import ContentfulImage from "@/components/ContentfulImage";
+import { cn } from "@/lib/utils";
 import getAlbumCovers from "@/queries/getAlbumCovers";
 
 export const revalidate = 86400;
@@ -11,9 +12,10 @@ const IMAGE_SIZES = [
   "100vw",
 ].join(", ");
 
-function getLoadingProps(index: number) {
-  const isLargestContentfulPaint = index === 0;
-  if (isLargestContentfulPaint) {
+const FIRST_CHILD_IMAGE_SIZES = "(min-width: 672px) 672px, 100vw";
+
+function getLoadingProps(isFirstChild: boolean) {
+  if (isFirstChild) {
     return { loading: "eager", fetchPriority: "high" } as const;
   }
   return { loading: "lazy" } as const;
@@ -28,19 +30,23 @@ export default async function AlbumCoversPage() {
     <>
       <h1 className="sr-only">Pochettes d&apos;albums</h1>
       <ul className="grid h-min grid-cols-1 gap-0 landscape:grid-cols-3">
-        {albumCovers.map((albumCover, index) => {
+        {albumCovers.map((albumCover, n) => {
+          const isFirstChild = n === 0;
           return (
             <li
               key={albumCover.sys.id}
-              className="flex items-center justify-center"
+              className={cn(
+                "flex items-center justify-center",
+                isFirstChild && "col-span-full"
+              )}
             >
               <ContentfulImage
                 src={albumCover.picture.url}
                 alt={`${albumCover.title} remake`}
                 width={albumCover.picture.width}
                 height={albumCover.picture.height}
-                sizes={IMAGE_SIZES}
-                {...getLoadingProps(index)}
+                sizes={isFirstChild ? FIRST_CHILD_IMAGE_SIZES : IMAGE_SIZES}
+                {...getLoadingProps(isFirstChild)}
               />
             </li>
           );
