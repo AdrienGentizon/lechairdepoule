@@ -48,8 +48,7 @@ export default function EventsList({
   return (
     <ul
       className={cn(
-        "flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm pb-4 pt-6",
-        "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]",
+        "mask-fade-y flex min-h-0 scroll-pb-16 flex-col overflow-y-auto rounded-sm pb-4 pt-6",
         className
       )}
       {...props}

@@ -15,8 +15,7 @@ export default function ConversationsList({
   return (
     <ul
       className={cn(
-        "relative grid auto-rows-min grid-cols-1",
-        "mask-[linear-gradient(to_bottom,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]",
+        "mask-fade-y relative grid auto-rows-min grid-cols-1",
         className
       )}
     >

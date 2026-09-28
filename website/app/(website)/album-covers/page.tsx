@@ -29,29 +29,31 @@ export default async function AlbumCoversPage() {
   return (
     <>
       <h1 className="sr-only">Pochettes d&apos;albums</h1>
-      <ul className="grid h-min grid-cols-1 gap-0 landscape:grid-cols-3">
-        {albumCovers.map((albumCover, n) => {
-          const isFirstChild = n === 0;
-          return (
-            <li
-              key={albumCover.sys.id}
-              className={cn(
-                "flex items-center justify-center",
-                isFirstChild && "col-span-full"
-              )}
-            >
-              <ContentfulImage
-                src={albumCover.picture.url}
-                alt={`${albumCover.title} remake`}
-                width={albumCover.picture.width}
-                height={albumCover.picture.height}
-                sizes={isFirstChild ? FIRST_CHILD_IMAGE_SIZES : IMAGE_SIZES}
-                {...getLoadingProps(isFirstChild)}
-              />
-            </li>
-          );
-        })}
-      </ul>
+      <div className="mask-fade-y overflow-y-auto py-5">
+        <ul className="grid h-min grid-cols-1 gap-0 landscape:grid-cols-3">
+          {albumCovers.map((albumCover, n) => {
+            const isFirstChild = n === 0;
+            return (
+              <li
+                key={albumCover.sys.id}
+                className={cn(
+                  "flex items-center justify-center",
+                  isFirstChild && "col-span-full"
+                )}
+              >
+                <ContentfulImage
+                  src={albumCover.picture.url}
+                  alt={`${albumCover.title} remake`}
+                  width={albumCover.picture.width}
+                  height={albumCover.picture.height}
+                  sizes={isFirstChild ? FIRST_CHILD_IMAGE_SIZES : IMAGE_SIZES}
+                  {...getLoadingProps(isFirstChild)}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </>
   );
 }

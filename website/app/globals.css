@@ -109,6 +109,16 @@
   }
 }
 
+@utility mask-fade-y {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 1.25rem,
+    black calc(100% - 1.25rem),
+    transparent
+  );
+}
+
 #sentry-feedback {
   --inset: auto 0 0 auto;
   --page-margin: 1rem;
