@@ -10,6 +10,8 @@ import getContactPage, {
   ContactPage as ContactPageType,
 } from "@/queries/getContactPage";
 
+export const revalidate = 86400;
+
 const METADATA = {
   CDP: {
     title: "Le Chair de Poule",

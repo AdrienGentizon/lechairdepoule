@@ -1,7 +1,7 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-import { CollectionTag } from "@/lib/contentful";
+import { CollectionTag, EntryTag } from "@/lib/contentful";
 import env from "@/lib/env";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     revalidateTag("eventCollection" as CollectionTag, {});
     revalidateTag("itemCollection" as CollectionTag, {});
     revalidateTag("albumCoverCollection" as CollectionTag, {});
+    revalidateTag("contact" as EntryTag, {});
 
     logger.flush();
     return NextResponse.json({ revalidated: true, now: Date.now() });
