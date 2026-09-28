@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "website:validate": "pnpm website:format && pnpm website:lint && pnpm website:typecheck",
     "dev": "pnpm --filter website dev",
     "format": "pnpm website:format",
     "lint": "pnpm website:lint",
-    "validate": "pnpm website:validate",
+    "validate": "pnpm --filter website validate",
     "build": "pnpm website:build"
   },
   "devDependencies": {
