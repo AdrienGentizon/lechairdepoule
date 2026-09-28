@@ -16,13 +16,15 @@ export default function contentful() {
 }
 
 export type EntryTag = "contact" | "randomBackground" | "termsOfService";
-export type CollectionTag = "eventCollection" | "itemCollection";
+export type CollectionTag =
+  "eventCollection" | "itemCollection" | "albumCoverCollection";
 
 type CollectionData<K extends CollectionTag, T = unknown> = {
   data?: Record<
     K,
     {
       items: T[];
+      total: number;
     }
   >;
 };

@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
 
     revalidateTag("eventCollection" as CollectionTag, {});
     revalidateTag("itemCollection" as CollectionTag, {});
+    revalidateTag("albumCoverCollection" as CollectionTag, {});
 
     logger.flush();
     return NextResponse.json({ revalidated: true, now: Date.now() });

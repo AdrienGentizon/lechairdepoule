@@ -1,3 +1,5 @@
+"use client";
+
 import Image, { ImageLoaderProps, ImageProps } from "next/image";
 
 function contentfulLoader({ src, width, quality }: ImageLoaderProps) {
