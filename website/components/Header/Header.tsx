@@ -6,6 +6,7 @@ import AgendaPNG from "@/public/agenda.png";
 import ContactPNG from "@/public/contact.png";
 import ForumPNG from "@/public/forum.png";
 import HorsLesMursPNG from "@/public/hors-les-murs.png";
+import PochetteDeLaSemaine from "@/public/pochette-de-la-semaine.png";
 
 import LogoSite from "../png/LogoSite";
 import HeaderClientLogic from "./HeaderClientLogic";
@@ -39,6 +40,14 @@ const navItems = [
     "data-nav-link-overlay": "/agenda",
   },
 ];
+
+if (process.env.NODE_ENV === "development")
+  navItems.push({
+    href: "/album-covers",
+    src: PochetteDeLaSemaine,
+    alt: "La pochette de la semaine",
+    "data-nav-link-overlay": "/album-covers",
+  });
 
 export default function Header({ variant }: { variant?: "relative" }) {
   return (
