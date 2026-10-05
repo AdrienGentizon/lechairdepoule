@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter website dev",
-    "format": "pnpm website:format",
-    "lint": "pnpm website:lint",
-    "validate": "pnpm --filter website validate",
-    "build": "pnpm website:build"
+    "validate": "pnpm -r format && pnpm -r lint && pnpm -r typecheck",
+    "build": "pnpm --filter website build",
+    "start": "pnpm --filter website start"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
