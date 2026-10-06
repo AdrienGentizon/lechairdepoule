@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@source "../../ui";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-body: var(--font-family-body);
+  --font-courier: var(--font-family-courier);
+  --font-mono: monospace;
+  --color-border: hsl(var(--border));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-body text-foreground;
+  }
+  *:focus-visible {
+    @apply ring-2 ring-purple-300 outline-none ring-inset;
+  }
+}
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

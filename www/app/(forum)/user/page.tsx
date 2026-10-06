@@ -60,9 +60,9 @@ function UserPage({ me }: { me: User }) {
             });
 
           if (!parsedInputs.success) {
+            const errors = z.flattenError(parsedInputs.error).fieldErrors;
             return setErrors({
-              pseudo:
-                parsedInputs.error.formErrors.fieldErrors.pseudo?.toString(),
+              pseudo: errors.pseudo?.at(0)?.toString(),
             });
           }
 

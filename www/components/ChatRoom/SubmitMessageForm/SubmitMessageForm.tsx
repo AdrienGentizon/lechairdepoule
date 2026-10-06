@@ -77,7 +77,7 @@ export default function SubmitMessageForm({
         className={cn(
           "border-foreground bg-foreground font-courier min-h-20 w-full rounded-sm border px-4 py-2 text-black",
           !isActive &&
-            "border-foreground bg-background text-foreground min-h-auto border",
+            "min-h-auto border-foreground bg-background text-foreground border",
         )}
         rows={isActive ? undefined : 1}
         autoFocus={autoFocus}

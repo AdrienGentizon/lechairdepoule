@@ -49,9 +49,13 @@ export const EventFormSchema = z.object({
     .string()
     .min(1, "Description obligatoire")
     .max(500, "Description trop longue (500 caractères max)"),
-  startsAt: z
-    .string({ required_error: "Date de début obligatoire" })
-    .datetime({ offset: true, message: "Date de début invalide" }),
+  startsAt: z.iso.datetime({
+    offset: true,
+    error: (issue) =>
+      issue.input === undefined
+        ? "Date de début obligatoire"
+        : "Date de début invalide",
+  }),
   endsAt: NullishDateSchema,
   timezone: TimezoneSchema,
   price: PriceSchema,

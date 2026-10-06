@@ -14,6 +14,7 @@ const flaggedRedirections = [
 ];
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@cdp/ui"],
   images: {
     remotePatterns: [
       {
