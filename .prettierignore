@@ -1,1 +1,4 @@
-*.yaml
+pnpm-lock.yaml
+**/.next
+**/dist
+**/node_modules

@@ -1,0 +1,64 @@
+import { Skull } from "lucide-react";
+import Link from "next/link";
+
+import BanUserTrigger from "@/components/BanUserTrigger/BanUserTrigger";
+import { Me } from "@/lib/auth/useMe";
+import { getConversationMetadata } from "@/lib/forum/utils";
+import { Conversation } from "@/lib/types";
+import { cn } from "@/lib/utils";
+
+import ConversationIcon from "./ConversationIcon";
+
+type Props = {
+  conversation: Omit<Conversation, "messages">;
+  variant?: "admin";
+  me?: Me;
+};
+
+export default function ConversationItem({ conversation, variant, me }: Props) {
+  const { pseudo, since } = getConversationMetadata(conversation);
+
+  return (
+    <li className="relative flex h-min flex-col border-b border-white px-4 py-2 first:border-t">
+      <Link href={`/forum/${conversation.id}`} className="flex flex-col">
+        <strong
+          className={cn(
+            "grid w-full grid-cols-[1fr_auto] grid-rows-1 items-start gap-2 pb-2 font-semibold uppercase leading-none",
+            conversation.reportedAt && "text-neutral-400 line-through",
+          )}
+        >
+          {conversation.title}
+
+          <ConversationIcon type={conversation.type} className="size-4" />
+        </strong>
+        <p
+          className={cn(
+            "line-clamp-2 font-light leading-tight",
+            conversation.reportedAt && "text-neutral-400 line-through",
+          )}
+        >
+          {conversation.description}
+        </p>
+        <small className="ml-auto text-xs text-neutral-300">
+          <span className="sr-only">créé par </span>
+          <span className="font-semibold">{pseudo}</span>, {since}
+        </small>
+      </Link>
+      {variant === "admin" && me && (
+        <BanUserTrigger
+          me={me}
+          user={conversation.createdBy}
+          className="absolute"
+        >
+          <button
+            disabled={conversation.createdBy.bannedAt !== null}
+            className="bg-background right-4 inline-flex cursor-pointer items-center gap-1 rounded-sm border border-white px-2 py-0.5 text-xs hover:bg-neutral-700 disabled:hidden"
+          >
+            <Skull className="size-3" />
+            Bannir
+          </button>
+        </BanUserTrigger>
+      )}
+    </li>
+  );
+}
