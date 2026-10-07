@@ -1,0 +1,6 @@
+{
+  "tailwindCSS.experimental.configFile": {
+    "cms/app/globals.css": ["cms/**", "ui/**"],
+    "www/app/globals.css": "www/**"
+  }
+}
