@@ -12,17 +12,29 @@ import z from "zod";
 
 import Button from "@cdp/ui/Button";
 import { InputField } from "@cdp/ui/Form";
+import cn from "@cdp/ui/cn";
 
-import sendOTP from "@/actions/auth/sendOTP";
+import sendOTPToEmail from "@/actions/auth/sendOTPToEmail";
 import signInWithOTP from "@/actions/auth/signInWithOTP";
+import dictionaries from "@/components/auth/dictionaries";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import useT from "@/components/i18n/useT";
+import errorDictionaries from "@/lib/i18n/dictionaries/errors";
 
 function EmailForm({
   defaultEmail,
+  className,
   onOTPSent,
 }: {
   defaultEmail: string | undefined;
+  className?: string;
   onOTPSent: (email: string) => void;
 }) {
+  const locale = useLocale();
+  const zodError = z.locales[locale]().localeError;
+  const dictionary = useT(dictionaries);
+  const errorDictionary = useT(errorDictionaries);
+
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<{
     email?: string[];
@@ -32,19 +44,21 @@ function EmailForm({
   const submit = (form: HTMLFormElement) => {
     const parsedInputs = z
       .object({ email: z.email().max(254) })
-      .safeParse(Object.fromEntries(new FormData(form).entries()));
+      .safeParse(Object.fromEntries(new FormData(form).entries()), {
+        error: zodError,
+      });
 
     if (!parsedInputs.success) {
       return setErrors(z.flattenError(parsedInputs.error).fieldErrors);
     }
 
     startTransition(async () => {
-      const response = await sendOTP({
+      const response = await sendOTPToEmail({
         email: parsedInputs.data.email,
       });
 
       if (!response.success) {
-        return setErrors({ submit: [response.error] });
+        return setErrors({ submit: [errorDictionary[response.error]] });
       }
 
       onOTPSent(parsedInputs.data.email);
@@ -53,7 +67,7 @@ function EmailForm({
 
   return (
     <form
-      className="flex w-full max-w-sm flex-col p-2"
+      className={cn("flex flex-col p-2", className)}
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
@@ -61,7 +75,7 @@ function EmailForm({
       }}
     >
       <InputField
-        label={`Email`}
+        label={dictionary.email_label}
         id="email"
         name="email"
         type="email"
@@ -73,8 +87,8 @@ function EmailForm({
         onResetError={() => setErrors({})}
       />
 
-      <Button type="submit" disabled={isPending}>
-        Continue
+      <Button type="submit" className="mt-2" disabled={isPending}>
+        {dictionary.continue}
         {isPending ? (
           <ArrowsClockwiseIcon
             className="motion-safe:animate-spin"
@@ -90,11 +104,18 @@ function EmailForm({
 
 function OTPForm({
   email,
+  className,
   onChangeEmail,
 }: {
   email: string;
+  className?: string;
   onChangeEmail: () => void;
 }) {
+  const locale = useLocale();
+  const zodError = z.locales[locale]().localeError;
+  const dictionary = useT(dictionaries);
+  const errorDictionary = useT(errorDictionaries);
+
   const [isPending, startTransition] = useTransition();
   const [isResending, startResendTransition] = useTransition();
   const isBusy = isPending || isResending;
@@ -106,10 +127,10 @@ function OTPForm({
 
   const resend = () => {
     startResendTransition(async () => {
-      const response = await sendOTP({ email });
+      const response = await sendOTPToEmail({ email });
 
       if (!response.success) {
-        return setErrors({ resend: [response.error] });
+        return setErrors({ resend: [errorDictionary[response.error]] });
       }
 
       console.log("OTP resent");
@@ -120,9 +141,11 @@ function OTPForm({
     const parsedInputs = z
       .object({
         email: z.email().max(254),
-        otp: z.string().min(1, "required").max(6),
+        otp: z.string().min(1).max(6),
       })
-      .safeParse(Object.fromEntries(new FormData(form).entries()));
+      .safeParse(Object.fromEntries(new FormData(form).entries()), {
+        error: zodError,
+      });
 
     if (!parsedInputs.success) {
       return setErrors(z.flattenError(parsedInputs.error).fieldErrors);
@@ -135,14 +158,14 @@ function OTPForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [response.error] });
+        return setErrors({ submit: [errorDictionary[response.error]] });
       }
     });
   };
 
   return (
     <form
-      className="flex w-full max-w-sm flex-col p-2"
+      className={cn("flex flex-col p-2", className)}
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
@@ -152,7 +175,7 @@ function OTPForm({
       <input type="hidden" name="email" value={email} />
 
       <InputField
-        label={`Verification code`}
+        label={dictionary.otp_label}
         id="otp"
         name="otp"
         type="text"
@@ -164,7 +187,7 @@ function OTPForm({
         hint={
           <div className="flex flex-col">
             <span>
-              We sent a code to <strong>{email}</strong>.
+              {dictionary.code_sent_to} <strong>{email}</strong>.
             </span>
             <Button
               type="button"
@@ -173,7 +196,7 @@ function OTPForm({
               disabled={isBusy}
               onClick={onChangeEmail}
             >
-              Oops, wrong email?
+              {dictionary.wrong_email_hint}
             </Button>
           </div>
         }
@@ -190,7 +213,7 @@ function OTPForm({
           ) : (
             <SignInIcon aria-hidden />
           )}
-          Sign in
+          {dictionary.sign_in}
         </Button>
         <Button
           type="button"
@@ -199,14 +222,14 @@ function OTPForm({
           disabled={isBusy}
           onClick={resend}
         >
-          Resend code
+          {dictionary.resend_code}
         </Button>
       </div>
     </form>
   );
 }
 
-export default function SignInForm() {
+export default function SignInForm({ className }: { className?: string }) {
   const [state, setState] = useState<
     { step: "email"; email?: string } | { step: "otp"; email: string }
   >({ step: "email" });
@@ -215,6 +238,7 @@ export default function SignInForm() {
     return (
       <OTPForm
         email={state.email}
+        className={className}
         onChangeEmail={() => setState({ step: "email", email: state.email })}
       />
     );
@@ -223,6 +247,7 @@ export default function SignInForm() {
   return (
     <EmailForm
       defaultEmail={state.email}
+      className={className}
       onOTPSent={(email) => setState({ step: "otp", email })}
     />
   );

@@ -32,13 +32,13 @@ Runs on [http://localhost:3000](http://localhost:3000) so it can run alongside c
 
 ## Scripts
 
-| Script            | Description                                     |
-| ----------------- | ----------------------------------------------- |
-| `pnpm dev`        | Start the dev server on port 3000               |
-| `pnpm build`      | Production build                                |
-| `pnpm start`      | Serve the production build                      |
-| `pnpm lint`       | Lint with ESLint                                |
-| `pnpm typecheck`  | Generate route types and run `tsc`              |
-| `pnpm format`     | Format with Prettier                            |
-| `pnpm db:dump`    | Dump the database to `../backup.dump`           |
+| Script            | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `pnpm dev`        | Start the dev server on port 3000                 |
+| `pnpm build`      | Production build                                  |
+| `pnpm start`      | Serve the production build                        |
+| `pnpm lint`       | Lint with ESLint                                  |
+| `pnpm typecheck`  | Generate route types and run `tsc`                |
+| `pnpm format`     | Format with Prettier                              |
+| `pnpm db:dump`    | Dump the database to `../backup.dump`             |
 | `pnpm db:restore` | Restore `../backup.dump` into the target database |

@@ -6,6 +6,10 @@ import { PostgresJSDialect } from "kysely-postgres-js";
 import sql from "./db";
 
 export const auth = betterAuth({
+  user: { modelName: "auth_users" },
+  session: { modelName: "auth_sessions" },
+  account: { modelName: "auth_accounts" },
+  verification: { modelName: "auth_verifications" },
   database: {
     dialect: new PostgresJSDialect({ postgres: sql }),
     type: "postgres",

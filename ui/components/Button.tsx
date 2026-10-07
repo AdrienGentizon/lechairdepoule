@@ -3,15 +3,19 @@ import { ComponentProps } from "react";
 import { type VariantProps, cva } from "class-variance-authority";
 
 export const buttonClassName = cva(
-  "bg-foreground text-background border-foreground inline-flex cursor-pointer items-center justify-center gap-1 border px-8 py-2 disabled:cursor-default disabled:opacity-50",
+  "inline-flex cursor-pointer items-center justify-center gap-1 border px-8 py-2 disabled:cursor-default disabled:opacity-50",
   {
     variants: {
       variant: {
-        secondary: "bg-background text-foreground border-foreground",
+        primary: "bg-background text-foreground border-foreground",
+        secondary: "bg-foreground text-background border-foreground",
         danger: "bg-red-400 text-background border-red-400",
         muted: "border-neutral-100 bg-neutral-50 text-neutral-600",
         text: "text-foreground border-none bg-transparent p-0 underline",
       },
+    },
+    defaultVariants: {
+      variant: "primary",
     },
   },
 );

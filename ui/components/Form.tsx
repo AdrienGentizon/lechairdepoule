@@ -9,7 +9,7 @@ export function Label({
 }: ComponentProps<"label">) {
   return (
     <label
-      className={cn("mb-0.5 text-sm font-medium leading-snug", className)}
+      className={cn("text-sm font-medium leading-snug", className)}
       {...props}
     >
       {children}
@@ -73,22 +73,20 @@ export function InputField({
           <div className="bg-foreground text-background">{suffix}</div>
         )}
       </div>
-      <div className="mt-1">
-        <div
-          id={`hints--${id}`}
-          aria-live="polite"
-          className="text-pretty text-sm leading-snug text-neutral-600"
-        >
-          {hint}
-        </div>
-        <p
-          id={`errors--${id}`}
-          role="alert"
-          className="text-pretty text-sm leading-snug text-red-400"
-        >
-          {errors.length > 0 ? errors.join(", ") : <>&nbsp;</>}
-        </p>
+      <div
+        id={`hints--${id}`}
+        aria-live="polite"
+        className="text-pretty text-sm leading-loose text-neutral-600"
+      >
+        {hint}
       </div>
+      <p
+        id={`errors--${id}`}
+        role="alert"
+        className="text-pretty text-sm leading-loose text-red-400"
+      >
+        {errors.length > 0 ? errors.join(", ") : <>&nbsp;</>}
+      </p>
     </div>
   );
 }

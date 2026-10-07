@@ -30,11 +30,11 @@ Runs on [http://localhost:3001](http://localhost:3001) so it can run alongside w
 
 ## Scripts
 
-| Script           | Description                           |
-| ---------------- | ------------------------------------- |
-| `pnpm dev`       | Start the dev server on port 3001     |
-| `pnpm build`     | Production build                      |
-| `pnpm start`     | Serve the production build            |
-| `pnpm lint`      | Lint with ESLint                      |
-| `pnpm typecheck` | Generate route types and run `tsc`    |
-| `pnpm format`    | Format with Prettier                  |
+| Script           | Description                        |
+| ---------------- | ---------------------------------- |
+| `pnpm dev`       | Start the dev server on port 3001  |
+| `pnpm build`     | Production build                   |
+| `pnpm start`     | Serve the production build         |
+| `pnpm lint`      | Lint with ESLint                   |
+| `pnpm typecheck` | Generate route types and run `tsc` |
+| `pnpm format`    | Format with Prettier               |

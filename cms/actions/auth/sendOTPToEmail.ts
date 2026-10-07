@@ -1,39 +1,20 @@
 "use server";
 
-import { isAPIError } from "better-auth/api";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import z from "zod";
 
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
 import { obfuscateEmail } from "@/lib/string";
 import Trace from "@/lib/trace";
-import { ErrorKeys, Result } from "@/lib/types";
+import { Result } from "@/lib/types";
 
-const AUTH_ERROR_KEYS: Record<string, ErrorKeys> = {
-  INVALID_OTP: "invalid_otp",
-  OTP_EXPIRED: "expired_otp",
-  TOO_MANY_ATTEMPTS: "expired_otp",
-};
-
-function toAuthErrorKey(error: unknown) {
-  if (!isAPIError(error)) return undefined;
-
-  return AUTH_ERROR_KEYS[error.body?.code ?? ""];
-}
-
-export default async function signInWithOTP(inputs: {
+export default async function sendOTPToEmail(inputs: {
   email: string;
-  otp: string;
-}): Promise<Result<void>> {
-  const trace = new Trace(`signInWithOTP`);
+}): Promise<Result<{ success: boolean }>> {
+  const trace = new Trace(`sendOTPToEmail`);
   try {
     const parsedInputs = z
-      .object({
-        email: z.email().max(254),
-        otp: z.string().max(6),
-      })
+      .object({ email: z.email().max(254) })
       .safeParse(inputs);
 
     if (!parsedInputs.success) {
@@ -50,27 +31,21 @@ export default async function signInWithOTP(inputs: {
       return { success: false, error: "unauthorized" };
     }
 
-    await auth.api.signInEmailOTP({
+    const data = await auth.api.sendVerificationOTP({
       body: {
         email: parsedInputs.data.email,
-        otp: parsedInputs.data.otp,
+        type: "sign-in",
       },
-      headers: await headers(),
     });
+
+    if (!data.success) throw new Error(`cannot send otp`);
+
     trace.log();
+    return { success: true, data };
   } catch (error) {
     trace.pushError(error);
-
-    const otpErrorKey = toAuthErrorKey(error);
-    if (otpErrorKey) {
-      trace.log(400);
-      return { success: false, error: otpErrorKey };
-    }
-
     trace.log(500);
 
     return { success: false, error: `server_error` };
   }
-
-  redirect("/");
 }
