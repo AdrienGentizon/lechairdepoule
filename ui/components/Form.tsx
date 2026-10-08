@@ -9,7 +9,7 @@ export function Label({
 }: ComponentProps<"label">) {
   return (
     <label
-      className={cn("text-sm font-medium leading-snug", className)}
+      className={cn("text-sm font-black leading-loose", className)}
       {...props}
     >
       {children}
@@ -21,7 +21,7 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
       className={cn(
-        "w-full min-w-0 border px-1.5 py-0.5 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
+        "font-courier w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
         className,
       )}
       {...props}
@@ -76,14 +76,14 @@ export function InputField({
       <div
         id={`hints--${id}`}
         aria-live="polite"
-        className="text-pretty text-sm leading-loose text-neutral-600"
+        className="font-courier text-pretty text-sm leading-loose text-neutral-600"
       >
         {hint}
       </div>
       <p
         id={`errors--${id}`}
         role="alert"
-        className="text-pretty text-sm leading-loose text-red-400"
+        className="font-courier text-pretty text-center text-sm leading-loose text-red-400"
       >
         {errors.length > 0 ? errors.join(", ") : <>&nbsp;</>}
       </p>

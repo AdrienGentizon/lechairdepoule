@@ -82,12 +82,12 @@ function EmailForm({
         autoComplete="email"
         required
         defaultValue={defaultEmail}
-        autoFocus={defaultEmail !== undefined}
+        autoFocus
         errors={[errors.submit, errors.email].flat()}
         onResetError={() => setErrors({})}
       />
 
-      <Button type="submit" className="mt-2" disabled={isPending}>
+      <Button type="submit" className="mt-2 uppercase" disabled={isPending}>
         {dictionary.continue}
         {isPending ? (
           <ArrowsClockwiseIcon
@@ -203,8 +203,8 @@ function OTPForm({
         onResetError={() => setErrors({})}
       />
 
-      <div className="flex flex-col gap-2">
-        <Button type="submit" disabled={isBusy}>
+      <div className="mt-2 flex flex-col gap-2">
+        <Button type="submit" className="uppercase" disabled={isBusy}>
           {isPending ? (
             <ArrowsClockwiseIcon
               className="motion-safe:animate-spin"

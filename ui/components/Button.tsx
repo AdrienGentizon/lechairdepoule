@@ -3,7 +3,7 @@ import { ComponentProps } from "react";
 import { type VariantProps, cva } from "class-variance-authority";
 
 export const buttonClassName = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-1 border px-8 py-2 disabled:cursor-default disabled:opacity-50",
+  "inline-flex rounded-sm cursor-pointer items-center justify-center gap-1 border px-8 py-1 disabled:cursor-default disabled:opacity-50",
   {
     variants: {
       variant: {

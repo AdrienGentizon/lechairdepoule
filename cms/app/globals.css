@@ -23,7 +23,7 @@
     @apply bg-background font-body text-foreground;
   }
   *:focus-visible {
-    @apply ring-2 ring-purple-300 outline-none ring-inset;
+    @apply ring-1 ring-purple-500 ring-offset-2 ring-offset-purple-400 outline-none;
   }
 }
 
