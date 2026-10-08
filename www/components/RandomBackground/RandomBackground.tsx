@@ -9,8 +9,7 @@ import ContentfulImage from "@/components/ContentfulImage";
 const CELL_HEIGHT = 224; // h-56
 const WINDOW_PADDING = -50;
 const COLS = 9;
-const ROWS_SAFE_FACTOR =
-  process.env["NEXT_PUBLIC_USE_SCROLL_TO"] === "true" ? 2 : 5;
+const ROWS_SAFE_FACTOR = 2;
 
 type Asset = {
   sys: {
@@ -134,9 +133,6 @@ export default function RandomBackground({ assets }: Props) {
       abortController.abort();
     };
   }, [pathname, assets]);
-
-  if (process.env["NEXT_PUBLIC_SHOW_RANDOM_BACKGROUND"] !== "true")
-    return <></>;
 
   return (
     <div

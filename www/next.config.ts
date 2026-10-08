@@ -2,17 +2,6 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 import type { NextConfig } from "next";
 
-const flaggedRedirections = [
-  {
-    enabled: !(process.env["NEXT_PUBLIC_SHOW_STORE"] === "true"),
-    redirection: {
-      source: "/drugstore",
-      destination: "/",
-      permanent: true,
-    },
-  },
-];
-
 const nextConfig: NextConfig = {
   transpilePackages: ["@cdp/ui"],
   images: {
@@ -24,22 +13,6 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-  },
-  async redirects() {
-    return flaggedRedirections.reduce(
-      (
-        acc: {
-          source: string;
-          destination: string;
-          permanent: boolean;
-        }[],
-        curr,
-      ) => {
-        if (!curr.enabled) return acc;
-        return [...acc, curr.redirection];
-      },
-      [],
-    );
   },
 };
 
