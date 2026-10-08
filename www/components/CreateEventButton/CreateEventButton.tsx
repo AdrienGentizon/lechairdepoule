@@ -1,13 +1,12 @@
 "use client";
 
-import { SignInButton } from "@clerk/nextjs";
-
 import { useState, useTransition } from "react";
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
+import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import insertEventAction from "@/lib/events/insertEventAction";
 import { resizeImage } from "@/lib/resizeImage";
@@ -202,14 +201,14 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <SignInButton mode="modal">
+    <LogInButton>
       <button
         type="button"
         className="flex cursor-pointer flex-col gap-2 px-4 py-3"
       >
         <Content />
       </button>
-    </SignInButton>
+    </LogInButton>
   );
 }
 

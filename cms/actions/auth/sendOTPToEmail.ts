@@ -14,7 +14,7 @@ export default async function sendOTPToEmail(inputs: {
   const trace = new Trace(`sendOTPToEmail`);
   try {
     const parsedInputs = z
-      .object({ email: z.email().max(254) })
+      .object({ email: z.email().max(254).toLowerCase() })
       .safeParse(inputs);
 
     if (!parsedInputs.success) {

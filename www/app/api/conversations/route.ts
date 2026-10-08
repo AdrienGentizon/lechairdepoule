@@ -1,8 +1,8 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
 import { getRequestLogger } from "@/lib/getRequestLogger";
@@ -13,7 +13,7 @@ import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 export async function POST(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
 
     if (!user || user.bannedAt) {
       logger.append(getLoggableUser(user));
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     const conversations = await selectConversations();

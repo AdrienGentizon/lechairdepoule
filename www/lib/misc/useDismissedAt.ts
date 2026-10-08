@@ -22,10 +22,5 @@ export default function useDismissedAt(key: string) {
     setDismissedAt(now);
   };
 
-  const reset = () => {
-    localStorage.removeItem(key);
-    setDismissedAt(null);
-  };
-
-  return { dismissedAt, dismiss, reset };
+  return { dismissedAt, dismiss };
 }

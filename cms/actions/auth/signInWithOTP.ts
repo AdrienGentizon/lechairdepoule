@@ -31,7 +31,7 @@ export default async function signInWithOTP(inputs: {
   try {
     const parsedInputs = z
       .object({
-        email: z.email().max(254),
+        email: z.email().max(254).toLowerCase(),
         otp: z.string().max(6),
       })
       .safeParse(inputs);

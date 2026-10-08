@@ -21,7 +21,7 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
       className={cn(
-        "font-courier w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
+        "font-courier border-foreground w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
         className,
       )}
       {...props}

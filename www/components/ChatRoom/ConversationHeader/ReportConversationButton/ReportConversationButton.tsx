@@ -1,10 +1,9 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { ButtonHTMLAttributes, useState } from "react";
 
 import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import LogInButton from "@/components/Auth/LogInButton";
 import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Button from "@/components/Button/Button";
 import {
@@ -55,9 +54,9 @@ function BannedUserReportConversationButton() {
 
 function UnauthUserReportConversationButton() {
   return (
-    <SignInButton mode="modal">
+    <LogInButton>
       <ReportConversationButtonContent />
-    </SignInButton>
+    </LogInButton>
   );
 }
 

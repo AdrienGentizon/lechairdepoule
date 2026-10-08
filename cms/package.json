@@ -13,13 +13,14 @@
   "dependencies": {
     "@cdp/ui": "workspace:*",
     "@phosphor-icons/react": "catalog:",
-    "better-auth": "^1.7.7",
-    "kysely": "^0.29.6",
-    "kysely-postgres-js": "^5.0.1",
+    "better-auth": "catalog:",
+    "kysely": "catalog:",
+    "kysely-postgres-js": "catalog:",
     "next": "catalog:",
     "postgres": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-email": "^6.11.1",
     "uuid": "catalog:",
     "zod": "catalog:"
   },

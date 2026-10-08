@@ -45,7 +45,7 @@ function Content({
       <BaseDialog.Backdrop className="data-ending-style:opacity-0 data-starting-style:opacity-0 fixed inset-0 min-h-dvh bg-black opacity-20 transition-opacity duration-150 supports-[-webkit-touch-callout:none]:absolute dark:opacity-50" />{" "}
       <BaseDialog.Popup
         className={cn(
-          "data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 bg-background text-foreground fixed left-1/2 top-1/2 -mt-8 flex w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col gap-4 border border-neutral-400 p-4 transition-[scale,opacity] duration-100 ease-out",
+          "data-ending-style:scale-[0.98] border-foreground data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 bg-background text-foreground fixed left-1/2 top-1/2 -mt-8 flex w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-sm border p-4 transition-[scale,opacity] duration-100 ease-out",
           className,
         )}
         {...props}

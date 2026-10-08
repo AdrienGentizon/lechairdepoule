@@ -140,7 +140,7 @@ function OTPForm({
   const submit = (form: HTMLFormElement) => {
     const parsedInputs = z
       .object({
-        email: z.email().max(254),
+        email: z.email().max(254).toLowerCase(),
         otp: z.string().min(1).max(6),
       })
       .safeParse(Object.fromEntries(new FormData(form).entries()), {

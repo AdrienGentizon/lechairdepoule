@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import insertBanAppeal from "@/lib/forum/insertBanAppeal";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { BanAppealFormSchema } from "@/lib/schemas";
@@ -10,7 +10,7 @@ import { BanAppeal } from "@/lib/types";
 export async function POST(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user) {

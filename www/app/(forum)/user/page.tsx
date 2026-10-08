@@ -1,12 +1,11 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
-
 import { useState } from "react";
 
 import Link from "next/link";
 import z from "zod";
 
+import SignOutButton from "@/components/Auth/SignOutButton";
 import Button from "@/components/Button/Button";
 import Form, {
   FieldError,
@@ -21,7 +20,6 @@ import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import { User } from "@/lib/types";
 
 function UserPage({ me }: { me: User }) {
-  const { signOut } = useClerk();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
 
   const {
@@ -134,12 +132,9 @@ function UserPage({ me }: { me: User }) {
         </Link>
       </section>
       <div className="pt-4">
-        <Button
-          className="w-full"
-          onClick={() => signOut({ redirectUrl: "/forum" })}
-        >
+        <SignOutButton className="w-full uppercase">
           Se déconnecter
-        </Button>
+        </SignOutButton>
       </div>
     </div>
   );

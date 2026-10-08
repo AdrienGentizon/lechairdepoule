@@ -1,9 +1,8 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { ButtonHTMLAttributes, useState } from "react";
 
 import { Ban } from "lucide-react";
 
+import LogInButton from "@/components/Auth/LogInButton";
 import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Loader from "@/components/Loader/Loader";
 import {
@@ -54,9 +53,9 @@ function BannedUserReportMessageButton() {
 
 function UnauthUserReportMessageButton() {
   return (
-    <SignInButton mode="modal">
+    <LogInButton>
       <ReportMessageButtonContent />
-    </SignInButton>
+    </LogInButton>
   );
 }
 

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import updateUser from "@/lib/auth/updateUser";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { User } from "@/lib/types";
@@ -10,7 +10,7 @@ import { User } from "@/lib/types";
 export async function GET(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user) {
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user || user.bannedAt) {

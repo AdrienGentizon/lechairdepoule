@@ -1,11 +1,10 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
 
@@ -140,14 +139,12 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <SignInButton mode="modal">
-      <button
-        type="button"
-        className="flex cursor-pointer flex-col gap-2 px-4 py-3"
-      >
-        <Content />
-      </button>
-    </SignInButton>
+    <LogInButton
+      type="button"
+      className="flex cursor-pointer flex-col gap-2 px-4 py-3"
+    >
+      <Content />
+    </LogInButton>
   );
 }
 

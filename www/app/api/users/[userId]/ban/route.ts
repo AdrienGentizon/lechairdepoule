@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -14,7 +14,7 @@ export async function POST(
   const { userId } = await params;
   const logger = getRequestLogger(req);
   try {
-    const bannedBy = await getUser(req);
+    const bannedBy = await getAuthenticatedUser();
     logger.append({ bannedBy: getLoggableUser(bannedBy) });
 
     if (
