@@ -5,10 +5,11 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import z from "zod";
 
+import { obfuscateEmail } from "@cdp/lib/string";
+import Trace from "@cdp/lib/trace";
+
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
-import { obfuscateEmail } from "@/lib/string";
-import Trace from "@/lib/trace";
 import { ErrorKeys, Result } from "@/lib/types";
 
 const AUTH_ERROR_KEYS: Record<string, ErrorKeys> = {

@@ -2,10 +2,11 @@
 
 import z from "zod";
 
+import { obfuscateEmail } from "@cdp/lib/string";
+import Trace from "@cdp/lib/trace";
+
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
-import { obfuscateEmail } from "@/lib/string";
-import Trace from "@/lib/trace";
 import { Result } from "@/lib/types";
 
 export default async function sendOTPToEmail(inputs: {

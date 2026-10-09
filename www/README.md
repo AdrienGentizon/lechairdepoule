@@ -30,6 +30,10 @@ pnpm dev
 
 Runs on [http://localhost:3000](http://localhost:3000) so it can run alongside cms (port 3001).
 
+### Emails
+
+Set `MAILING_SERVICE_STATUS=disabled` to skip sending emails through Resend (saves quota in development). Sign-in codes are then only printed in the server logs, in development only.
+
 ## Scripts
 
 | Script            | Description                                       |

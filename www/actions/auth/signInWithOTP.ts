@@ -1,28 +1,18 @@
 "use server";
 
-import { isAPIError } from "better-auth/api";
+import { isAPIError as isBetterAuthError } from "better-auth/api";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
 
+import { AuthErrorKeys } from "@cdp/lib/errors";
+import { obfuscateEmail } from "@cdp/lib/string";
+import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
+
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/auth/selectUserFromEmail";
 import sql from "@/lib/db";
-import { obfuscateEmail } from "@/lib/string";
-import Trace from "@/lib/trace";
 import { CacheKey, Result } from "@/lib/types";
-
-const AUTH_ERROR_KEYS: Record<string, string> = {
-  INVALID_OTP: "invalid otp",
-  OTP_EXPIRED: "expired otp",
-  TOO_MANY_ATTEMPTS: "expired otp",
-};
-
-function toAuthErrorKey(error: unknown) {
-  if (!isAPIError(error)) return undefined;
-
-  return AUTH_ERROR_KEYS[error.body?.code ?? ""];
-}
 
 export default async function signInWithOTP(inputs: {
   email: string;
@@ -38,7 +28,8 @@ export default async function signInWithOTP(inputs: {
       .safeParse(inputs);
 
     if (!parsedInputs.success) {
-      trace.push([JSON.stringify(inputs), parsedInputs.error.message]);
+      trace.push([toObfuscatedUser(inputs), parsedInputs.error.message]);
+      trace.log(400);
       return { success: false, error: "bad_request" };
     }
 
@@ -46,7 +37,12 @@ export default async function signInWithOTP(inputs: {
     const existingUser = await selectUserFromEmail({
       email: parsedInputs.data.email,
     });
-    trace.push(JSON.stringify({ user: existingUser ?? "not_found" }));
+    trace.push(
+      JSON.stringify({
+        user: existingUser ? toObfuscatedUser(existingUser) : "not_found",
+      }),
+    );
+
     const session = await auth.api.signInEmailOTP({
       body: {
         email: parsedInputs.data.email,
@@ -55,12 +51,15 @@ export default async function signInWithOTP(inputs: {
       headers: await headers(),
     });
 
-    if (existingUser?.authProvider === "better-auth") {
+    if (
+      existingUser?.authProvider === "better-auth" &&
+      existingUser.authId === session.user.id
+    ) {
       trace.log();
       return { success: true, data: { userId: existingUser.id } };
     }
 
-    const newUser = (
+    const upsertedUser = (
       await sql<{ id: string }[]>`
       INSERT INTO users
         (email, auth_provider, auth_id, created_at)
@@ -72,22 +71,36 @@ export default async function signInWithOTP(inputs: {
       RETURNING
         id::text;`
     ).at(0);
-    if (!newUser) return { success: false, error: "cannot insert new user" };
+    if (!upsertedUser) {
+      trace.push("upsert_user_failed");
+      trace.log(500);
+      return { success: false, error: "upsert_user_failed" };
+    }
 
     revalidateTag("users" satisfies CacheKey, {});
     trace.log();
-    return { success: true, data: { userId: newUser.id } };
+    return { success: true, data: { userId: upsertedUser.id } };
   } catch (error) {
     trace.pushError(error);
 
-    const otpErrorKey = toAuthErrorKey(error);
-    if (otpErrorKey) {
-      trace.log(400);
-      return { success: false, error: otpErrorKey };
+    if (isBetterAuthError(error)) {
+      const qualifiedErrors: AuthErrorKeys[] = [
+        "INVALID_OTP",
+        "OTP_EXPIRED",
+        "TOO_MANY_ATTEMPTS",
+      ];
+      const errorKey =
+        qualifiedErrors.find((errorKey) => error?.body?.code === errorKey) ??
+        "UNKNOWN_AUTH_ERROR";
+      trace.log(error.statusCode);
+      return {
+        success: false,
+        error: errorKey,
+      };
     }
 
     trace.log(500);
 
-    return { success: false, error: `server error` };
+    return { success: false, error: `server_error` };
   }
 }

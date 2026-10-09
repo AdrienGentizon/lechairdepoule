@@ -10,6 +10,7 @@ import { useState, useTransition } from "react";
 
 import z from "zod";
 
+import { toErrorMessage } from "@cdp/lib/errors";
 import Button from "@cdp/ui/Button";
 import { InputField } from "@cdp/ui/Form";
 import cn from "@cdp/ui/cn";
@@ -49,7 +50,7 @@ function EmailForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [response.error] });
+        return setErrors({ submit: [toErrorMessage(response.error)] });
       }
 
       onOTPSent(parsedInputs.data.email);
@@ -118,7 +119,7 @@ function OTPForm({
       const response = await sendOTPToEmail({ email });
 
       if (!response.success) {
-        return setErrors({ resend: [response.error] });
+        return setErrors({ resend: [toErrorMessage(response.error)] });
       }
 
       console.log("OTP resent");
@@ -146,7 +147,7 @@ function OTPForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [response.error] });
+        return setErrors({ submit: [toErrorMessage(response.error)] });
       }
 
       onSuccess();

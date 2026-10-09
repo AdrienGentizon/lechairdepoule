@@ -1,7 +1,8 @@
 packages:
+  - lib
+  - ui
   - www
   - cms
-  - ui
 catalog:
   "@base-ui/react": ^1.8.0
   "@phosphor-icons/react": ^2.1.10

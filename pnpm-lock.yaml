@@ -101,6 +101,9 @@ importers:
 
   cms:
     dependencies:
+      '@cdp/lib':
+        specifier: workspace:*
+        version: link:../lib
       '@cdp/ui':
         specifier: workspace:*
         version: link:../ui
@@ -159,6 +162,12 @@ importers:
         specifier: 'catalog:'
         version: 4.3.3
 
+  lib:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.9
+
   ui:
     dependencies:
       '@base-ui/react':
@@ -195,6 +204,9 @@ importers:
 
   www:
     dependencies:
+      '@cdp/lib':
+        specifier: workspace:*
+        version: link:../lib
       '@cdp/ui':
         specifier: workspace:*
         version: link:../ui

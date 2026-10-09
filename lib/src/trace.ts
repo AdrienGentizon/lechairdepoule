@@ -1,3 +1,5 @@
+import { obfuscateEmail } from "./string";
+
 type Part = string | Record<string, unknown>;
 
 export default class Trace {
@@ -40,4 +42,13 @@ export default class Trace {
 
     return console.error(message);
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toObfuscatedUser(user: any & { email?: string }) {
+  if (!user.email || typeof user.email !== "string") return user;
+  return {
+    ...user,
+    email: obfuscateEmail(user.email),
+  };
 }

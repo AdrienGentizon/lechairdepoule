@@ -6,6 +6,7 @@ export default async function selectUserFromEmail(inputs: { email: string }) {
       {
         id: string;
         role: (string & {}) | "admin";
+        authId: string;
         authProvider: (string & {}) | "clerk" | "better-auth";
         createdAt: Date;
       }[]
@@ -13,6 +14,7 @@ export default async function selectUserFromEmail(inputs: { email: string }) {
   SELECT
     id::text,
     role,
+    auth_id as "authId",
     auth_provider as "authProvider",
     created_at as "createdAt"
   FROM users u
