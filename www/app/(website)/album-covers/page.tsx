@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ContentfulImage from "@/components/ContentfulImage";
@@ -5,6 +6,12 @@ import { cn } from "@/lib/utils";
 import getAlbumCovers from "@/queries/getAlbumCovers";
 
 export const revalidate = 86400;
+
+export const metadata: Metadata = {
+  title: "Pochettes d'album",
+  description: "Les fameux remakes de pochettes d'album par le Chair de poule.",
+  alternates: { canonical: "/album-covers" },
+};
 
 const IMAGE_SIZES = [
   "(orientation: landscape) and (min-width: 672px) 224px",

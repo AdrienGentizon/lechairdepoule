@@ -1,5 +1,6 @@
 import Markdown from "react-markdown";
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ContactForm from "@/components/ContactForm/ContactForm";
@@ -11,6 +12,13 @@ import getContactPage, {
 } from "@/queries/getContactPage";
 
 export const revalidate = 86400;
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Adresses, horaires d'ouverture et formulaire de contact du Chair de poule et du Peine Perdue.",
+  alternates: { canonical: "/contact" },
+};
 
 const METADATA = {
   CDP: {

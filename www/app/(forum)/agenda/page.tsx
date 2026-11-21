@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 
 import CreateEventButton from "@/components/CreateEventButton/CreateEventButton";
@@ -6,6 +7,13 @@ import EventsList from "@/components/EventsList/EventsList";
 import TextParser from "@/components/TextParser";
 import { LOCALE, getEventTime } from "@/lib/date";
 import getCachedEvents from "@/lib/events/getChachedEvents";
+
+export const metadata: Metadata = {
+  title: "Agenda",
+  description:
+    "L'agenda des événements proposés par les habitués du Chair de poule.",
+  alternates: { canonical: "/agenda" },
+};
 
 export default async function AgendaPage() {
   const events = await getCachedEvents();

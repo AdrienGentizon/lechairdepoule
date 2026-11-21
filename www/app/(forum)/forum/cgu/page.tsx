@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import MarkdownRenderer from "@/components/MarkDownRenderer/MarkDownRenderer";
 import { fetchEntryGraphQL } from "@/lib/contentful";
 import { TermsOfService } from "@/lib/types";
+
+export const metadata: Metadata = {
+  title: "Conditions générales d'utilisation",
+  description: "Conditions générales d'utilisation du forum du Chair de poule.",
+  alternates: { canonical: "/forum/cgu" },
+};
 
 async function getCGU() {
   try {

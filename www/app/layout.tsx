@@ -24,9 +24,17 @@ const mono = Courier_Prime({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lechairdepoule.fr"),
-  title: "Le Chair de poule",
+  metadataBase: new URL("https://www.lechairdepoule.fr"),
+  title: {
+    default: "Le Chair de poule",
+    template: "%s | Le Chair de poule",
+  },
   description: "Le site web du bar Le Chair de Poule et du Peine perdue aussi",
+  openGraph: {
+    siteName: "Le Chair de poule",
+    locale: "fr_FR",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({
