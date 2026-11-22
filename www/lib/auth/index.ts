@@ -10,6 +10,7 @@ import { obfuscateEmail } from "@/lib/string";
 import Trace from "@/lib/trace";
 
 const OTP_EXPIRES_IN_SECONDS = 5 * 60;
+const SESSION_EXPIRES_IN_SECONDS = 28 * 24 * 60 * 60;
 
 async function sendSignInOTP({ email, otp }: { email: string; otp: string }) {
   const trace = new Trace(`sendSignInOTP`);
@@ -35,7 +36,10 @@ async function sendSignInOTP({ email, otp }: { email: string; otp: string }) {
 
 export const auth = betterAuth({
   user: { modelName: "auth_users" },
-  session: { modelName: "auth_sessions" },
+  session: {
+    modelName: "auth_sessions",
+    expiresIn: SESSION_EXPIRES_IN_SECONDS,
+  },
   account: { modelName: "auth_accounts" },
   verification: { modelName: "auth_verifications" },
   database: {
