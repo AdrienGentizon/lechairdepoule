@@ -13,6 +13,6 @@ export default async function selectUserFromAuthId(inputs: {
   FROM users u
   WHERE
     u.auth_id = ${inputs.authId}
-    AND u.auth_rpvoder = ${inputs.authProvider};`
+    AND u.auth_provider = ${inputs.authProvider};`
   ).at(0);
 }
