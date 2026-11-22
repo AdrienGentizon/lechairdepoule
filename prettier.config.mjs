@@ -9,7 +9,16 @@ const config = {
   importOrder: ["^react", "^[a-zA-Z]", "^@cdp/(.*)$", "^@/(.*)$", "^[./]"],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
-  tailwindStylesheet: "./www/app/globals.css", // TODO merge/align a global one used by all packages
+  overrides: [
+    {
+      files: "www/**",
+      options: { tailwindStylesheet: "./www/app/globals.css" },
+    },
+    {
+      files: "cms/**",
+      options: { tailwindStylesheet: "./cms/app/globals.css" },
+    },
+  ],
 };
 
 export default config;

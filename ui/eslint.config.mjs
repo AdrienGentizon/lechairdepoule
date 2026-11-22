@@ -3,7 +3,4 @@ import { defineConfig } from "eslint/config";
 
 import baseConfig from "../eslint.config.base.mjs";
 
-export default defineConfig([
-  ...baseConfig,
-  reactHooks.configs.flat.recommended,
-]);
+export default defineConfig([baseConfig, reactHooks.configs.flat.recommended]);

@@ -37,4 +37,3 @@ Runs on [http://localhost:3001](http://localhost:3001) so it can run alongside w
 | `pnpm start`     | Serve the production build         |
 | `pnpm lint`      | Lint with ESLint                   |
 | `pnpm typecheck` | Generate route types and run `tsc` |
-| `pnpm format`    | Format with Prettier               |

@@ -33,11 +33,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang={locale}
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="grid h-dvh min-h-full grid-cols-1 justify-items-center overflow-x-hidden bg-background portrait:w-dvw">
+      <body className="bg-background grid h-dvh min-h-full grid-cols-1 justify-items-center overflow-x-hidden portrait:w-dvw">
         <LocaleProvider locale={locale}>
           <a
             href="#main"
-            className="sr-only absolute top-2 left-2 bg-foreground text-background focus:not-sr-only focus:absolute focus:px-2"
+            className="bg-foreground text-background sr-only absolute left-2 top-2 focus:not-sr-only focus:absolute focus:px-2"
           >
             {dictionary.skip_content}
           </a>
