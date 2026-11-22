@@ -44,10 +44,7 @@ export default function useMe() {
         method: "GET",
       });
 
-      if (!response.ok) {
-        console.log((await response.json()).error);
-        return null;
-      }
+      if (!response.ok) return null;
 
       return response.json() as Promise<User>;
     },
