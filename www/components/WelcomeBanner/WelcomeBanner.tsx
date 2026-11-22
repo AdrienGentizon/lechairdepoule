@@ -1,7 +1,5 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
-
 import { useEffect, useRef } from "react";
 
 import Link from "next/link";
@@ -15,8 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 const LOCAL_STORAGE_KEY = "cdp-forum-banner-dismissed-at";
 
 export default function WelcomeBanner() {
-  const { me } = useMe();
-  const { userId } = useAuth();
+  const { me, isPending } = useMe();
+  const userId = isPending ? undefined : (me?.id ?? null);
   const { dismissedAt, dismiss, reset } = useDismissedAt(LOCAL_STORAGE_KEY);
 
   const previousUserId = useRef(userId);

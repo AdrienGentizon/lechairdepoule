@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 
 import { CacheKey, Conversation, User } from "../types";
@@ -34,19 +33,18 @@ function getPermissions(user: User) {
 }
 
 export default function useMe() {
-  const { isLoaded, userId } = useAuth();
-
   const {
     data: me,
-    isFetching,
+    isPending,
     error,
   } = useQuery({
-    queryKey: ["me" satisfies CacheKey, userId],
-    enabled: isLoaded && userId !== null && userId !== undefined,
+    queryKey: ["me" satisfies CacheKey],
     queryFn: async () => {
       const response = await fetch(`/api/me`, {
         method: "GET",
       });
+
+      if (response.status === 401) return null;
 
       if (!response.ok) {
         console.log((await response.json()).error);
@@ -64,7 +62,7 @@ export default function useMe() {
           ...getPermissions(me),
         }
       : undefined,
-    isFetching: !isLoaded || isFetching,
+    isPending,
     error,
   };
 }

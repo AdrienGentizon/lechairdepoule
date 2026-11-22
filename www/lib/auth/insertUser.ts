@@ -8,7 +8,7 @@ export default async function insertUser({
   auth,
 }: {
   email: string;
-  auth: { provider: "clerk"; userId: string };
+  auth: { provider: "better-auth"; userId: string };
 }) {
   revalidateTag("users" satisfies CacheKey, {});
   return (

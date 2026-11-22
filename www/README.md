@@ -12,7 +12,7 @@ Admin and content management are moving to [cms](../cms), a dedicated app with i
 ## Stack
 
 - [Next.js](https://nextjs.org) (App Router)
-- [Clerk](https://clerk.com) — auth, migrating to [better-auth](https://www.better-auth.com) like cms for less aggressive session expiration
+- [better-auth](https://www.better-auth.com) — auth (email OTP), shares auth tables with cms
 - [Contentful](https://www.contentful.com) — editorial content
 - Postgres (Neon) — shares the database with cms
 - [Pusher](https://pusher.com) — realtime

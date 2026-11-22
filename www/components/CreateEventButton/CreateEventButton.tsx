@@ -1,7 +1,5 @@
 "use client";
 
-import { SignInButton } from "@clerk/nextjs";
-
 import { useState, useTransition } from "react";
 
 import { Plus } from "lucide-react";
@@ -14,6 +12,7 @@ import { resizeImage } from "@/lib/resizeImage";
 import { Event, isEventType } from "@/lib/types";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
+import SignInDialog from "../SignInDialog/SignInDialog";
 import {
   Dialog,
   DialogContent,
@@ -202,14 +201,14 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <SignInButton mode="modal">
+    <SignInDialog>
       <button
         type="button"
         className="flex cursor-pointer flex-col gap-2 px-4 py-3"
       >
         <Content />
       </button>
-    </SignInButton>
+    </SignInDialog>
   );
 }
 

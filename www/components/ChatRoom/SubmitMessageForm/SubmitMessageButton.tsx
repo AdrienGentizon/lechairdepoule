@@ -1,10 +1,9 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { ReactNode } from "react";
 
 import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Button from "@/components/Button/Button";
 import Loader from "@/components/Loader/Loader";
+import SignInDialog from "@/components/SignInDialog/SignInDialog";
 import { Me } from "@/lib/auth/useMe";
 
 function BannedUserSubmitButton({ buttonLabel }: { buttonLabel: ReactNode }) {
@@ -21,9 +20,9 @@ function UnauthUserSubmitMessageButton({
   buttonLabel: ReactNode;
 }) {
   return (
-    <SignInButton mode="modal">
+    <SignInDialog>
       <Button type="button">{buttonLabel}</Button>
-    </SignInButton>
+    </SignInDialog>
   );
 }
 

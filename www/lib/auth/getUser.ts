@@ -5,89 +5,56 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
-import clerk from "../clerk";
+import { auth } from "../auth";
 import { getRequestLogger } from "../getRequestLogger";
 import { getLogger } from "../logger";
 import insertUser from "./insertUser";
+import selectClerkUserFromEmail from "./selectClerkUserFromEmail";
 import { selectUserFromAuthId } from "./selectUserFromId";
+import updateUserAuth from "./updateUserAuth";
 
-async function insertNotFoundButAuthenticatedUser(
-  userIdFromAuthProvider: string,
-): Promise<
-  | { success: true; data: Awaited<ReturnType<typeof insertUser>> }
-  | { success: false; error: string }
-> {
-  const clerkUser = await clerk.users.getUser(userIdFromAuthProvider);
-  const email = clerkUser.emailAddresses.find(
-    ({ id }) => id === clerkUser.primaryEmailAddressId,
-  )?.emailAddress;
-  if (!email) {
-    return {
-      success: false,
-      error: `no primary email for clerk user: ${userIdFromAuthProvider}`,
-    };
-  }
-
-  const insertedUser = await insertUser({
-    email,
-    auth: { provider: "clerk", userId: userIdFromAuthProvider },
-  });
-  if (!insertedUser) {
-    return {
-      success: false,
-      error: `cannot insert user: ${userIdFromAuthProvider}`,
-    };
-  }
-
-  return {
-    success: true,
-    data: insertedUser,
-  };
-}
-
-async function authenticateUserId(
-  request: Request,
+async function selectOrCreateUser(
+  session: { userId: string; email: string },
   logger: ReturnType<typeof getLogger>,
 ) {
-  const { isAuthenticated, toAuth, message } = await clerk.authenticateRequest(
-    request,
-    {
-      authorizedParties: [
-        "http://localhost:3000",
-        "https://dev.lechairdepoule.fr",
-        "https://lechairdepoule.fr",
-        "https://www.lechairdepoule.fr",
-      ],
-    },
+  const authValues = {
+    provider: "better-auth" as const,
+    userId: session.userId,
+  };
+
+  const user = await selectUserFromAuthId(authValues);
+  if (user) return user;
+
+  const clerkUser = await selectClerkUserFromEmail({ email: session.email });
+  if (clerkUser) {
+    logger.append({ message: "migrating clerk user", id: clerkUser.id });
+    return updateUserAuth({ id: clerkUser.id, auth: authValues });
+  }
+
+  logger.append({ message: "inserting user", authId: session.userId });
+  return insertUser({ email: session.email, auth: authValues });
+}
+
+async function getUserFromHeaders(
+  requestHeaders: Headers,
+  logger: ReturnType<typeof getLogger>,
+) {
+  const session = await auth.api.getSession({ headers: requestHeaders });
+  if (!session) return;
+
+  const user = await selectOrCreateUser(
+    { userId: session.user.id, email: session.user.email },
+    logger,
   );
-  if (message) logger.append(message);
-  if (!isAuthenticated) {
-    logger.withError("user not authenticated").flush();
-    return;
-  }
-  const token = toAuth();
-  if (!token?.userId) {
-    logger.withError("user token undefined").flush();
-    return;
-  }
-  return token.userId;
+  if (!user) throw new Error(`cannot get user: ${session.user.id}`);
+
+  return user;
 }
 
 const getUserCached = cache(async (req: NextRequest) => {
   const logger = getRequestLogger(req);
   try {
-    const userId = await authenticateUserId(req, logger);
-    if (!userId) return;
-
-    const user = await selectUserFromAuthId({ provider: "clerk", userId });
-    if (user) return user;
-
-    const newUser = await insertNotFoundButAuthenticatedUser(userId);
-
-    if (!newUser.success) {
-      throw new Error(newUser.error);
-    }
-    return newUser.data;
+    return await getUserFromHeaders(req.headers, logger);
   } catch (error) {
     logger.withError(error).flush();
     return;
@@ -102,15 +69,7 @@ const getActionUserCached = cache(async () => {
   const requestHeaders = await headers();
   const logger = getLogger(`ACTION ${requestHeaders.get("host")}`, "Request");
   try {
-    const proto = requestHeaders.get("x-forwarded-proto") ?? "https";
-    const request = new Request(`${proto}://${requestHeaders.get("host")}`, {
-      headers: requestHeaders,
-    });
-
-    const userId = await authenticateUserId(request, logger);
-    if (!userId) return;
-
-    return selectUserFromAuthId({ provider: "clerk", userId });
+    return await getUserFromHeaders(requestHeaders, logger);
   } catch (error) {
     logger.withError(error).flush();
     return;

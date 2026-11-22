@@ -1,10 +1,9 @@
 "use client";
 
-import { SignInButton } from "@clerk/nextjs";
-
 import { UserCircle, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 
+import SignInDialog from "@/components/SignInDialog/SignInDialog";
 import useMe from "@/lib/auth/useMe";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
 
@@ -35,7 +34,7 @@ function UserButton() {
 
 function UnauthUserButton() {
   return (
-    <SignInButton mode="modal">
+    <SignInDialog>
       <button
         type="button"
         className="scale-100 cursor-pointer rounded-full border-2 border-transparent p-1 transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900"
@@ -46,14 +45,14 @@ function UnauthUserButton() {
         />
         <span className="sr-only">Se connecter</span>
       </button>
-    </SignInButton>
+    </SignInDialog>
   );
 }
 
 export default function Fetcher() {
-  const { me, isFetching } = useMe();
+  const { me, isPending } = useMe();
 
-  if (isFetching) return null;
+  if (isPending) return null;
   if (!me) return <UnauthUserButton />;
 
   return <UserButton />;

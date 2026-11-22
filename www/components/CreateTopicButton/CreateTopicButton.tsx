@@ -1,5 +1,3 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
@@ -12,6 +10,7 @@ import usePostConversation from "@/lib/forum/usePostConversation";
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
 import { buttonClassName } from "../Button/Button";
 import SelectItemToBeCreatedType from "../CreateEventButton/SelectItemToBeCreatedType";
+import SignInDialog from "../SignInDialog/SignInDialog";
 import {
   Dialog,
   DialogContent,
@@ -140,14 +139,14 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <SignInButton mode="modal">
+    <SignInDialog>
       <button
         type="button"
         className="flex cursor-pointer flex-col gap-2 px-4 py-3"
       >
         <Content />
       </button>
-    </SignInButton>
+    </SignInDialog>
   );
 }
 

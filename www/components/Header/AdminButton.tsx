@@ -6,9 +6,9 @@ import Link from "next/link";
 import useMe from "@/lib/auth/useMe";
 
 export default function AdminButton() {
-  const { me, isFetching } = useMe();
+  const { me, isPending } = useMe();
 
-  if (isFetching) return null;
+  if (isPending) return null;
   if (me?.role !== "admin") return null;
 
   return (

@@ -1,12 +1,14 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import z from "zod";
 
+import signOut from "@/actions/auth/signOut";
 import Button from "@/components/Button/Button";
 import Form, {
   FieldError,
@@ -21,7 +23,9 @@ import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import { User } from "@/lib/types";
 
 function UserPage({ me }: { me: User }) {
-  const { signOut } = useClerk();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isSigningOut, startSignOutTransition] = useTransition();
   const { updateUserPseudo, isPending } = useUpdateUserPseudo();
 
   const {
@@ -136,7 +140,14 @@ function UserPage({ me }: { me: User }) {
       <div className="pt-4">
         <Button
           className="w-full"
-          onClick={() => signOut({ redirectUrl: "/forum" })}
+          disabled={isSigningOut}
+          onClick={() => {
+            startSignOutTransition(async () => {
+              await signOut();
+              queryClient.clear();
+              router.push("/forum");
+            });
+          }}
         >
           Se déconnecter
         </Button>

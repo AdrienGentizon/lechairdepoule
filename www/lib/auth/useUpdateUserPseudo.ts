@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { CacheKey, User } from "../types";
@@ -6,7 +5,6 @@ import { CacheKey, User } from "../types";
 export default function useUpdateUserPseudo(options?: {
   onSuccess?: () => void;
 }) {
-  const { userId } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -27,7 +25,7 @@ export default function useUpdateUserPseudo(options?: {
       return response.json() as Promise<User>;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["me" satisfies CacheKey, userId], () => {
+      queryClient.setQueryData(["me" satisfies CacheKey], () => {
         return data;
       });
 
