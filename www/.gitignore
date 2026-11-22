@@ -43,6 +43,3 @@ next-env.d.ts
 
 # ai
 /.claude
-
-# Sentry Config File
-.env.sentry-build-plugin

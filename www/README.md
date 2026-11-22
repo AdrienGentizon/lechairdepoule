@@ -18,7 +18,6 @@ Admin and content management are moving to [cms](../cms), a dedicated app with i
 - [Pusher](https://pusher.com) — realtime
 - [Resend](https://resend.com) — emails
 - [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — image storage
-- [Sentry](https://sentry.io) — error monitoring
 - [`@cdp/ui`](../ui) — shared UI components
 
 ## Development
@@ -39,6 +38,5 @@ Runs on [http://localhost:3000](http://localhost:3000) so it can run alongside c
 | `pnpm start`      | Serve the production build                        |
 | `pnpm lint`       | Lint with ESLint                                  |
 | `pnpm typecheck`  | Generate route types and run `tsc`                |
-| `pnpm format`     | Format with Prettier                              |
 | `pnpm db:dump`    | Dump the database to `../backup.dump`             |
 | `pnpm db:restore` | Restore `../backup.dump` into the target database |

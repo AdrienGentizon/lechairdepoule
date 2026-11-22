@@ -9,7 +9,6 @@
   },
   "scripts": {
     "lint": "eslint",
-    "format": "prettier --write --log-level warn .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
