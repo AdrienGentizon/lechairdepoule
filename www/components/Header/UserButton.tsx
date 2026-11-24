@@ -47,10 +47,22 @@ function UnauthUserButton() {
   );
 }
 
+function UnknownUserPlaceholder() {
+  return (
+    <span className="p-1">
+      <UserCircle2
+        aria-hidden
+        className="bg-background size-8 rounded-full stroke-purple-300 opacity-50"
+      />
+    </span>
+  );
+}
+
 export default function Fetcher() {
-  const { me, isFetching } = useMe();
+  const { me, isFetching, error } = useMe();
 
   if (isFetching) return null;
+  if (!me && error) return <UnknownUserPlaceholder />;
   if (!me) return <UnauthUserButton />;
 
   return <UserButton />;

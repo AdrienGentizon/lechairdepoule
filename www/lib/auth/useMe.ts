@@ -44,7 +44,8 @@ export default function useMe() {
         method: "GET",
       });
 
-      if (!response.ok) return null;
+      if (response.status === 401) return null;
+      if (!response.ok) throw new Error(`/api/me ${response.status}`);
 
       return response.json() as Promise<User>;
     },
