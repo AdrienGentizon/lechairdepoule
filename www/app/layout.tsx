@@ -49,7 +49,7 @@ export default async function RootLayout({
       <body
         className={cn(
           `${sans.variable} ${mono.variable} antialiased`,
-          "dark grid h-dvh min-h-full grid-cols-1 grid-rows-[auto_1fr_auto] justify-items-center overflow-x-hidden portrait:w-dvw",
+          "dark overflow-x-hidden",
         )}
       >
         <a
@@ -58,15 +58,17 @@ export default async function RootLayout({
         >
           Aller au contenu principal
         </a>
-        <RandomBackground assets={assets} />
-        <Header />
-        <Main>
-          <noscript className="flex items-center justify-center text-center align-middle text-sm font-medium text-purple-300">
-            Ce site nécessite JavaScript pour fonctionner correctement.
-          </noscript>
-          {children}
-        </Main>
-        <Footer />
+        <div className="isolate grid h-dvh min-h-full grid-cols-1 grid-rows-[auto_1fr_auto] justify-items-center portrait:w-dvw">
+          <RandomBackground assets={assets} />
+          <Header />
+          <Main>
+            <noscript className="flex items-center justify-center text-center align-middle text-sm font-medium text-purple-300">
+              Ce site nécessite JavaScript pour fonctionner correctement.
+            </noscript>
+            {children}
+          </Main>
+          <Footer />
+        </div>
       </body>
       <Analytics />
     </html>
