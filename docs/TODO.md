@@ -1,11 +1,5 @@
 # Todo
 
-## Before pushing to prod
-
-- [ ] Back up prod DB (`db/backup.sh`)
-- [ ] Apply `db/updates/21-create-better-auth-schema.sql` (idempotent)
-- [ ] Set `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET` on Vercel prod (www)
-
 ## Clerk — after prod cutover
 
 - [ ] Remove Clerk env vars
