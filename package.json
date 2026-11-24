@@ -5,7 +5,9 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "format": "prettier --write --log-level warn .",
-    "validate": "pnpm format && pnpm lint && pnpm typecheck"
+    "validate": "pnpm format && pnpm lint && pnpm typecheck",
+    "db:backup": "sh db/backup.sh",
+    "db:restore": "sh db/restore.sh"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
