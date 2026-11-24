@@ -34,6 +34,8 @@ function EmailForm({
   }>({});
 
   const submit = (form: HTMLFormElement) => {
+    if (isPending) return;
+
     const parsedInputs = z
       .object({ email: z.email().max(254).toLowerCase() })
       .safeParse(Object.fromEntries(new FormData(form).entries()), {
@@ -79,7 +81,11 @@ function EmailForm({
         onResetError={() => setErrors({})}
       />
 
-      <Button type="submit" className="mt-2 uppercase" disabled={isPending}>
+      <Button
+        type="submit"
+        className="mt-2 uppercase"
+        aria-disabled={isPending}
+      >
         Continuer
         {isPending ? (
           <ArrowsClockwiseIcon
@@ -90,6 +96,9 @@ function EmailForm({
           <ArrowRightIcon aria-hidden />
         )}
       </Button>
+      <p role="status" className="sr-only">
+        {isPending ? `Envoi du code…` : ""}
+      </p>
     </form>
   );
 }
@@ -108,6 +117,7 @@ function OTPForm({
   const [isPending, startTransition] = useTransition();
   const [isResending, startResendTransition] = useTransition();
   const isBusy = isPending || isResending;
+  const [hasResent, setHasResent] = useState(false);
   const [errors, setErrors] = useState<{
     otp?: string[];
     submit?: string[];
@@ -122,11 +132,14 @@ function OTPForm({
         return setErrors({ resend: [toErrorMessage(response.error)] });
       }
 
-      console.log("OTP resent");
+      setErrors({});
+      setHasResent(true);
     });
   };
 
   const submit = (form: HTMLFormElement) => {
+    if (isBusy) return;
+
     const parsedInputs = z
       .object({
         email: z.email().max(254),
@@ -174,28 +187,23 @@ function OTPForm({
         autoComplete="one-time-code"
         required
         autoFocus
-        errors={[errors.submit, errors.resend, errors.otp].flat()}
+        errors={[errors.submit, errors.otp].flat()}
         hint={
-          <div className="flex flex-col">
+          hasResent ? (
+            <span>
+              {`Un nouveau code a été envoyé à`} <strong>{email}</strong>.
+            </span>
+          ) : (
             <span>
               {`Le code a été envoyé à`} <strong>{email}</strong>.
             </span>
-            <Button
-              type="button"
-              variant="text"
-              className="ml-auto text-xs text-neutral-600"
-              disabled={isBusy}
-              onClick={onChangeEmail}
-            >
-              {`Oups, changer l'email ?`}
-            </Button>
-          </div>
+          )
         }
         onResetError={() => setErrors({})}
       />
 
       <div className="mt-2 flex flex-col gap-2">
-        <Button type="submit" className="uppercase" disabled={isBusy}>
+        <Button type="submit" className="uppercase" aria-disabled={isBusy}>
           {isPending ? (
             <ArrowsClockwiseIcon
               className="motion-safe:animate-spin"
@@ -206,15 +214,35 @@ function OTPForm({
           )}
           {`Se connecter`}
         </Button>
-        <Button
-          type="button"
-          variant="text"
-          className="mx-auto w-fit text-xs text-neutral-600"
-          disabled={isBusy}
-          onClick={resend}
+        <p role="status" className="sr-only">
+          {isPending ? `Connexion en cours…` : ""}
+        </p>
+        <div className="flex justify-between">
+          <Button
+            type="button"
+            variant="text"
+            className="text-xs text-neutral-600"
+            disabled={isBusy}
+            onClick={onChangeEmail}
+          >
+            {`Oups, changer l'email ?`}
+          </Button>
+          <Button
+            type="button"
+            variant="text"
+            className="text-xs text-neutral-600"
+            disabled={isBusy}
+            onClick={resend}
+          >
+            {`Renvoyer un code`}
+          </Button>
+        </div>
+        <p
+          role="alert"
+          className="font-courier text-pretty text-center text-sm leading-loose text-red-400"
         >
-          {`Renvoyer un code`}
-        </Button>
+          {errors.resend?.join(", ")}
+        </p>
       </div>
     </form>
   );
