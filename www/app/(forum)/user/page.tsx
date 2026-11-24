@@ -28,7 +28,6 @@ function UserPage({ me }: { me: User }) {
     isLoading: isSearching,
   } = useSearchSimilarUsersByPseudo({ exactMatch: true });
 
-  const [pseudo, setPseudo] = useState(me.pseudo ?? "");
   const [errors, setErrors] = useState<{ pseudo?: string }>({});
 
   return (
@@ -53,9 +52,7 @@ function UserPage({ me }: { me: User }) {
                 .string()
                 .min(3, { message: "Pseudo trop court (3 char min)" }),
             })
-            .safeParse({
-              pseudo,
-            });
+            .safeParse(Object.fromEntries(new FormData(e.currentTarget)));
 
           if (!parsedInputs.success) {
             const errors = z.flattenError(parsedInputs.error).fieldErrors;
@@ -73,17 +70,10 @@ function UserPage({ me }: { me: User }) {
             });
           }
 
-          updateUserPseudo(
-            {
-              pseudo: parsedInputs.data.pseudo,
-              cgu: me.tosAcceptedAt !== null,
-            },
-            {
-              onSuccess: () => {
-                setPseudo(me.pseudo ?? "");
-              },
-            },
-          );
+          updateUserPseudo({
+            pseudo: parsedInputs.data.pseudo,
+            cgu: me.tosAcceptedAt !== null,
+          });
         }}
       >
         <FormField>
@@ -91,12 +81,12 @@ function UserPage({ me }: { me: User }) {
             Pseudo
           </Label>
           <Input
+            key={me.pseudo ?? ""}
             id="pseudo"
             name="pseudo"
             autoComplete="off"
-            value={pseudo}
+            defaultValue={me.pseudo ?? ""}
             onChange={(e) => {
-              setPseudo(e.target.value);
               updateSearch(e.target.value);
             }}
           />

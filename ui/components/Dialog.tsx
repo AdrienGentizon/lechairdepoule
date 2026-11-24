@@ -57,8 +57,9 @@ function Description({
 function Content({
   className,
   children,
+  closable = true,
   ...props
-}: ComponentProps<typeof BaseDialog.Popup>) {
+}: ComponentProps<typeof BaseDialog.Popup> & { closable?: boolean }) {
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className="data-ending-style:opacity-0 data-starting-style:opacity-0 fixed inset-0 min-h-dvh bg-black opacity-50 transition-opacity duration-150 supports-[-webkit-touch-callout:none]:absolute" />
@@ -70,10 +71,12 @@ function Content({
         {...props}
       >
         {children}
-        <BaseDialog.Close className="absolute right-4 top-4 cursor-pointer opacity-70 transition-opacity hover:opacity-100">
-          <XIcon aria-hidden />
-          <span className="sr-only">Fermer</span>
-        </BaseDialog.Close>
+        {closable && (
+          <BaseDialog.Close className="absolute right-4 top-4 cursor-pointer opacity-70 transition-opacity hover:opacity-100">
+            <XIcon aria-hidden />
+            <span className="sr-only">Fermer</span>
+          </BaseDialog.Close>
+        )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>
   );

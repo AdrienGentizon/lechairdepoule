@@ -14,14 +14,13 @@ import Button from "../Button/Button";
 import CguCheckbox from "../CguCheckbox/CguCheckbox";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
 
-export default function UpdateUserPseudoDialog() {
-  const { me } = useMe();
+function PseudoForm({ defaultPseudo }: { defaultPseudo: string }) {
   const {
     updateUserPseudo,
     isPending,
     error: errorUpdatePseudo,
   } = useUpdateUserPseudo();
-  const [pseudo, setPseudo] = useState("");
+  const [pseudo, setPseudo] = useState(defaultPseudo);
   const [cguAccepted, setCguAccepted] = useState(false);
   const {
     updateSearch,
@@ -32,15 +31,108 @@ export default function UpdateUserPseudoDialog() {
   });
   const [errors, setErrors] = useState<{ pseudo?: string; cgu?: string }>({});
 
-  const pseudoError = hasExactMatch
+  const isPseudoTaken = hasExactMatch && pseudo.trim() !== defaultPseudo;
+  const pseudoError = isPseudoTaken
     ? "Pseudo déjà utilisé, veuillez en choisir un autre"
     : (errors.pseudo ?? errorUpdatePseudo?.message);
 
-  if (!me || me.pseudo) return null;
+  return (
+    <Form
+      onFocus={() => {
+        if (Object.values(errors).length > 0) {
+          setErrors({});
+        }
+      }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (isPending || isSearching) return;
+
+        setErrors({});
+
+        const parsedInputs = z
+          .object({
+            pseudo: z
+              .string()
+              .trim()
+              .min(3, { message: "Pseudo trop court (3 char min)" }),
+            cgu: z.literal(true, {
+              message: "Vous devez accepter les CGU",
+            }),
+          })
+          .safeParse({
+            pseudo,
+            cgu: cguAccepted,
+          });
+
+        if (!parsedInputs.success) {
+          const errors = z.flattenError(parsedInputs.error).fieldErrors;
+          return setErrors({
+            pseudo: errors.pseudo?.at(0)?.toString(),
+            cgu: errors.cgu?.at(0)?.toString(),
+          });
+        }
+
+        if (isPseudoTaken) {
+          return setErrors((prev) => {
+            return {
+              ...prev,
+              pseudo: "Pseudo déjà utilisé, veuillez en choisir un autre",
+            };
+          });
+        }
+
+        updateUserPseudo({
+          pseudo: parsedInputs.data.pseudo,
+          cgu: parsedInputs.data.cgu,
+        });
+      }}
+    >
+      <FormField>
+        <Label htmlFor="pseudo" aria-required>
+          Pseudo
+        </Label>
+        <Input
+          id="pseudo"
+          name="pseudo"
+          value={pseudo}
+          autoComplete="off"
+          onChange={(e) => {
+            setPseudo(e.target.value);
+            updateSearch(e.target.value);
+          }}
+          required
+        />
+
+        <FieldError>{pseudoError}</FieldError>
+      </FormField>
+      <CguCheckbox
+        name="cgu"
+        checked={cguAccepted}
+        onChange={(e) => {
+          setCguAccepted(e.target.checked);
+        }}
+        aria-invalid={!cguAccepted}
+      />
+      <Button
+        className="w-full"
+        type="submit"
+        disabled={isPending || isSearching || !cguAccepted}
+      >
+        Créer mon pseudo
+      </Button>
+    </Form>
+  );
+}
+
+export default function UpdateUserPseudoDialog() {
+  const { me } = useMe();
+
+  if (!me) return null;
+  if (me.pseudo && me.tosAcceptedAt) return null;
 
   return (
     <Dialog open>
-      <Dialog.Content>
+      <Dialog.Content closable={false}>
         <Dialog.Title>Modification du pseudo</Dialog.Title>
         <Dialog.Description className="sr-only">
           Formulaire pour choisir votre pseudo d&apos;affichage
@@ -49,90 +141,7 @@ export default function UpdateUserPseudoDialog() {
           <p className="font-light">
             Choisissez-vous un pseudo pour accéder au forum.
           </p>
-          <Form
-            onFocus={() => {
-              if (Object.values(errors).length > 0) {
-                setErrors({});
-              }
-            }}
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (isPending || isSearching) return;
-
-              setErrors({});
-
-              const parsedInputs = z
-                .object({
-                  pseudo: z
-                    .string()
-                    .trim()
-                    .min(3, { message: "Pseudo trop court (3 char min)" }),
-                  cgu: z.literal(true, {
-                    message: "Vous devez accepter les CGU",
-                  }),
-                })
-                .safeParse({
-                  pseudo,
-                  cgu: cguAccepted,
-                });
-
-              if (!parsedInputs.success) {
-                const errors = z.flattenError(parsedInputs.error).fieldErrors;
-                return setErrors({
-                  pseudo: errors.pseudo?.at(0)?.toString(),
-                  cgu: errors.cgu?.at(0)?.toString(),
-                });
-              }
-
-              if (hasExactMatch) {
-                return setErrors((prev) => {
-                  return {
-                    ...prev,
-                    pseudo: "Pseudo déjà utilisé, veuillez en choisir un autre",
-                  };
-                });
-              }
-
-              updateUserPseudo({
-                pseudo: parsedInputs.data.pseudo,
-                cgu: parsedInputs.data.cgu,
-              });
-            }}
-          >
-            <FormField>
-              <Label htmlFor="pseudo" aria-required>
-                Pseudo
-              </Label>
-              <Input
-                id="pseudo"
-                name="pseudo"
-                value={pseudo}
-                autoComplete="off"
-                onChange={(e) => {
-                  setPseudo(e.target.value);
-                  updateSearch(e.target.value);
-                }}
-                required
-              />
-
-              <FieldError>{pseudoError}</FieldError>
-            </FormField>
-            <CguCheckbox
-              name="cgu"
-              checked={cguAccepted}
-              onChange={(e) => {
-                setCguAccepted(e.target.checked);
-              }}
-              aria-invalid={!cguAccepted}
-            />
-            <Button
-              className="w-full"
-              type="submit"
-              disabled={isPending || isSearching || !cguAccepted}
-            >
-              Créer mon pseudo
-            </Button>
-          </Form>
+          <PseudoForm defaultPseudo={me.pseudo ?? ""} />
         </div>
       </Dialog.Content>
     </Dialog>
