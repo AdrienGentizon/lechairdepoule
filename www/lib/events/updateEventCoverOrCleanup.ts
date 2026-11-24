@@ -1,11 +1,12 @@
+import Trace from "@cdp/lib/trace";
+
 import deleteImage from "@/lib/deleteImage";
-import { getLogger } from "@/lib/logger";
 
 import updateEventCoverFromId from "./updateEventCoverFromId";
 
 export default async function updateEventCoverOrCleanup(
   params: Parameters<typeof updateEventCoverFromId>[0],
-  logger: ReturnType<typeof getLogger>,
+  trace: Trace,
 ): Promise<
   | {
       success: true;
@@ -16,11 +17,11 @@ export default async function updateEventCoverOrCleanup(
   try {
     const updatedEvent = await updateEventCoverFromId(params);
     if (!updatedEvent) {
-      await deleteImage(params.cover.url, logger);
+      await deleteImage(params.cover.url, trace);
     }
     return { success: true, data: updatedEvent };
   } catch (error) {
-    await deleteImage(params.cover.url, logger);
+    await deleteImage(params.cover.url, trace);
     return {
       success: false,
       error: `${(error as Error)?.message ?? error}`,

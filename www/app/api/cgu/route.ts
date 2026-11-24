@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import { fetchEntryGraphQL } from "@/lib/contentful";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { TermsOfService } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const response = await fetchEntryGraphQL<TermsOfService>(
       "termsOfService",
@@ -20,16 +21,18 @@ export async function GET(req: NextRequest) {
     );
 
     if (!response?.data) {
-      logger.withError(new Error("not found")).flush();
+      trace.pushError("not found");
+      trace.log(404);
       return NextResponse.json(null, { status: 404 });
     }
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<TermsOfService>(response?.data?.termsOfService, {
       status: 200,
     });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

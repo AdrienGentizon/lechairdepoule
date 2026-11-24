@@ -1,21 +1,23 @@
 import { unstable_cache } from "next/cache";
 
+import Trace from "@cdp/lib/trace";
+
 import { getDateSpanUTC } from "../date";
-import { getLogger } from "../logger";
 import { CacheKey } from "../types";
 import selectEvents from "./selectEvents";
 
 async function getEvents() {
-  const logger = getLogger("getCachedEvents");
+  const trace = new Trace("getCachedEvents");
   try {
     const events = await selectEvents({
       from: getDateSpanUTC().from.toISOString(),
     });
-    logger.append(`${events.length}x event(s) selected`);
-    logger.flush();
+    trace.push(`${events.length}x event(s) selected`);
+    trace.log();
     return events;
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return [];
   }
 }

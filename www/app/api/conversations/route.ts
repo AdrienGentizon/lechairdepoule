@@ -1,23 +1,25 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { ConversationFormSchema } from "@/lib/schemas";
 import { CacheKey, Conversation } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
 
     if (!user || user.bannedAt) {
-      logger.append(getLoggableUser(user));
-      logger.withError("unauthorized").flush();
+      trace.push(getLoggableUser(user));
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -27,8 +29,9 @@ export async function POST(req: NextRequest) {
     const parsedInputs = ConversationFormSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json(
         { error: "conversation non valide ne sera pas créée" },
         { status: 400 },
@@ -44,7 +47,7 @@ export async function POST(req: NextRequest) {
       if (uploadResult.success) {
         cover = uploadResult.data;
       } else {
-        logger.append({ uploadError: uploadResult.error });
+        trace.push({ uploadError: uploadResult.error });
       }
     }
 
@@ -59,26 +62,27 @@ export async function POST(req: NextRequest) {
       throw new Error(`cannot insert conversation ${parsedInputs.data}`);
 
     revalidateTag("cachedAgenda" satisfies CacheKey, "max");
-    logger.append({ insertedConversation });
-    logger.flush();
+    trace.push({ insertedConversation });
+    trace.log();
     return NextResponse.json<Conversation>(insertedConversation, {
       status: 200,
     });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     const conversations = await selectConversations();
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<Omit<Conversation, "messages">[]>(
       user?.role === "admin"
         ? conversations
@@ -86,7 +90,8 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

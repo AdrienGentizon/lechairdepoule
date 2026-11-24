@@ -2,6 +2,8 @@ import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
@@ -17,7 +19,6 @@ import selectConversationFromId from "@/lib/forum/selectConversationFromId";
 import selectConversationMessages from "@/lib/forum/selectConversationMessages";
 import updateConversationFromId from "@/lib/forum/updateConversationFromId";
 import upsertThreadNotifications from "@/lib/forum/upsertThreadNotifications";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { ConversationFormSchema } from "@/lib/schemas";
 import { CacheKey, Conversation, Message } from "@/lib/types";
@@ -27,15 +28,16 @@ export async function GET(
   ctx: { params: Promise<{ conversationId: string }> },
 ) {
   const params = await ctx.params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     const conversation = await selectConversationFromId(params.conversationId);
 
     if (!conversation || (conversation.reportedAt && user?.role !== "admin")) {
-      logger.withError("not found").flush();
+      trace.pushError("not found");
+      trace.log(404);
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
@@ -63,7 +65,7 @@ export async function GET(
       [],
     );
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<Conversation>(
       {
         ...conversation,
@@ -78,7 +80,8 @@ export async function GET(
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
@@ -88,13 +91,14 @@ export async function POST(
   ctx: { params: Promise<{ conversationId: string }> },
 ) {
   const params = await ctx.params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -107,8 +111,9 @@ export async function POST(
       .safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json(
         { error: "message non valide ne sera pas posté" },
         { status: 400 },
@@ -136,10 +141,10 @@ export async function POST(
     const insertedMessage = await insertMessageIntoConversation(values);
 
     if (!insertedMessage) {
-      logger.append({ values });
+      trace.push({ values });
       throw new Error(`cannot insert message`);
     }
-    logger.append(getLoggableMessage(insertedMessage));
+    trace.push(getLoggableMessage(insertedMessage));
 
     await insertMentions({
       messageId: insertedMessage.id,
@@ -160,8 +165,8 @@ export async function POST(
       insertedMessage,
     );
 
-    logger.append({ insertedMessage: getLoggableMessage(insertedMessage) });
-    logger.flush();
+    trace.push({ insertedMessage: getLoggableMessage(insertedMessage) });
+    trace.log();
     return NextResponse.json<Message>(
       {
         ...insertedMessage,
@@ -173,7 +178,8 @@ export async function POST(
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
@@ -183,13 +189,14 @@ export async function DELETE(
   ctx: { params: Promise<{ conversationId: string }> },
 ) {
   const params = await ctx.params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -199,18 +206,20 @@ export async function DELETE(
     });
 
     if (!conversation) {
-      logger.withError("not found").flush();
+      trace.pushError("not found");
+      trace.log(404);
       return NextResponse.json({ error: "introuvable" }, { status: 404 });
     }
 
     revalidateTag("cachedAgenda" satisfies CacheKey, "max");
-    logger.flush();
+    trace.log();
     return NextResponse.json<{ conversationId: string }>(
       { conversationId: conversation.id },
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
@@ -220,13 +229,14 @@ export async function PATCH(
   ctx: { params: Promise<{ conversationId: string }> },
 ) {
   const params = await ctx.params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -235,8 +245,9 @@ export async function PATCH(
     const parsedInputs = ConversationFormSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json(
         {
           error: "modification non valide la conversation ne sera pas mofifiée",
@@ -254,8 +265,9 @@ export async function PATCH(
     const updatedConversation = await updateConversationFromId(values);
 
     if (!updatedConversation) {
-      logger.append({ values });
-      logger.withError("cannot update conversation").flush();
+      trace.push({ values });
+      trace.pushError("cannot update conversation");
+      trace.log(500);
       return NextResponse.json(
         { error: "impossible de modifier la conversation" },
         { status: 500 },
@@ -263,13 +275,14 @@ export async function PATCH(
     }
     revalidateTag("cachedAgenda" satisfies CacheKey, "max");
 
-    logger.append({ updatedConversation });
-    logger.flush();
+    trace.push({ updatedConversation });
+    trace.log();
     return NextResponse.json<
       Omit<Conversation, "messages" | "createdAt" | "createdBy">
     >(updatedConversation, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

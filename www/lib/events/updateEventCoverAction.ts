@@ -2,9 +2,10 @@
 
 import { updateTag } from "next/cache";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import deleteImage from "@/lib/deleteImage";
-import { getLogger } from "@/lib/logger";
 import { CacheKey, Event } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
@@ -20,25 +21,28 @@ export default async function updateEventCoverAction(
     }
   | { success: false; error: string }
 > {
-  const logger = getLogger("updateEventCoverAction", "Action");
+  const trace = new Trace("updateEventCoverAction");
   try {
     const user = await getAuthenticatedUser();
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return { success: false, error: "non autorisé" };
     }
 
     const imageFileWithMetadata = await getImageFileWithMetadata(formData);
     if (!imageFileWithMetadata.success) {
-      logger.append({ formData });
-      logger.withError("invalid payload").flush();
+      trace.push({ formData });
+      trace.pushError("invalid payload");
+      trace.log(400);
       return { success: false, error: "image non valide." };
     }
 
     const uploadedImage = await uploadImage(imageFileWithMetadata.data);
     if (!uploadedImage.success) {
-      logger.append({ uploadError: uploadedImage.error });
-      logger.withError("upload failed").flush();
+      trace.push({ uploadError: uploadedImage.error });
+      trace.pushError("upload failed");
+      trace.log(500);
       return { success: false, error: "l'image n'a pas pu être chargée" };
     }
 
@@ -48,17 +52,19 @@ export default async function updateEventCoverAction(
         eventId,
         cover: uploadedImage.data,
       },
-      logger,
+      trace,
     );
     if (!updateResult.success) {
-      logger.withError(updateResult.error).flush();
+      trace.pushError(updateResult.error);
+      trace.log(500);
       return { success: false, error: "erreur serveur" };
     }
     const updatedEvent = updateResult.data;
 
     if (!updatedEvent) {
-      logger.append({ eventId, uploadedImage: uploadedImage.data });
-      logger.withError("cannot update event cover").flush();
+      trace.push({ eventId, uploadedImage: uploadedImage.data });
+      trace.pushError("cannot update event cover");
+      trace.log(500);
       return {
         success: false,
         error: "l'image n'a pas pu être sauvegardée",
@@ -66,13 +72,13 @@ export default async function updateEventCoverAction(
     }
 
     if (updatedEvent.previousCoverUrl) {
-      await deleteImage(updatedEvent.previousCoverUrl, logger);
+      await deleteImage(updatedEvent.previousCoverUrl, trace);
     }
 
     updateTag("cachedEvents" satisfies CacheKey);
 
-    logger.append({ updatedEvent });
-    logger.flush();
+    trace.push({ updatedEvent });
+    trace.log();
     return {
       success: true,
       data: {
@@ -83,7 +89,8 @@ export default async function updateEventCoverAction(
       },
     };
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return { success: false, error: "erreur serveur" };
   }
 }

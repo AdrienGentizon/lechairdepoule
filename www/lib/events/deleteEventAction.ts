@@ -2,9 +2,10 @@
 
 import { updateTag } from "next/cache";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import deleteImage from "@/lib/deleteImage";
-import { getLogger } from "@/lib/logger";
 import { CacheKey } from "@/lib/types";
 
 import deleteEventFromId from "./deleteEventFromId";
@@ -15,32 +16,35 @@ export default async function deleteEventAction(
   | { success: true; data: { eventId: string } }
   | { success: false; error: string }
 > {
-  const logger = getLogger("deleteEventAction", "Action");
+  const trace = new Trace("deleteEventAction");
   try {
     const user = await getAuthenticatedUser();
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return { success: false, error: "non autorisé" };
     }
 
     const event = await deleteEventFromId({ userId: user.id, eventId });
 
     if (!event) {
-      logger.withError("not found").flush();
+      trace.pushError("not found");
+      trace.log(404);
       return { success: false, error: "introuvable" };
     }
 
     if (event.coverUrl) {
-      await deleteImage(event.coverUrl, logger);
+      await deleteImage(event.coverUrl, trace);
     }
 
     updateTag("cachedEvents" satisfies CacheKey);
 
-    logger.append({ eventId: event.id });
-    logger.flush();
+    trace.push({ eventId: event.id });
+    trace.log();
     return { success: true, data: { eventId: event.id } };
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return { success: false, error: "erreur serveur" };
   }
 }

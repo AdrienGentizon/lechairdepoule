@@ -1,25 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import insertBanAppeal from "@/lib/forum/insertBanAppeal";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { BanAppealFormSchema } from "@/lib/schemas";
 import { BanAppeal } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     if (!user.bannedAt) {
-      logger.withError("user not banned").flush();
+      trace.pushError("user not banned");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 403 });
     }
 
@@ -27,8 +30,9 @@ export async function POST(req: NextRequest) {
     const parsedInputs = BanAppealFormSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json({ error: "requête invalide" }, { status: 400 });
     }
 
@@ -36,19 +40,21 @@ export async function POST(req: NextRequest) {
     const banAppeal = await insertBanAppeal(values);
 
     if (!banAppeal) {
-      logger.append({ values });
-      logger.withError("appeal already pending").flush();
+      trace.push({ values });
+      trace.pushError("appeal already pending");
+      trace.log(400);
       return NextResponse.json(
         { error: "une demande est déjà en cours" },
         { status: 409 },
       );
     }
 
-    logger.append({ banAppeal });
-    logger.flush();
+    trace.push({ banAppeal });
+    trace.log();
     return NextResponse.json<BanAppeal>(banAppeal, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

@@ -1,22 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBodyMentionWIthUserName";
 import selectUnreadUsernotifications from "@/lib/forum/selectUnreadUsernotifications";
 import updateUserMentions from "@/lib/forum/updateUserMentions";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { UserNotifications } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const me = await getAuthenticatedUser();
-    logger.append(getLoggableUser(me));
+    trace.push(getLoggableUser(me));
 
     if (!me) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
       userId: me.id,
     });
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<UserNotifications>(
       {
         mentions: notifications
@@ -41,19 +43,21 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const me = await getAuthenticatedUser();
-    logger.append(getLoggableUser(me));
+    trace.push(getLoggableUser(me));
 
     if (!me) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -65,8 +69,9 @@ export async function POST(req: NextRequest) {
       .safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json({ error: "requête invalide" }, { status: 400 });
     }
 
@@ -75,10 +80,11 @@ export async function POST(req: NextRequest) {
       messageIds: parsedInputs.data.messageIds,
     });
 
-    logger.flush();
+    trace.log();
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

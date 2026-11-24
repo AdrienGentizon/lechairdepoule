@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import { buildIcsCalendar } from "@/lib/calendar/ics";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   const { searchParams } = req.nextUrl;
 
   const title = searchParams.get("title");
@@ -12,14 +13,15 @@ export async function GET(req: NextRequest) {
   const endsAt = searchParams.get("endsAt");
 
   if (!title || !startsAt) {
-    logger.withError("missing required params (title, startsAt)").flush();
+    trace.pushError("missing required params (title, startsAt)");
+    trace.log(400);
     return new Response(null, { status: 400 });
   }
 
   const ics = buildIcsCalendar({ title, startsAt, endsAt });
 
-  logger.append({ ics });
-  logger.flush();
+  trace.push({ ics });
+  trace.log();
   return new Response(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",

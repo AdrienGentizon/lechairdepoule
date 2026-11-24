@@ -2,9 +2,10 @@
 
 import { updateTag } from "next/cache";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import deleteImage from "@/lib/deleteImage";
-import { getLogger } from "@/lib/logger";
 import { CacheKey, Event } from "@/lib/types";
 
 import deleteEventCoverFromId from "./deleteEventCoverFromId";
@@ -17,17 +18,19 @@ export default async function deleteEventCoverAction(eventId: string): Promise<
     }
   | { success: false; error: string }
 > {
-  const logger = getLogger("deleteEventCoverAction", "Action");
+  const trace = new Trace("deleteEventCoverAction");
   try {
     const user = await getAuthenticatedUser();
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return { success: false, error: "non autorisé" };
     }
 
     const event = await selectEventFromId(eventId);
     if (!event) {
-      logger.withError("not found").flush();
+      trace.pushError("not found");
+      trace.log(404);
       return { success: false, error: "introuvable" };
     }
 
@@ -37,21 +40,23 @@ export default async function deleteEventCoverAction(eventId: string): Promise<
     });
 
     if (!updatedEvent) {
-      logger.withError("cannot delete event cover").flush();
+      trace.pushError("cannot delete event cover");
+      trace.log(500);
       return { success: false, error: "impossible de supprimer l'image" };
     }
 
     if (event.coverUrl) {
-      await deleteImage(event.coverUrl, logger);
+      await deleteImage(event.coverUrl, trace);
     }
 
     updateTag("cachedEvents" satisfies CacheKey);
 
-    logger.append({ eventId: updatedEvent.id });
-    logger.flush();
+    trace.push({ eventId: updatedEvent.id });
+    trace.log();
     return { success: true, data: updatedEvent };
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return { success: false, error: "erreur serveur" };
   }
 }

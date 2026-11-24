@@ -3,11 +3,12 @@
 import { updateTag } from "next/cache";
 import { z } from "zod";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import { EventFormSchema } from "@/lib/schemas";
 import { CacheKey, Event } from "@/lib/types";
 
-import { getLogger } from "../logger";
 import updateEventFromId from "./updateEventFromId";
 
 export default async function updateEventAction(
@@ -17,18 +18,20 @@ export default async function updateEventAction(
   | { success: true; data: Omit<Event, "createdBy"> }
   | { success: false; error: string }
 > {
-  const logger = getLogger("updateEventAction", "Action");
+  const trace = new Trace("updateEventAction");
   try {
     const user = await getAuthenticatedUser();
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return { success: false, error: "non autorisé" };
     }
 
     const parsedInputs = EventFormSchema.safeParse(values);
     if (!parsedInputs.success) {
-      logger.append({ values });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ values });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return {
         success: false,
         error: "modification non valide l'événement ne sera pas mofifié",
@@ -50,18 +53,20 @@ export default async function updateEventAction(
     });
 
     if (!updatedEvent) {
-      logger.append({ eventId, values });
-      logger.withError("cannot update event").flush();
+      trace.push({ eventId, values });
+      trace.pushError("cannot update event");
+      trace.log(500);
       return { success: false, error: "impossible de modifier l'événement" };
     }
 
     updateTag("cachedEvents" satisfies CacheKey);
 
-    logger.append({ updatedEvent });
-    logger.flush();
+    trace.push({ updatedEvent });
+    trace.log();
     return { success: true, data: updatedEvent };
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return { success: false, error: "erreur serveur" };
   }
 }

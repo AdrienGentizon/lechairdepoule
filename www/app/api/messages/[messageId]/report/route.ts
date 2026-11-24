@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import updateMessageAsReported from "@/lib/forum/updateMessageAsReported";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { Message } from "@/lib/types";
 
@@ -12,13 +13,14 @@ export async function POST(
   { params }: { params: Promise<{ messageId: string }> },
 ) {
   const { messageId } = await params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const reportedBy = await getAuthenticatedUser();
-    logger.append({ reportedBy: getLoggableUser(reportedBy) });
+    trace.push({ reportedBy: getLoggableUser(reportedBy) });
 
     if (!reportedBy || reportedBy.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -26,7 +28,7 @@ export async function POST(
     const reportedMessage = await updateMessageAsReported(values);
 
     if (!reportedMessage) {
-      logger.append({ values });
+      trace.push({ values });
       throw new Error(
         `user (${reportedBy.id}) cannot report message (${messageId})`,
       );
@@ -38,11 +40,12 @@ export async function POST(
       reportedMessage,
     );
 
-    logger.append({ reportedMessage });
-    logger.flush();
+    trace.push({ reportedMessage });
+    trace.log();
     return NextResponse.json<Message>(reportedMessage, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

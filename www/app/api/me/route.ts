@@ -1,40 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import updateUser from "@/lib/auth/updateUser";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { User } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
     const { email: _, ...publicUser } = user;
-    logger.flush();
+    trace.log();
     return NextResponse.json<User>(publicUser, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
 
 export async function PATCH(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
     const payload = await req.json();
@@ -49,8 +53,9 @@ export async function PATCH(req: NextRequest) {
       .safeParse(payload);
 
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return NextResponse.json({ error: "requête invalide" }, { status: 400 });
     }
 
@@ -62,22 +67,24 @@ export async function PATCH(req: NextRequest) {
     const updatedUser = await updateUser(values);
 
     if (!updatedUser) {
-      logger.append({ values });
-      logger.withError("cannot update user").flush();
+      trace.push({ values });
+      trace.pushError("cannot update user");
+      trace.log(500);
       return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
     }
 
-    logger.append({
+    trace.push({
       updatedUser: {
         id: updatedUser.id,
         role: updatedUser.role,
         bannedAt: updatedUser.bannedAt,
       },
     });
-    logger.flush();
+    trace.log();
     return NextResponse.json<User>(updatedUser, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

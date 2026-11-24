@@ -1,20 +1,22 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import { CollectionTag, EntryTag } from "@/lib/contentful";
 import env from "@/lib/env";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 
 export async function POST(req: NextRequest) {
-  const logger = getRequestLogger(req);
-  logger.append({ timestamp: new Date().toISOString() });
+  const trace = new Trace(req);
+  trace.push({ timestamp: new Date().toISOString() });
 
   try {
     const requestHeaders = new Headers(req.headers);
     const secret = requestHeaders.get("x-vercel-reval-key");
 
     if (secret !== env().CONTENTFUL_WEBHOOK_SECRET) {
-      logger.withError("invalid secret").flush();
+      trace.pushError("invalid secret");
+      trace.log(401);
       return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
     }
 
@@ -23,10 +25,11 @@ export async function POST(req: NextRequest) {
     revalidateTag("albumCoverCollection" as CollectionTag, {});
     revalidateTag("contact" as EntryTag, {});
 
-    logger.flush();
+    trace.log();
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json(
       { revalidated: false, now: Date.now() },
       { status: 500 },

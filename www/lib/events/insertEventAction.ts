@@ -2,8 +2,9 @@
 
 import { updateTag } from "next/cache";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import { getLogger } from "@/lib/logger";
 import { EventFormSchema } from "@/lib/schemas";
 import { CacheKey, Event } from "@/lib/types";
 import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
@@ -13,19 +14,21 @@ import insertEventOrCleanupCover from "./insertEventOrCleanupCover";
 export default async function insertEventAction(
   formData: FormData,
 ): Promise<{ success: true; data: Event } | { success: false; error: string }> {
-  const logger = getLogger("insertEventAction", "Action");
+  const trace = new Trace("insertEventAction");
   try {
     const user = await getAuthenticatedUser();
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return { success: false, error: "non autorisé" };
     }
 
     const payload = Object.fromEntries(formData.entries());
     const parsedInputs = EventFormSchema.safeParse(payload);
     if (!parsedInputs.success) {
-      logger.append({ payload });
-      logger.withError(parsedInputs.error).flush();
+      trace.push({ payload });
+      trace.pushError(parsedInputs.error);
+      trace.log(400);
       return { success: false, error: "événement non valide ne sera pas créé" };
     }
 
@@ -38,7 +41,7 @@ export default async function insertEventAction(
       if (uploadResult.success) {
         cover = uploadResult.data;
       } else {
-        logger.append({ uploadError: uploadResult.error });
+        trace.push({ uploadError: uploadResult.error });
       }
     }
 
@@ -60,21 +63,23 @@ export default async function insertEventAction(
         venue: parsedInputs.data.venue,
         url: parsedInputs.data.url,
       },
-      logger,
+      trace,
     );
     if (!insertResult.success) {
-      logger.withError(insertResult.error).flush();
+      trace.pushError(insertResult.error);
+      trace.log(500);
       return { success: false, error: "erreur serveur" };
     }
     const insertedEvent = insertResult.data;
 
     updateTag("cachedEvents" satisfies CacheKey);
 
-    logger.append({ insertedEvent });
-    logger.flush();
+    trace.push({ insertedEvent });
+    trace.log();
     return { success: true, data: insertedEvent };
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return { success: false, error: "erreur serveur" };
   }
 }

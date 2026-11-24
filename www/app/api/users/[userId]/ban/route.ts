@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import updateUserAsBanned from "@/lib/forum/updateUserAsBanned";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
 import { User } from "@/lib/types";
 
@@ -12,10 +13,10 @@ export async function POST(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   const { userId } = await params;
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const bannedBy = await getAuthenticatedUser();
-    logger.append({ bannedBy: getLoggableUser(bannedBy) });
+    trace.push({ bannedBy: getLoggableUser(bannedBy) });
 
     if (
       !bannedBy ||
@@ -23,7 +24,8 @@ export async function POST(
       bannedBy.id === userId ||
       bannedBy.role !== "admin"
     ) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -31,19 +33,20 @@ export async function POST(
     const bannedUser = await updateUserAsBanned(values);
 
     if (!bannedUser) {
-      logger.append({ values });
+      trace.push({ values });
       throw new Error(`user (${bannedBy.id}) cannot ban user (${userId})`);
     }
 
-    logger.append({
+    trace.push({
       bannedUser,
     });
     await pusher.trigger(`users`, `user:ban`, bannedUser);
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<User>(bannedUser, { status: 200 });
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }

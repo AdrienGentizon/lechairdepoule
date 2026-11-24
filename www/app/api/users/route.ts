@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import Trace from "@cdp/lib/trace";
+
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import selectSimilarUsersByPseudo from "@/lib/auth/selectSimilarUsersByPseudo";
 import selectUsersByPseudo from "@/lib/auth/selectUsersByPseudo";
-import { getRequestLogger } from "@/lib/getRequestLogger";
 import { User } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
-  const logger = getRequestLogger(req);
+  const trace = new Trace(req);
   try {
     const user = await getAuthenticatedUser();
-    logger.append(getLoggableUser(user));
+    trace.push(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
-      logger.withError("unauthorized").flush();
+      trace.pushError("unauthorized");
+      trace.log(401);
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
@@ -22,14 +24,15 @@ export async function GET(req: NextRequest) {
     const exactMatch =
       req.nextUrl.searchParams.get("exactMatch")?.toString() === "true";
     if (!search) {
-      logger.withError("search parameter is required").flush();
+      trace.pushError("search parameter is required");
+      trace.log(400);
       return NextResponse.json(
         { error: "paramètre de recherche requis" },
         { status: 400 },
       );
     }
 
-    logger.flush();
+    trace.log();
     return NextResponse.json<(User & { similarity: number })[]>(
       exactMatch
         ? (await selectUsersByPseudo(search)).map((user) => ({
@@ -40,7 +43,8 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    logger.withError(error).flush();
+    trace.pushError(error);
+    trace.log(500);
     return NextResponse.json({ error: "erreur serveur" }, { status: 500 });
   }
 }
