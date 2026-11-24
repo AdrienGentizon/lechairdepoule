@@ -65,6 +65,7 @@ function EmailForm({
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
+        e.stopPropagation();
         submit(e.currentTarget);
       }}
     >
@@ -173,6 +174,7 @@ function OTPForm({
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
+        e.stopPropagation();
         submit(e.currentTarget);
       }}
     >
@@ -185,19 +187,36 @@ function OTPForm({
         type="text"
         inputMode="numeric"
         autoComplete="one-time-code"
+        className="font-courier"
         required
         autoFocus
-        errors={[errors.submit, errors.otp].flat()}
+        errors={[errors.submit, errors.otp, errors.resend].flat()}
         hint={
-          hasResent ? (
-            <span>
-              {`Un nouveau code a été envoyé à`} <strong>{email}</strong>.
+          <span>
+            {hasResent
+              ? `Un nouveau code a été envoyé à`
+              : `Le code a été envoyé à`}{" "}
+            <strong>{email}</strong>.
+            <span className="inline-flex w-full items-center justify-center gap-4">
+              <button
+                type="button"
+                className="underline"
+                disabled={isBusy}
+                onClick={onChangeEmail}
+              >
+                {`Changer l'email`}
+              </button>
+              {"ou"}
+              <button
+                type="button"
+                className="underline"
+                disabled={isBusy}
+                onClick={resend}
+              >
+                {`Renvoyer un code`}
+              </button>
             </span>
-          ) : (
-            <span>
-              {`Le code a été envoyé à`} <strong>{email}</strong>.
-            </span>
-          )
+          </span>
         }
         onResetError={() => setErrors({})}
       />
@@ -216,32 +235,6 @@ function OTPForm({
         </Button>
         <p role="status" className="sr-only">
           {isPending ? `Connexion en cours…` : ""}
-        </p>
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="text"
-            className="text-xs text-neutral-600"
-            disabled={isBusy}
-            onClick={onChangeEmail}
-          >
-            {`Oups, changer l'email ?`}
-          </Button>
-          <Button
-            type="button"
-            variant="text"
-            className="text-xs text-neutral-600"
-            disabled={isBusy}
-            onClick={resend}
-          >
-            {`Renvoyer un code`}
-          </Button>
-        </div>
-        <p
-          role="alert"
-          className="font-courier text-pretty text-center text-sm leading-loose text-red-400"
-        >
-          {errors.resend?.join(", ")}
         </p>
       </div>
     </form>
