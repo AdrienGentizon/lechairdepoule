@@ -7,8 +7,9 @@ export default class Trace {
   #parts: Part[];
   #startedAt: number;
 
-  constructor(operationName: string) {
-    this.#operationName = operationName;
+  constructor(args: string | Request) {
+    this.#operationName =
+      typeof args === "string" ? args : `${args.method} ${args.url}`;
     this.#parts = [];
     this.#startedAt = Date.now();
   }
@@ -18,7 +19,11 @@ export default class Trace {
   }
 
   pushError(error: unknown) {
-    this.#parts.push((error as Error)?.message, "unknown_error");
+    this.#parts.push(
+      error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : String(error),
+    );
   }
 
   #tag(status: number) {
