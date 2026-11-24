@@ -17,11 +17,68 @@ export function Label({
   );
 }
 
+export function ErrorMessage({
+  className,
+  children,
+  ...props
+}: ComponentProps<"p">) {
+  return (
+    <p
+      className={cn(
+        "font-courier text-pretty text-center text-sm leading-loose text-red-400",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
+
+export function HintMessage({
+  className,
+  children,
+  ...props
+}: ComponentProps<"div">) {
+  return (
+    <div
+      className={cn(
+        "font-courier text-pretty text-sm leading-loose",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function HintOrErrorMessage({
+  id,
+  hint,
+  errors,
+}: {
+  id: string;
+  hint?: ReactNode;
+  errors: string[];
+}) {
+  return (
+    <>
+      <HintMessage id={`hints--${id}`} aria-live="polite">
+        {hint}
+      </HintMessage>
+      <ErrorMessage id={`errors--${id}`} role="alert">
+        {errors.length > 0 ? errors.join(", ") : <>&nbsp;</>}
+      </ErrorMessage>
+    </>
+  );
+}
+
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
       className={cn(
-        "font-courier border-foreground w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
+        "font-courier border-foreground bg-background w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
         className,
       )}
       {...props}
@@ -73,20 +130,7 @@ export function InputField({
           <div className="bg-foreground text-background">{suffix}</div>
         )}
       </div>
-      <div
-        id={`hints--${id}`}
-        aria-live="polite"
-        className="font-courier text-pretty text-sm leading-loose text-neutral-600"
-      >
-        {hint}
-      </div>
-      <p
-        id={`errors--${id}`}
-        role="alert"
-        className="font-courier text-pretty text-center text-sm leading-loose text-red-400"
-      >
-        {errors.length > 0 ? errors.join(", ") : <>&nbsp;</>}
-      </p>
+      <HintOrErrorMessage id={id} hint={hint} errors={errors} />
     </div>
   );
 }
