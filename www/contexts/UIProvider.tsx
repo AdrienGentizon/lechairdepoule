@@ -2,8 +2,8 @@
 
 import { ReactNode } from "react";
 
-import { TooltipProvider } from "@/components/ui/tooltip";
+import Tooltip from "@cdp/ui/Tooltip";
 
 export default function UIProvider({ children }: { children: ReactNode }) {
-  return <TooltipProvider>{children}</TooltipProvider>;
+  return <Tooltip.Provider>{children}</Tooltip.Provider>;
 }

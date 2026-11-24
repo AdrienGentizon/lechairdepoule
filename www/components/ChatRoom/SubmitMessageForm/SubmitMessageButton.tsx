@@ -8,9 +8,9 @@ import { Me } from "@/lib/auth/useMe";
 
 function BannedUserSubmitButton({ buttonLabel }: { buttonLabel: ReactNode }) {
   return (
-    <BannedUserDialogTrigger asChild>
-      <Button type="button">{buttonLabel}</Button>
-    </BannedUserDialogTrigger>
+    <BannedUserDialogTrigger
+      render={<Button type="button">{buttonLabel}</Button>}
+    />
   );
 }
 
@@ -19,11 +19,7 @@ function UnauthUserSubmitMessageButton({
 }: {
   buttonLabel: ReactNode;
 }) {
-  return (
-    <LogInButton>
-      <Button type="button">{buttonLabel}</Button>
-    </LogInButton>
-  );
+  return <LogInButton render={<Button type="button">{buttonLabel}</Button>} />;
 }
 
 function AuthorizedUserSubmitMessageButton({

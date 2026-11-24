@@ -2,17 +2,11 @@ import { ButtonHTMLAttributes, useState } from "react";
 
 import { Ban } from "lucide-react";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import LogInButton from "@/components/Auth/LogInButton";
 import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Loader from "@/components/Loader/Loader";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
 import { isReportableMessage } from "@/lib/forum/permissions";
 import useReportMessage from "@/lib/forum/useReportMessage";
@@ -44,19 +38,11 @@ function ReportMessageButtonContent({
 }
 
 function BannedUserReportMessageButton() {
-  return (
-    <BannedUserDialogTrigger asChild>
-      <ReportMessageButtonContent />
-    </BannedUserDialogTrigger>
-  );
+  return <BannedUserDialogTrigger render={<ReportMessageButtonContent />} />;
 }
 
 function UnauthUserReportMessageButton() {
-  return (
-    <LogInButton>
-      <ReportMessageButtonContent />
-    </LogInButton>
-  );
+  return <LogInButton render={<ReportMessageButtonContent />} />;
 }
 
 function ActiveReportMessageButton({ message, me }: Props) {
@@ -67,17 +53,16 @@ function ActiveReportMessageButton({ message, me }: Props) {
 
   return (
     <Dialog open={openReport} onOpenChange={setOpenReport}>
-      <DialogTrigger disabled={!isReportableMessage(message, me)} asChild>
-        <ReportMessageButtonContent />
-      </DialogTrigger>
-      <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-neutral-500 bg-white p-0 text-black landscape:max-w-96">
-        <DialogHeader className="bg-black p-4 text-white">
-          <DialogTitle>Dénoncer un message</DialogTitle>
-          <DialogDescription className="sr-only">
-            Formulaire pour signaler un message inapproprié à la modération
-          </DialogDescription>
-        </DialogHeader>
-        <div className="bg-white p-2">
+      <Dialog.Trigger
+        disabled={!isReportableMessage(message, me)}
+        render={<ReportMessageButtonContent />}
+      />
+      <Dialog.Content className="landscape:max-w-96">
+        <Dialog.Title>Dénoncer un message</Dialog.Title>
+        <Dialog.Description className="sr-only">
+          Formulaire pour signaler un message inapproprié à la modération
+        </Dialog.Description>
+        <div>
           <p>
             Vous êtes sur le point de dénoncer un message de{" "}
             <strong>{message.user.pseudo}</strong>.
@@ -88,9 +73,9 @@ function ActiveReportMessageButton({ message, me }: Props) {
           </p>
           <p>Voulez-vous poursuivre?</p>
         </div>
-        <footer className="flex flex-col gap-1 p-2">
+        <footer className="flex flex-col gap-1">
           <button
-            className="hover:not:disabled:bg-neutral-700 w-full rounded-sm border border-black bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:not:disabled:bg-neutral-700 w-full rounded-sm border border-white bg-black py-0.5 text-center text-white disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isPendingReportMessage}
             onClick={() => {
               reportMessage(message.id, {
@@ -115,7 +100,7 @@ function ActiveReportMessageButton({ message, me }: Props) {
             Fermer
           </button>
         </footer>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

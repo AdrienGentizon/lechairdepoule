@@ -22,7 +22,8 @@ export default function LogInButton({
       <Dialog.Trigger className={className} {...props}>
         {children}
       </Dialog.Trigger>
-      <Dialog.Content title={`Se connecter`}>
+      <Dialog.Content>
+        <Dialog.Title>Se connecter</Dialog.Title>
         <SignInForm
           onSuccess={() => {
             setOpen(false);

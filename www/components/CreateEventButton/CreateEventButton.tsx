@@ -6,6 +6,8 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import insertEventAction from "@/lib/events/insertEventAction";
@@ -13,14 +15,6 @@ import { resizeImage } from "@/lib/resizeImage";
 import { Event, isEventType } from "@/lib/types";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import CreateEventForm from "./CreateEventForm";
 import SelectItemToBeCreatedType from "./SelectItemToBeCreatedType";
 
@@ -130,26 +124,24 @@ function MultiStepCreateEventButton() {
         setStep("EVENT_TYPE");
       }}
     >
-      <DialogTrigger className="flex cursor-pointer flex-col gap-2 px-4 py-3">
+      <Dialog.Trigger className="flex cursor-pointer flex-col gap-2 px-4 py-3">
         <Content />
-      </DialogTrigger>
-      <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
-        <DialogHeader>
-          <DialogTitle>
-            {selectedEventType
-              ? EVENT_TYPE_LABELS[selectedEventType].title
-              : "Nouveau topic"}
-          </DialogTitle>
-          <DialogDescription
-            className="sr-only"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {step === "EVENT_TYPE"
-              ? "Étape 1 sur 2 : choisir le type de topic"
-              : "Étape 2 sur 2 : remplir les informations du topic"}
-          </DialogDescription>
-        </DialogHeader>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>
+          {selectedEventType
+            ? EVENT_TYPE_LABELS[selectedEventType].title
+            : "Nouveau topic"}
+        </Dialog.Title>
+        <Dialog.Description
+          className="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {step === "EVENT_TYPE"
+            ? "Étape 1 sur 2 : choisir le type de topic"
+            : "Étape 2 sur 2 : remplir les informations du topic"}
+        </Dialog.Description>
         {step === "EVENT_TYPE" && (
           <SelectItemToBeCreatedType
             types={[
@@ -186,7 +178,7 @@ function MultiStepCreateEventButton() {
             }}
           />
         )}
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }
@@ -201,14 +193,16 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <LogInButton>
-      <button
-        type="button"
-        className="flex cursor-pointer flex-col gap-2 px-4 py-3"
-      >
-        <Content />
-      </button>
-    </LogInButton>
+    <LogInButton
+      render={
+        <button
+          type="button"
+          className="flex cursor-pointer flex-col gap-2 px-4 py-3"
+        >
+          <Content />
+        </button>
+      }
+    />
   );
 }
 

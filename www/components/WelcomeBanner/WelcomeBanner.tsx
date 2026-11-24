@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import useMe from "@/lib/auth/useMe";
 import useDismissedAt from "@/lib/misc/useDismissedAt";
 
 import Button from "../Button/Button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
 const LOCAL_STORAGE_KEY = "cdp-forum-banner-dismissed-at";
 
@@ -24,15 +25,13 @@ export default function WelcomeBanner() {
         if (!open) dismiss();
       }}
     >
-      <DialogContent
+      <Dialog.Content
         aria-describedby="welcome-banner-description"
         className="border-purple-300"
       >
-        <DialogHeader>
-          <DialogTitle className="uppercase text-purple-300">
-            Bienvenue sur le forum
-          </DialogTitle>
-        </DialogHeader>
+        <Dialog.Title className="uppercase text-purple-300">
+          Bienvenue sur le forum
+        </Dialog.Title>
         <div
           id="welcome-banner-description"
           className="flex flex-col gap-1 font-light"
@@ -97,7 +96,7 @@ export default function WelcomeBanner() {
         >
           Fermer
         </Button>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

@@ -3,22 +3,12 @@ import { ButtonHTMLAttributes, useState } from "react";
 import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import Dialog from "@cdp/ui/Dialog";
+import Tooltip from "@cdp/ui/Tooltip";
+
 import LogInButton from "@/components/Auth/LogInButton";
 import BannedUserDialogTrigger from "@/components/BannedUserDialogTrigger/BannedUserDialogTrigger";
 import Button from "@/components/Button/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipArrow,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Me } from "@/lib/auth/useMe";
 import { isReportableConversation } from "@/lib/forum/permissions";
 import useReportConversation from "@/lib/forum/useReportConversation";
@@ -46,18 +36,12 @@ function ReportConversationButtonContent({
 
 function BannedUserReportConversationButton() {
   return (
-    <BannedUserDialogTrigger asChild>
-      <ReportConversationButtonContent />
-    </BannedUserDialogTrigger>
+    <BannedUserDialogTrigger render={<ReportConversationButtonContent />} />
   );
 }
 
 function UnauthUserReportConversationButton() {
-  return (
-    <LogInButton>
-      <ReportConversationButtonContent />
-    </LogInButton>
-  );
+  return <LogInButton render={<ReportConversationButtonContent />} />;
 }
 
 function ActiveReportConversationButton({
@@ -80,25 +64,22 @@ function ActiveReportConversationButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger
-            asChild
-            disabled={!isReportableConversation(conversation, me)}
-          >
-            <ReportConversationButtonContent />
-          </DialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent className="bg-foreground text-background border-0">
-          Signaler la conversation
-          <TooltipArrow className="fill-foreground" />
-        </TooltipContent>
+        <Tooltip.Trigger
+          render={
+            <Dialog.Trigger
+              disabled={!isReportableConversation(conversation, me)}
+              render={<ReportConversationButtonContent />}
+            />
+          }
+        />
+        <Tooltip.Content>Signaler la conversation</Tooltip.Content>
       </Tooltip>
-      <DialogContent>
-        <DialogTitle>Signaler la conversation</DialogTitle>
-        <DialogDescription className="sr-only">
+      <Dialog.Content>
+        <Dialog.Title>Signaler la conversation</Dialog.Title>
+        <Dialog.Description className="sr-only">
           Confirmation avant le signalement de la conversation et de tous ses
           messages
-        </DialogDescription>
+        </Dialog.Description>
         <div className="flex flex-col gap-2 leading-5">
           <p>
             Vous êtes sur le point de signaler la conversation{" "}
@@ -126,7 +107,7 @@ function ActiveReportConversationButton({
             Signaler
           </Button>
         </footer>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

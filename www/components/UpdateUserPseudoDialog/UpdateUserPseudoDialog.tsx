@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { z } from "zod";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import useMe from "@/lib/auth/useMe";
 import useSearchSimilarUsersByPseudo from "@/lib/auth/useSearchSimilarUsersByPseudo";
 import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
@@ -11,13 +13,6 @@ import useUpdateUserPseudo from "@/lib/auth/useUpdateUserPseudo";
 import Button from "../Button/Button";
 import CguCheckbox from "../CguCheckbox/CguCheckbox";
 import Form, { FieldError, FormField, Input, Label } from "../Form/Form";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
 
 export default function UpdateUserPseudoDialog() {
   const { me } = useMe();
@@ -45,13 +40,11 @@ export default function UpdateUserPseudoDialog() {
 
   return (
     <Dialog open>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Modification du pseudo</DialogTitle>
-          <DialogDescription className="sr-only">
-            Formulaire pour choisir votre pseudo d&apos;affichage
-          </DialogDescription>
-        </DialogHeader>
+      <Dialog.Content>
+        <Dialog.Title>Modification du pseudo</Dialog.Title>
+        <Dialog.Description className="sr-only">
+          Formulaire pour choisir votre pseudo d&apos;affichage
+        </Dialog.Description>
         <div>
           <p className="font-light">
             Choisissez-vous un pseudo pour accéder au forum.
@@ -141,7 +134,7 @@ export default function UpdateUserPseudoDialog() {
             </Button>
           </Form>
         </div>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

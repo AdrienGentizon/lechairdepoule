@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import useMe from "@/lib/auth/useMe";
 import deleteEventAction from "@/lib/events/deleteEventAction";
 import deleteEventCoverAction from "@/lib/events/deleteEventCoverAction";
@@ -12,14 +14,6 @@ import { Event } from "@/lib/types";
 
 import Button from "../Button/Button";
 import CreateEventForm from "../CreateEventButton/CreateEventForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 
 function UpdateEventButton({ event }: { event: Event }) {
   const [isPending, startTransition] = useTransition();
@@ -28,15 +22,11 @@ function UpdateEventButton({ event }: { event: Event }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="cursor-pointer text-xs text-neutral-200 hover:text-purple-300 hover:underline">
-          modifier
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{`Modification de l'événement`}</DialogTitle>
-        </DialogHeader>
+      <Dialog.Trigger className="cursor-pointer text-xs text-neutral-200 hover:text-purple-300 hover:underline">
+        modifier
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>{`Modification de l'événement`}</Dialog.Title>
         <CreateEventForm
           initialValues={{
             ...event,
@@ -92,7 +82,7 @@ function UpdateEventButton({ event }: { event: Event }) {
             });
           }}
         />
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }
@@ -103,16 +93,14 @@ function DeleteEventButton({ event }: { event: Event }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="cursor-pointer text-xs text-neutral-200 hover:text-purple-300 hover:underline">
-          supprimer
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Confirmer la suppression</DialogTitle>
-        <DialogDescription className="sr-only">
+      <Dialog.Trigger className="cursor-pointer text-xs text-neutral-200 hover:text-purple-300 hover:underline">
+        supprimer
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>Confirmer la suppression</Dialog.Title>
+        <Dialog.Description className="sr-only">
           Confirmation avant la suppression définitive de l&apos;événement
-        </DialogDescription>
+        </Dialog.Description>
         <div className="flex flex-col gap-2 leading-5">
           <p>
             Vous êtes sur le point de supprimer l&apos;événement{" "}
@@ -135,7 +123,7 @@ function DeleteEventButton({ event }: { event: Event }) {
             Supprimer
           </Button>
         </footer>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }
