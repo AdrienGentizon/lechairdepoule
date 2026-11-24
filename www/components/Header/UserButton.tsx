@@ -36,7 +36,7 @@ function UnauthUserButton() {
   return (
     <LogInButton
       type="button"
-      className="scale-100 cursor-pointer rounded-full border-2 border-transparent p-1 transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900"
+      className="scale-100 cursor-pointer rounded-full border-transparent transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900 landscape:border-2 landscape:p-1"
     >
       <UserCircle2
         aria-hidden
@@ -49,7 +49,7 @@ function UnauthUserButton() {
 
 function UnknownUserPlaceholder() {
   return (
-    <span className="p-1">
+    <span className="landscape:p-1">
       <UserCircle2
         aria-hidden
         className="bg-background size-8 rounded-full stroke-purple-300 opacity-50"

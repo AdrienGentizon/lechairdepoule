@@ -151,6 +151,18 @@ CREATE TABLE ban_appeals (
     CONSTRAINT reviewed_by_fk FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE user_reports (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('BUG', 'QUESTION', 'FEATURE')),
+    body TEXT NOT NULL,
+    page_url TEXT,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ NOT NULL,
+    reviewed_at TIMESTAMPTZ,
+    CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+);
+
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- CREATE INDEX trgm_idx_gist ON users USING GIST (pseudo gist_trgm_ops);
 -- SET pg_trgm.similarity_threshold = 0.3;

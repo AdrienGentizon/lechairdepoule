@@ -23,6 +23,17 @@ export type BanAppeal = {
   reviewedBy: string | null;
 };
 
+export type UserReport = {
+  id: string;
+  userId: string;
+  type: "BUG" | "QUESTION" | "FEATURE";
+  body: string;
+  pageUrl: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+};
+
 export type BannedUser = User & {
   appeal: { id: string; body: string; createdAt: string } | null;
 };

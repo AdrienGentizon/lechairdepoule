@@ -2,10 +2,11 @@ import { ReactNode, Suspense } from "react";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import AbsoluteButtonGroup from "@/components/Header/AbsoluteButtonGroup";
+import FloatingButtons from "@/components/FloatingButtons/FloatingButtons";
 import AdminButton from "@/components/Header/AdminButton";
 import UserButton from "@/components/Header/UserButton";
 import UpdateUserPseudoDialog from "@/components/UpdateUserPseudoDialog/UpdateUserPseudoDialog";
+import UserReportButton from "@/components/UserReportButton/UserReportButton";
 import PusherProvider from "@/contexts/PusherProvider";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import UIProvider from "@/contexts/UIProvider";
@@ -22,10 +23,15 @@ export default async function ForumLayout({
           <ReactQueryProvider>
             <UIProvider>
               {children}
-              <AbsoluteButtonGroup>
-                <AdminButton />
-                <UserButton />
-              </AbsoluteButtonGroup>
+              <FloatingButtons
+                primary={
+                  <>
+                    <AdminButton />
+                    <UserButton />
+                  </>
+                }
+                secondary={<UserReportButton />}
+              />
               <UpdateUserPseudoDialog />
             </UIProvider>
           </ReactQueryProvider>
