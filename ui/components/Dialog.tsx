@@ -3,7 +3,7 @@
 import { Dialog as BaseDialog } from "@base-ui/react";
 import { XIcon } from "@phosphor-icons/react";
 
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps } from "react";
 
 import cn from "../lib/cn";
 
@@ -30,37 +30,53 @@ function Trigger({
   );
 }
 
+function Title({
+  className,
+  ...props
+}: ComponentProps<typeof BaseDialog.Title>) {
+  return (
+    <BaseDialog.Title
+      className={cn("text-base font-bold", className)}
+      {...props}
+    />
+  );
+}
+
+function Description({
+  className,
+  ...props
+}: ComponentProps<typeof BaseDialog.Description>) {
+  return (
+    <BaseDialog.Description
+      className={cn("text-sm text-neutral-400", className)}
+      {...props}
+    />
+  );
+}
+
 function Content({
   className,
   children,
-  title,
-  description,
+  closable = true,
   ...props
-}: ComponentProps<typeof BaseDialog.Popup> & {
-  title: ReactNode;
-  description?: ReactNode;
-}) {
+}: ComponentProps<typeof BaseDialog.Popup> & { closable?: boolean }) {
   return (
     <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="data-ending-style:opacity-0 data-starting-style:opacity-0 fixed inset-0 min-h-dvh bg-black opacity-20 transition-opacity duration-150 supports-[-webkit-touch-callout:none]:absolute dark:opacity-50" />{" "}
+      <BaseDialog.Backdrop className="data-ending-style:opacity-0 data-starting-style:opacity-0 fixed inset-0 min-h-dvh bg-black opacity-50 transition-opacity duration-150 supports-[-webkit-touch-callout:none]:absolute" />
       <BaseDialog.Popup
         className={cn(
-          "data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 bg-background text-foreground fixed left-1/2 top-1/2 -mt-8 flex w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col gap-4 border border-neutral-400 p-4 transition-[scale,opacity] duration-100 ease-out",
+          "data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 fixed left-1/2 top-1/2 flex max-h-[90dvh] w-full max-w-[90dvw] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-sm border border-white bg-black p-4 text-white transition-[scale,opacity] duration-100 ease-out landscape:max-w-xl",
           className,
         )}
         {...props}
       >
-        <div className="flex flex-col gap-1">
-          <BaseDialog.Title className="text-base font-bold">
-            {title}
-          </BaseDialog.Title>
-          {description && (
-            <BaseDialog.Description className="text-sm text-neutral-600 dark:text-neutral-400">
-              {description}
-            </BaseDialog.Description>
-          )}
-        </div>
         {children}
+        {closable && (
+          <BaseDialog.Close className="absolute right-4 top-4 cursor-pointer opacity-70 transition-opacity hover:opacity-100">
+            <XIcon aria-hidden />
+            <span className="sr-only">Fermer</span>
+          </BaseDialog.Close>
+        )}
       </BaseDialog.Popup>
     </BaseDialog.Portal>
   );
@@ -76,3 +92,5 @@ export default function Dialog({
 Dialog.Close = Close;
 Dialog.Trigger = Trigger;
 Dialog.Content = Content;
+Dialog.Title = Title;
+Dialog.Description = Description;

@@ -2,15 +2,9 @@ import { useState } from "react";
 
 import { Pencil } from "lucide-react";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import CreateTopicForm from "@/components/CreateTopicButton/CreateTopicForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
 import useUpdateConversation from "@/lib/forum/useUpdateConversation";
 import { Conversation } from "@/lib/types";
@@ -32,17 +26,15 @@ export default function UpdateConversationButton({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
+      <Dialog.Trigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
         <Pencil className="size-5" />
         <span className="sr-only">Modifier</span>
-      </DialogTrigger>
-      <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
-        <DialogHeader>
-          <DialogTitle>Modifier la conversation</DialogTitle>
-          <DialogDescription className="sr-only">
-            Formulaire pour modifier le titre de la conversation
-          </DialogDescription>
-        </DialogHeader>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>Modifier la conversation</Dialog.Title>
+        <Dialog.Description className="sr-only">
+          Formulaire pour modifier le titre de la conversation
+        </Dialog.Description>
         <CreateTopicForm
           conversationType={conversation.type}
           initialValues={{
@@ -60,7 +52,7 @@ export default function UpdateConversationButton({
           error={error as Error | null}
           submitLabel="Sauver"
         />
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

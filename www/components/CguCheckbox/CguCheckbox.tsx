@@ -1,17 +1,11 @@
 import { InputHTMLAttributes, useState } from "react";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import useCGU from "@/lib/misc/useCGU";
 import { cn } from "@/lib/utils";
 
 import MarkdownRenderer from "../MarkDownRenderer/MarkDownRenderer";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 
 export default function CguCheckbox({
   ...props
@@ -24,25 +18,23 @@ export default function CguCheckbox({
       <div className="flex items-center gap-2">
         <input type="checkbox" className="accent-purple-300" {...props} />
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger
+          <Dialog.Trigger
             className={cn(
               "text-sm underline",
               props["aria-invalid"] === true && "text-red-500",
             )}
           >
             J&apos;accepte les Conditions Générales d&apos;Utilisation
-          </DialogTrigger>
-          <DialogContent className="grid max-h-[90dvh] w-full max-w-[90dvw] grid-cols-1 grid-rows-[min-content_1fr_min-content] gap-0 overflow-hidden rounded-sm border border-gray-500 bg-white p-0 text-black landscape:max-w-3xl">
-            <DialogHeader className="bg-black p-4 text-white">
-              <DialogTitle>Conditions Générales d&apos;Utilisation</DialogTitle>
-              <DialogDescription className="sr-only">
-                Lecture des conditions générales d&apos;utilisation du service
-              </DialogDescription>
-            </DialogHeader>
-            <div className="overflow-y-scroll bg-white p-2">
+          </Dialog.Trigger>
+          <Dialog.Content className="overflow-hidden landscape:max-w-3xl">
+            <Dialog.Title>Conditions Générales d&apos;Utilisation</Dialog.Title>
+            <Dialog.Description className="sr-only">
+              Lecture des conditions générales d&apos;utilisation du service
+            </Dialog.Description>
+            <div className="min-h-0 overflow-y-scroll">
               <MarkdownRenderer content={cgu?.cgu ?? ""} />
             </div>
-            <footer className="flex flex-col gap-1 p-2">
+            <footer className="flex flex-col gap-1">
               <button
                 className="w-full rounded-sm border border-white bg-black py-0.5 text-center text-white hover:bg-neutral-700"
                 onClick={() => {
@@ -52,7 +44,7 @@ export default function CguCheckbox({
                 Fermer
               </button>
             </footer>
-          </DialogContent>
+          </Dialog.Content>
         </Dialog>
       </div>
       <p className="text-sm font-light text-neutral-300">

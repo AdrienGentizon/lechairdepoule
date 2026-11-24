@@ -2,15 +2,18 @@
 
 import { z } from "zod";
 
-import ContactEmail from "@/components/ContactEmail/ContactEmail";
+import ContactEmail from "@/components/Email/ContactEmail";
 import env from "@/lib/env";
-import resend from "@/lib/resend";
+import sendEmail from "@/lib/mailing/sendEmail";
 
-export default async function sendEmail(_prev: unknown, formData: FormData) {
+export default async function sendContactEmail(
+  _prev: unknown,
+  formData: FormData,
+) {
   try {
     const parsedInputs = z
       .object({
-        email: z.string().email(),
+        email: z.email(),
         subject: z.string().optional(),
         message: z.string().min(1, {
           message: "Le message est vide",
@@ -25,8 +28,7 @@ export default async function sendEmail(_prev: unknown, formData: FormData) {
       };
     }
 
-    const { error } = await resend.emails.send({
-      from: "Le Chair de Poule <noreply@lechairdepoule.fr>",
+    const { error } = await sendEmail({
       to: env().RESEND_TO_EMAIL.split(","),
       replyTo: parsedInputs.data.email,
       subject: parsedInputs.data.subject ?? "",
@@ -43,7 +45,7 @@ export default async function sendEmail(_prev: unknown, formData: FormData) {
       message: `Le message a été envoyé`,
     };
   } catch (error) {
-    console.error(`[ERROR] sendEmail ${error}`);
+    console.error(`[ERROR] sendContactEmail ${error}`);
     return {
       status: 500,
       message: `Le message n'a pas pu être envoyé`,

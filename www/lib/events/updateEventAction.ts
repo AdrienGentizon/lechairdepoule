@@ -3,10 +3,10 @@
 import { updateTag } from "next/cache";
 import { z } from "zod";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import { EventFormSchema } from "@/lib/schemas";
 import { CacheKey, Event } from "@/lib/types";
 
-import { getActionUser } from "../auth/getUser";
 import { getLogger } from "../logger";
 import updateEventFromId from "./updateEventFromId";
 
@@ -18,26 +18,24 @@ export default async function updateEventAction(
   | { success: false; error: string }
 > {
   const logger = getLogger("updateEventAction", "Action");
-
-  const user = await getActionUser();
-  if (!user || user.bannedAt) {
-    logger.withError("unauthorized").flush();
-    return { success: false, error: "non autorisé" };
-  }
-
-  const parsedInputs = EventFormSchema.safeParse(values);
-  if (!parsedInputs.success) {
-    logger.append({ values });
-    logger.withError(parsedInputs.error).flush();
-    return {
-      success: false,
-      error: "modification non valide l'événement ne sera pas mofifié",
-    };
-  }
-
-  let updatedEvent;
   try {
-    updatedEvent = await updateEventFromId({
+    const user = await getAuthenticatedUser();
+    if (!user || user.bannedAt) {
+      logger.withError("unauthorized").flush();
+      return { success: false, error: "non autorisé" };
+    }
+
+    const parsedInputs = EventFormSchema.safeParse(values);
+    if (!parsedInputs.success) {
+      logger.append({ values });
+      logger.withError(parsedInputs.error).flush();
+      return {
+        success: false,
+        error: "modification non valide l'événement ne sera pas mofifié",
+      };
+    }
+
+    const updatedEvent = await updateEventFromId({
       userId: user.id,
       eventId,
       type: parsedInputs.data.type,
@@ -50,20 +48,20 @@ export default async function updateEventAction(
       venue: parsedInputs.data.venue ?? null,
       url: parsedInputs.data.url ?? null,
     });
+
+    if (!updatedEvent) {
+      logger.append({ eventId, values });
+      logger.withError("cannot update event").flush();
+      return { success: false, error: "impossible de modifier l'événement" };
+    }
+
+    updateTag("cachedEvents" satisfies CacheKey);
+
+    logger.append({ updatedEvent });
+    logger.flush();
+    return { success: true, data: updatedEvent };
   } catch (error) {
     logger.withError(error).flush();
     return { success: false, error: "erreur serveur" };
   }
-
-  if (!updatedEvent) {
-    logger.append({ eventId, values });
-    logger.withError("cannot update event").flush();
-    return { success: false, error: "impossible de modifier l'événement" };
-  }
-
-  updateTag("cachedEvents" satisfies CacheKey);
-
-  logger.append({ updatedEvent });
-  logger.flush();
-  return { success: true, data: updatedEvent };
 }

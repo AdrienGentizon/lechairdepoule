@@ -2,8 +2,8 @@ import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import { selectUsersFromId } from "@/lib/auth/selectUsersFromId";
 import selectUsersFromPseudo from "@/lib/auth/selectUsersFromPseudo";
 import deleteConversationFromId from "@/lib/forum/deleteConversationFromId";
@@ -29,7 +29,7 @@ export async function GET(
   const params = await ctx.params;
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     const conversation = await selectConversationFromId(params.conversationId);
@@ -90,7 +90,7 @@ export async function POST(
   const params = await ctx.params;
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
@@ -185,7 +185,7 @@ export async function DELETE(
   const params = await ctx.params;
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user || user.bannedAt) {
@@ -222,7 +222,7 @@ export async function PATCH(
   const params = await ctx.params;
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user || user.bannedAt) {

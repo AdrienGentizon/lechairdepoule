@@ -1,25 +1,18 @@
-import { SignInButton } from "@clerk/nextjs";
-
 import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import Dialog from "@cdp/ui/Dialog";
+
+import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import usePostConversation from "@/lib/forum/usePostConversation";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
 import { buttonClassName } from "../Button/Button";
 import SelectItemToBeCreatedType from "../CreateEventButton/SelectItemToBeCreatedType";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import CreateTopicForm from "./CreateTopicForm";
 
 const CONVERSATION_TYPE_LABELS: Record<
@@ -140,14 +133,12 @@ function BannedUserCreateTopicButton() {
 
 function UnauthUserCreateTopicButton() {
   return (
-    <SignInButton mode="modal">
-      <button
-        type="button"
-        className="flex cursor-pointer flex-col gap-2 px-4 py-3"
-      >
-        <Content />
-      </button>
-    </SignInButton>
+    <LogInButton
+      type="button"
+      className="flex cursor-pointer flex-col gap-2 px-4 py-3"
+    >
+      <Content />
+    </LogInButton>
   );
 }
 
@@ -168,26 +159,24 @@ function MultiStepCreateTopicButton() {
         setStep("CONVERSATION_TYPE");
       }}
     >
-      <DialogTrigger className="flex cursor-pointer flex-col gap-2 px-4 py-3">
+      <Dialog.Trigger className="flex cursor-pointer flex-col gap-2 px-4 py-3">
         <Content />
-      </DialogTrigger>
-      <DialogContent className="grid grid-cols-1 grid-rows-[auto_1fr] px-2 pb-2 landscape:px-4">
-        <DialogHeader>
-          <DialogTitle>
-            {selectedConversationType
-              ? CONVERSATION_TYPE_LABELS[selectedConversationType].title
-              : "Nouveau topic"}
-          </DialogTitle>
-          <DialogDescription
-            className="sr-only"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {step === "CONVERSATION_TYPE"
-              ? "Étape 1 sur 2 : choisir le type de topic"
-              : "Étape 2 sur 2 : remplir les informations du topic"}
-          </DialogDescription>
-        </DialogHeader>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>
+          {selectedConversationType
+            ? CONVERSATION_TYPE_LABELS[selectedConversationType].title
+            : "Nouveau topic"}
+        </Dialog.Title>
+        <Dialog.Description
+          className="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {step === "CONVERSATION_TYPE"
+            ? "Étape 1 sur 2 : choisir le type de topic"
+            : "Étape 2 sur 2 : remplir les informations du topic"}
+        </Dialog.Description>
         {step === "CONVERSATION_TYPE" && (
           <SelectItemToBeCreatedType
             types={[
@@ -223,7 +212,7 @@ function MultiStepCreateTopicButton() {
             }}
           />
         )}
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

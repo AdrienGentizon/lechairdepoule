@@ -1,7 +1,9 @@
-import getUser from "./getUser";
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 
 type User = NonNullable<
-  Awaited<ReturnType<typeof getUser>> & { reportedBy?: string | null }
+  Awaited<ReturnType<typeof getAuthenticatedUser>> & {
+    reportedBy?: string | null;
+  }
 >;
 type Options = Partial<Record<keyof User, boolean>>;
 

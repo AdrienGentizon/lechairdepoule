@@ -2,10 +2,11 @@
 
 import z from "zod";
 
+import { obfuscateEmail } from "@cdp/lib/string";
+import Trace from "@cdp/lib/trace";
+
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
-import { obfuscateEmail } from "@/lib/string";
-import Trace from "@/lib/trace";
 import { Result } from "@/lib/types";
 
 export default async function sendOTPToEmail(inputs: {
@@ -14,7 +15,7 @@ export default async function sendOTPToEmail(inputs: {
   const trace = new Trace(`sendOTPToEmail`);
   try {
     const parsedInputs = z
-      .object({ email: z.email().max(254) })
+      .object({ email: z.email().max(254).toLowerCase() })
       .safeParse(inputs);
 
     if (!parsedInputs.success) {

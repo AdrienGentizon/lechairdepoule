@@ -1,8 +1,8 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import updateConversationAsReported from "@/lib/forum/updateConversationAsReported";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import pusher from "@/lib/pusher";
@@ -15,7 +15,7 @@ export async function POST(
   const { conversationId } = await params;
   const logger = getRequestLogger(req);
   try {
-    const reportedBy = await getUser(req);
+    const reportedBy = await getAuthenticatedUser();
     logger.append({ reportedBy: getLoggableUser(reportedBy) });
 
     if (!reportedBy || reportedBy.bannedAt) {

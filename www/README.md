@@ -12,13 +12,12 @@ Admin and content management are moving to [cms](../cms), a dedicated app with i
 ## Stack
 
 - [Next.js](https://nextjs.org) (App Router)
-- [Clerk](https://clerk.com) — auth, migrating to [better-auth](https://www.better-auth.com) like cms for less aggressive session expiration
+- [better-auth](https://www.better-auth.com) — auth (email OTP), shared with cms
 - [Contentful](https://www.contentful.com) — editorial content
 - Postgres (Neon) — shares the database with cms
 - [Pusher](https://pusher.com) — realtime
 - [Resend](https://resend.com) — emails
 - [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — image storage
-- [Sentry](https://sentry.io) — error monitoring
 - [`@cdp/ui`](../ui) — shared UI components
 
 ## Development
@@ -30,6 +29,10 @@ pnpm dev
 
 Runs on [http://localhost:3000](http://localhost:3000) so it can run alongside cms (port 3001).
 
+### Emails
+
+Set `MAILING_SERVICE_STATUS=disabled` to skip sending emails through Resend (saves quota in development). Sign-in codes are then only printed in the server logs, in development only.
+
 ## Scripts
 
 | Script            | Description                                       |
@@ -39,6 +42,5 @@ Runs on [http://localhost:3000](http://localhost:3000) so it can run alongside c
 | `pnpm start`      | Serve the production build                        |
 | `pnpm lint`       | Lint with ESLint                                  |
 | `pnpm typecheck`  | Generate route types and run `tsc`                |
-| `pnpm format`     | Format with Prettier                              |
 | `pnpm db:dump`    | Dump the database to `../backup.dump`             |
 | `pnpm db:restore` | Restore `../backup.dump` into the target database |

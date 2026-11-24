@@ -1,0 +1,59 @@
+import { obfuscateEmail } from "./string";
+
+type Part = string | Record<string, unknown>;
+
+export default class Trace {
+  #operationName: string;
+  #parts: Part[];
+  #startedAt: number;
+
+  constructor(args: string | Request) {
+    this.#operationName =
+      typeof args === "string" ? args : `${args.method} ${args.url}`;
+    this.#parts = [];
+    this.#startedAt = Date.now();
+  }
+
+  push(part: Part | Part[]) {
+    this.#parts = this.#parts.concat(part);
+  }
+
+  pushError(error: unknown) {
+    this.#parts.push(
+      error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : String(error),
+    );
+  }
+
+  #tag(status: number) {
+    return status < 400 ? `Operation` : `Error`;
+  }
+
+  #body() {
+    return this.#parts
+      .reduce((acc: string[], curr) => {
+        acc.push(typeof curr === "string" ? curr : JSON.stringify(curr));
+        return acc;
+      }, [])
+      .join(",");
+  }
+
+  log(status = 200) {
+    const duration = Date.now() - this.#startedAt;
+    const message = `[${this.#tag(status)}] ${this.#operationName} (${duration}ms) ${this.#body()}`;
+
+    if (status < 400) return console.log(message);
+
+    return console.error(message);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toObfuscatedUser(user: any & { email?: string }) {
+  if (!user.email || typeof user.email !== "string") return user;
+  return {
+    ...user,
+    email: obfuscateEmail(user.email),
+  };
+}

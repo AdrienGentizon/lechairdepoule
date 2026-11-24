@@ -6,7 +6,7 @@ import { useFormStatus } from "react-dom";
 import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import sendEmail from "@/actions/sendEmail";
+import sendContactEmail from "@/actions/sendContactEmail";
 import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
@@ -53,7 +53,7 @@ export default function ContactForm() {
           ref={formRef}
           className="relative flex w-full max-w-md flex-col gap-4 bg-black px-4 pb-8 pt-4 sm:px-0"
           action={async (formData) => {
-            const actionResult = await sendEmail(undefined, formData);
+            const actionResult = await sendContactEmail(undefined, formData);
             setActionResult(actionResult);
             if (actionResult.status === 200)
               setTimeout(() => {

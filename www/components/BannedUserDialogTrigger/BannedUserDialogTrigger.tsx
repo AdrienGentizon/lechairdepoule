@@ -1,5 +1,7 @@
 import { ComponentProps, useState } from "react";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import useSubmitBanAppeal from "@/lib/forum/useSubmitBanAppeal";
 import { BanAppealFormSchema } from "@/lib/schemas";
 
@@ -12,14 +14,6 @@ import Form, {
   inputClassName,
 } from "../Form/Form";
 import Loader from "../Loader/Loader";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 
 function BanAppealForm() {
   const [body, setBody] = useState("");
@@ -86,22 +80,20 @@ function BanAppealForm() {
 export default function BannedUserDialogTrigger({
   children,
   ...props
-}: ComponentProps<typeof DialogTrigger>) {
+}: ComponentProps<typeof Dialog.Trigger>) {
   return (
     <Dialog>
-      <DialogTrigger {...props}>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Opération non autorisée</DialogTitle>
-          <DialogDescription
-            className="sr-only"
-            aria-live="polite"
-            aria-atomic="true"
-          >{`L'envoi de message avec ce compte n'est pas autorisé`}</DialogDescription>
-        </DialogHeader>
+      <Dialog.Trigger {...props}>{children}</Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>Opération non autorisée</Dialog.Title>
+        <Dialog.Description
+          className="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+        >{`L'envoi de message avec ce compte n'est pas autorisé`}</Dialog.Description>
         {`Il semble que vous ayez enfreint les règles du forum. Si vous pensez qu'il s'agit d'une erreur de notre part, contactez l'équipe de modération pour en discuter.`}
         <BanAppealForm />
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

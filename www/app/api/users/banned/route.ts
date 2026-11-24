@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import selectBannedUsers from "@/lib/auth/selectBannedUsers";
 import { getRequestLogger } from "@/lib/getRequestLogger";
 import { BannedUser } from "@/lib/types";
@@ -9,7 +9,7 @@ import { BannedUser } from "@/lib/types";
 export async function GET(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const user = await getUser(req);
+    const user = await getAuthenticatedUser();
     logger.append(getLoggableUser(user));
 
     if (!user || user.bannedAt || user.role !== "admin") {

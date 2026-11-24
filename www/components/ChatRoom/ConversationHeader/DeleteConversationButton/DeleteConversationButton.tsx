@@ -3,14 +3,9 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import Dialog from "@cdp/ui/Dialog";
+
 import Button from "@/components/Button/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Me } from "@/lib/auth/useMe";
 import useDeleteConversation from "@/lib/forum/useDeleteConversation";
 import { Conversation } from "@/lib/types";
@@ -36,18 +31,16 @@ export default function DeleteConversationButton({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
-          <Trash2 className="size-5" />
-          <span className="sr-only">Supprimer</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Confirmer la suppression</DialogTitle>
-        <DialogDescription className="sr-only">
+      <Dialog.Trigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
+        <Trash2 className="size-5" />
+        <span className="sr-only">Supprimer</span>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Title>Confirmer la suppression</Dialog.Title>
+        <Dialog.Description className="sr-only">
           Confirmation avant la suppression définitive de la conversation et de
           tous ses messages
-        </DialogDescription>
+        </Dialog.Description>
         <div className="flex flex-col gap-2 leading-5">
           <p>
             Vous êtes sur le point de supprimer la conversation{" "}
@@ -74,7 +67,7 @@ export default function DeleteConversationButton({
             Supprimer
           </Button>
         </footer>
-      </DialogContent>
+      </Dialog.Content>
     </Dialog>
   );
 }

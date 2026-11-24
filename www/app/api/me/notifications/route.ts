@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
-import getUser from "@/lib/auth/getUser";
 import replaceMessageBodyMentionWIthUserName from "@/lib/forum/replaceMessageBodyMentionWIthUserName";
 import selectUnreadUsernotifications from "@/lib/forum/selectUnreadUsernotifications";
 import updateUserMentions from "@/lib/forum/updateUserMentions";
@@ -12,7 +12,7 @@ import { UserNotifications } from "@/lib/types";
 export async function GET(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const me = await getUser(req);
+    const me = await getAuthenticatedUser();
     logger.append(getLoggableUser(me));
 
     if (!me) {
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const logger = getRequestLogger(req);
   try {
-    const me = await getUser(req);
+    const me = await getAuthenticatedUser();
     logger.append(getLoggableUser(me));
 
     if (!me) {

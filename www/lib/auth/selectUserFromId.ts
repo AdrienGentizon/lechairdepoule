@@ -4,7 +4,7 @@ export async function selectUserFromAuthId({
   provider,
   userId,
 }: {
-  provider: "clerk";
+  provider: "clerk" | "better-auth";
   userId: string;
 }) {
   return (
