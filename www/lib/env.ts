@@ -10,10 +10,7 @@ type Env = {
   RESEND_TO_EMAIL: string;
 
   // DATABASE - NEONDB
-  PGUSER: string;
-  PGHOST: string;
-  PGPASSWORD: string;
-  PGDATABASE: string;
+  PG_CONNECTION_STRING: string;
 
   // STORAGE - VERCEL BLOB
   BLOB_READ_WRITE_TOKEN: string;
@@ -42,10 +39,7 @@ export default function env() {
       CONTENTFUL_WEBHOOK_SECRET: getEnvVar("CONTENTFUL_WEBHOOK_SECRET"),
       RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       RESEND_TO_EMAIL: getEnvVar("RESEND_TO_EMAIL"),
-      PGUSER: getEnvVar("PGUSER"),
-      PGHOST: getEnvVar("PGHOST"),
-      PGPASSWORD: getEnvVar("PGPASSWORD"),
-      PGDATABASE: getEnvVar("PGDATABASE"),
+      PG_CONNECTION_STRING: getEnvVar("PG_CONNECTION_STRING"),
       BLOB_READ_WRITE_TOKEN: getEnvVar("BLOB_READ_WRITE_TOKEN"),
       PUSHER_APP_ID: getEnvVar("PUSHER_APP_ID"),
       PUSHER_KEY: getEnvVar("PUSHER_KEY"),

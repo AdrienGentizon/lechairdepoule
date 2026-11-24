@@ -1,9 +1,6 @@
 type Env = {
   // DATABASE - NEONDB
-  PGUSER: string;
-  PGHOST: string;
-  PGPASSWORD: string;
-  PGDATABASE: string;
+  PG_CONNECTION_STRING: string;
 };
 
 let envVars: undefined | Env = undefined;
@@ -17,10 +14,7 @@ function getEnvVar(key: string, defaultValue = "", required = true) {
 export default function env() {
   if (!envVars) {
     envVars = {
-      PGUSER: getEnvVar("PGUSER"),
-      PGHOST: getEnvVar("PGHOST"),
-      PGPASSWORD: getEnvVar("PGPASSWORD"),
-      PGDATABASE: getEnvVar("PGDATABASE"),
+      PG_CONNECTION_STRING: getEnvVar("PG_CONNECTION_STRING"),
     };
   }
 
