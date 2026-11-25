@@ -1,6 +1,7 @@
+import { PlusIcon } from "@phosphor-icons/react";
+
 import { useEffect, useState } from "react";
 
-import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -112,7 +113,7 @@ function Form({
 function Content() {
   return (
     <div className="flex w-full items-center justify-center gap-2 font-light uppercase">
-      <Plus className="stroke-[1.5px]" aria-hidden="true" />
+      <PlusIcon size={24} weight="light" aria-hidden="true" />
       <span className="flex flex-col items-start">
         <span className="font-semibold">Créer une discussion</span>
         <span className="text-muted-foreground text-xs normal-case">

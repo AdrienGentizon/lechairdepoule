@@ -1,6 +1,7 @@
+import { CircleNotchIcon } from "@phosphor-icons/react";
+
 import { useState } from "react";
 
-import { Loader } from "lucide-react";
 import Link from "next/link";
 
 import { ConversationFormSchema } from "@/lib/schemas";
@@ -164,7 +165,7 @@ export default function CreateTopicForm({
           className="w-full"
         >
           {submitLabel}
-          {isPending && <Loader className="size-4 animate-spin" />}
+          {isPending && <CircleNotchIcon className="size-4 animate-spin" />}
         </Button>
         {error && (
           <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">

@@ -1,6 +1,7 @@
 "use client";
 
-import { UserCircle, UserCircle2 } from "lucide-react";
+import { UserCircleIcon } from "@phosphor-icons/react";
+
 import Link from "next/link";
 
 import LogInButton from "@/components/Auth/LogInButton";
@@ -15,7 +16,7 @@ function UserButton() {
       href={`/user`}
       className="text-foreground cursor-pointer hover:text-purple-300"
     >
-      <UserCircle aria-hidden className="size-8" />
+      <UserCircleIcon aria-hidden className="size-8" />
       <span
         className="sr-only"
         aria-live="polite"
@@ -38,9 +39,9 @@ function UnauthUserButton() {
       type="button"
       className="scale-100 cursor-pointer rounded-full border-transparent transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900 landscape:border-2 landscape:p-1"
     >
-      <UserCircle2
+      <UserCircleIcon
         aria-hidden
-        className="b bg-background size-8 rounded-full stroke-purple-300"
+        className="bg-background size-8 rounded-full text-purple-300"
       />
       <span className="sr-only">Se connecter</span>
     </LogInButton>
@@ -50,9 +51,9 @@ function UnauthUserButton() {
 function UnknownUserPlaceholder() {
   return (
     <span className="landscape:p-1">
-      <UserCircle2
+      <UserCircleIcon
         aria-hidden
-        className="bg-background size-8 rounded-full stroke-purple-300 opacity-50"
+        className="bg-background size-8 rounded-full text-purple-300 opacity-50"
       />
     </span>
   );

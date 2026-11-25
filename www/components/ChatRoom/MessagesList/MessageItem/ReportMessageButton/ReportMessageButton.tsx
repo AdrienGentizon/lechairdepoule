@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes, useState } from "react";
+import { ProhibitIcon } from "@phosphor-icons/react";
 
-import { Ban } from "lucide-react";
+import { ButtonHTMLAttributes, useState } from "react";
 
 import Dialog from "@cdp/ui/Dialog";
 
@@ -31,7 +31,7 @@ function ReportMessageButtonContent({
       )}
       {...props}
     >
-      <Ban className="size-3" />
+      <ProhibitIcon className="size-3" />
       Molo molo
     </button>
   );

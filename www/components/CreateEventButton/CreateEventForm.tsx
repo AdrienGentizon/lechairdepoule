@@ -1,6 +1,7 @@
+import { CircleNotchIcon, TrashIcon } from "@phosphor-icons/react";
+
 import { useState } from "react";
 
-import { Loader, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -350,7 +351,7 @@ export default function CreateEventForm({
                 />
               </div>
               <div className="inline-flex items-center justify-center gap-2 rounded-r-sm bg-gray-800 transition-colors group-hover:text-red-400">
-                <Trash2 aria-hidden className="size-4" />
+                <TrashIcon aria-hidden className="size-4" />
                 Supprimer
               </div>
             </button>
@@ -415,7 +416,7 @@ export default function CreateEventForm({
           className="w-full"
         >
           {submitLabel}
-          {isPending && <Loader className="size-4 animate-spin" />}
+          {isPending && <CircleNotchIcon className="size-4 animate-spin" />}
         </Button>
         {error && (
           <FieldError className="mt-2 rounded-sm border border-red-500 bg-red-500/15 px-2 text-center">

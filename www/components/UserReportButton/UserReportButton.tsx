@@ -1,8 +1,8 @@
 "use client";
 
-import { ButtonHTMLAttributes, useState } from "react";
+import { QuestionIcon } from "@phosphor-icons/react";
 
-import { MessageCircleQuestion } from "lucide-react";
+import { ButtonHTMLAttributes, useState } from "react";
 
 import Dialog from "@cdp/ui/Dialog";
 
@@ -42,9 +42,9 @@ function UserReportButtonContent({
       )}
       {...props}
     >
-      <MessageCircleQuestion
+      <QuestionIcon
         aria-hidden
-        className="bg-background size-8 rounded-full stroke-purple-300"
+        className="bg-background size-8 rounded-full text-purple-300"
       />
       <span className="sr-only">Nous contacter</span>
     </button>

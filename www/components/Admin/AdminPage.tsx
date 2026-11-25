@@ -1,6 +1,6 @@
 "use client";
 
-import { Skull } from "lucide-react";
+import { SkullIcon } from "@phosphor-icons/react";
 
 import BanUserTrigger from "@/components/BanUserTrigger/BanUserTrigger";
 import AugmentedMessageItem from "@/components/ChatRoom/MessagesList/MessageItem/MessageItem";
@@ -139,7 +139,7 @@ export default function AdminPage() {
                     className="absolute right-4"
                   >
                     <button className="inline-flex items-center gap-1 rounded-sm border border-white px-2 py-0.5 text-xs hover:bg-white hover:text-black">
-                      <Skull className="size-3" />
+                      <SkullIcon className="size-3" />
                       Bannir
                     </button>
                   </BanUserTrigger>

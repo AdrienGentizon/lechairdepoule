@@ -1,6 +1,7 @@
+import { ProhibitIcon } from "@phosphor-icons/react";
+
 import { ButtonHTMLAttributes, useState } from "react";
 
-import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import Dialog from "@cdp/ui/Dialog";
@@ -28,7 +29,7 @@ function ReportConversationButtonContent({
       )}
       {...props}
     >
-      <Ban className="size-5" />
+      <ProhibitIcon className="size-5" />
       <span className="sr-only">Signaler</span>
     </button>
   );

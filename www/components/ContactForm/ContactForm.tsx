@@ -1,9 +1,10 @@
 "use client";
 
+import { EnvelopeIcon, XIcon } from "@phosphor-icons/react";
+
 import { ComponentRef, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import sendContactEmail from "@/actions/sendContactEmail";
@@ -43,7 +44,7 @@ export default function ContactForm() {
           setOpen((prev) => !prev);
         }}
       >
-        <Mail className="size-4" />
+        <EnvelopeIcon className="size-4" />
         <span className="cursor-pointer hover:underline">
           Envoyer un message ?
         </span>
@@ -66,7 +67,7 @@ export default function ContactForm() {
             onClick={() => setOpen(false)}
           >
             <span className="sr-only">Fermer le formulaire</span>
-            <X className="size-5 stroke-black sm:size-4" />
+            <XIcon className="size-5 text-black sm:size-4" />
           </button>
 
           <fieldset className="flex flex-col gap-2">

@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings } from "lucide-react";
+import { GearIcon } from "@phosphor-icons/react";
+
 import Link from "next/link";
 
 import useMe from "@/lib/auth/useMe";
@@ -14,9 +15,9 @@ export default function AdminButton() {
   return (
     <Link
       href={`/forum/admin`}
-      className="stroke-foreground cursor-pointer hover:text-purple-300"
+      className="text-foreground cursor-pointer hover:text-purple-300"
     >
-      <Settings className="size-8" />
+      <GearIcon className="size-8" />
       <span className="sr-only">Espace d&appos;administration</span>
     </Link>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon } from "@phosphor-icons/react";
 
 type ICS = { title: string; startsAt: string; endsAt?: string | null };
 

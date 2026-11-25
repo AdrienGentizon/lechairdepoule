@@ -10,8 +10,8 @@ import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
 import { AuthErrorKeys, Result } from "@cdp/lib/types";
 
 import { auth } from "@/lib/auth";
+import selectUserFromEmail from "@/lib/auth/selectUserFromEmail";
 import sql from "@/lib/db";
-import selectUserFromEmail from "@/lib/selectUserFromEmail";
 
 async function upsertBetterAuthUser(inputs: {
   email: string;

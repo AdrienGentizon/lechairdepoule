@@ -10,9 +10,12 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
     "@cdp/lib": "workspace:*",
     "@cdp/ui": "workspace:*",
     "@phosphor-icons/react": "catalog:",
+    "@tanstack/react-query": "catalog:",
     "better-auth": "catalog:",
     "kysely": "catalog:",
     "kysely-postgres-js": "catalog:",

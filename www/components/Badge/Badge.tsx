@@ -1,6 +1,6 @@
-import { SVGAttributes } from "lucide-react";
+import { ComponentProps } from "react";
 
-export default function Badge({ ...props }: SVGAttributes) {
+export default function Badge({ ...props }: ComponentProps<"svg">) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

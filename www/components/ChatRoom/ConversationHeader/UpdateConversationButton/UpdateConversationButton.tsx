@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { PencilSimpleIcon } from "@phosphor-icons/react";
 
-import { Pencil } from "lucide-react";
+import { useState } from "react";
 
 import Dialog from "@cdp/ui/Dialog";
 
@@ -27,7 +27,7 @@ export default function UpdateConversationButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Dialog.Trigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
-        <Pencil className="size-5" />
+        <PencilSimpleIcon className="size-5" />
         <span className="sr-only">Modifier</span>
       </Dialog.Trigger>
       <Dialog.Content>

@@ -9,7 +9,7 @@ export function Label({
 }: ComponentProps<"label">) {
   return (
     <label
-      className={cn("text-sm font-black leading-loose", className)}
+      className={cn("text-sm font-bold leading-loose", className)}
       {...props}
     >
       {children}
@@ -25,7 +25,7 @@ export function ErrorMessage({
   return (
     <p
       className={cn(
-        "font-courier text-pretty text-center text-sm leading-loose text-red-400",
+        "font-courier text-pretty text-sm leading-loose text-red-400",
         className,
       )}
       {...props}
@@ -78,7 +78,7 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
       className={cn(
-        "font-courier border-foreground bg-background w-full min-w-0 rounded-sm border px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
+        "font-courier w-full min-w-0 rounded-sm border border-neutral-300 bg-neutral-950 px-2 py-1 read-only:cursor-default read-only:caret-transparent read-only:opacity-50 disabled:opacity-50",
         className,
       )}
       {...props}
@@ -111,7 +111,7 @@ export function InputField({
 
   return (
     <div className="flex flex-col">
-      <Label htmlFor={id}>
+      <Label htmlFor={id} hidden={props.type === "hidden"}>
         {label}
         {props.required && <span aria-hidden>*</span>}
       </Label>
@@ -130,7 +130,9 @@ export function InputField({
           <div className="bg-foreground text-background">{suffix}</div>
         )}
       </div>
-      <HintOrErrorMessage id={id} hint={hint} errors={errors} />
+      {props.type !== "hidden" && (
+        <HintOrErrorMessage id={id} hint={hint} errors={errors} />
+      )}
     </div>
   );
 }

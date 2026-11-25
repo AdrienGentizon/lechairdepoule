@@ -1,6 +1,7 @@
+import { TrashIcon } from "@phosphor-icons/react";
+
 import { useState } from "react";
 
-import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import Dialog from "@cdp/ui/Dialog";
@@ -32,7 +33,7 @@ export default function DeleteConversationButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Dialog.Trigger className="inline-flex cursor-pointer items-center gap-2 rounded-sm hover:text-purple-300">
-        <Trash2 className="size-5" />
+        <TrashIcon className="size-5" />
         <span className="sr-only">Supprimer</span>
       </Dialog.Trigger>
       <Dialog.Content>

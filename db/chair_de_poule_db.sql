@@ -116,6 +116,26 @@ CREATE TABLE notifications (
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id, read_at) WHERE read_at IS NULL;
 
+CREATE TABLE organizations (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    managed_by INTEGER NOT NULL,
+    type TEXT,
+    name TEXT NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    image_width INTEGER,
+    image_height INTEGER,
+    country TEXT NOT NULL,
+    zipcode TEXT NOT NULL,
+    city TEXT NOT NULL,
+    street TEXT,
+    metadata JSONB NOT NULL DEFAULT '{}',
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT user_fk FOREIGN KEY (managed_by) REFERENCES users(id) ON DELETE RESTRICT
+);
+
 CREATE TABLE events (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type TEXT NOT NULL,
@@ -124,8 +144,13 @@ CREATE TABLE events (
     image_url TEXT,
     image_width INTEGER,
     image_height INTEGER,
+    image_key TEXT,
     starts_at TIMESTAMPTZ NOT NULL,
     ends_at TIMESTAMPTZ,
+    start_date DATE,
+    start_time TIME,
+    end_date DATE,
+    end_time TIME,
     timezone TEXT NOT NULL,
     price TEXT,
     venue TEXT,
@@ -135,8 +160,14 @@ CREATE TABLE events (
     updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     conversation_id INTEGER,
+    organization_id INTEGER,
+    venue_id INTEGER,
+    published_at TIMESTAMPTZ,
+    visibility TEXT NOT NULL DEFAULT 'PUBLIC',
     CONSTRAINT user_fk FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     CONSTRAINT conversation_fk FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE RESTRICT,
+    CONSTRAINT organization_fk FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE RESTRICT,
+    CONSTRAINT venue_fk FOREIGN KEY (venue_id) REFERENCES organizations(id) ON DELETE SET NULL,
     CONSTRAINT conversation_uq UNIQUE(conversation_id)
 );
 

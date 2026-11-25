@@ -1,4 +1,5 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
+
 import Link from "next/link";
 
 import { Me } from "@/lib/auth/useMe";
@@ -24,7 +25,7 @@ export default function ChatRoomHeader({
       <div className="flex items-center gap-4">
         <nav className="self-start">
           <Link href={`/forum`}>
-            <ArrowLeft />
+            <ArrowLeftIcon size={24} />
           </Link>
         </nav>
         <div className="font-courier flex flex-col gap-2">

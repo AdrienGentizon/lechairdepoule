@@ -19,11 +19,17 @@
   * {
     @apply border-border;
   }
+  *:focus-visible {
+    @apply outline-none ring-1 ring-purple-500 ring-offset-2 ring-offset-purple-400;
+  }
   body {
     @apply bg-background font-body text-foreground;
   }
-  *:focus-visible {
-    @apply outline-none ring-1 ring-purple-500 ring-offset-2 ring-offset-purple-400;
+  a {
+    @apply underline transition-colors hover:text-purple-300;
+  }
+  button {
+    @apply cursor-pointer;
   }
 }
 

@@ -1,4 +1,5 @@
-import { AtSign, MessageCircle } from "lucide-react";
+import { AtIcon, ChatCircleIcon } from "@phosphor-icons/react";
+
 import Link from "next/link";
 
 import { getSinceAsString } from "@/lib/date";
@@ -51,9 +52,9 @@ export default function UserNotifications() {
                 className="ml-auto inline-flex items-center gap-1 font-mono text-xs text-gray-100"
               >
                 {notification.type === "mention" ? (
-                  <AtSign aria-hidden size={12} />
+                  <AtIcon aria-hidden size={12} />
                 ) : (
-                  <MessageCircle aria-hidden size={12} />
+                  <ChatCircleIcon aria-hidden size={12} />
                 )}
                 {getSinceAsString(new Date(notification.createdAt))}
               </time>

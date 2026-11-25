@@ -1,4 +1,4 @@
-import sql from "./db";
+import sql from "../db";
 
 export default async function selectUserFromEmail(inputs: { email: string }) {
   return (

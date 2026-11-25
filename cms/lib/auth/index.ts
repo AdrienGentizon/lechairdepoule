@@ -3,7 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { emailOTP } from "better-auth/plugins";
 import { PostgresJSDialect } from "kysely-postgres-js";
 
-import sql from "./db";
+import sql from "../db";
 
 export const OTP_EXPIRES_IN_SECONDS = 5 * 60;
 const SESSION_EXPIRES_IN_SECONDS = 28 * 24 * 60 * 60;

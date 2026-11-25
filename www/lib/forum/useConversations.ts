@@ -1,8 +1,12 @@
+import {
+  ChatCircleIcon,
+  MicrophoneStageIcon,
+  NewspaperIcon,
+} from "@phosphor-icons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ComponentType, useCallback, useEffect } from "react";
 
-import { MessageCircle, MicVocal, Newspaper } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
 import { usePusher } from "@/contexts/PusherProvider";
@@ -21,17 +25,17 @@ export const CONVERSATION_FILTERS: {
   {
     type: "topic",
     label: "Discussions",
-    icon: MessageCircle,
+    icon: ChatCircleIcon,
   },
   {
     type: "event",
     label: "Evénements",
-    icon: MicVocal,
+    icon: MicrophoneStageIcon,
   },
   {
     type: "release",
     label: "Sorties",
-    icon: Newspaper,
+    icon: NewspaperIcon,
   },
 ];
 
