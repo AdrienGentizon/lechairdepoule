@@ -2,7 +2,8 @@
 
 import { z } from "zod";
 
-import ContactEmail from "@/components/Email/ContactEmail";
+import ContactEmail from "@cdp/ui/emails/ContactEmail";
+
 import env from "@/lib/env";
 import sendEmail from "@/lib/mailing/sendEmail";
 

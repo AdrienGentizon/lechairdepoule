@@ -3,15 +3,17 @@
 import z from "zod";
 
 import { obfuscateEmail } from "@cdp/lib/string";
-import Trace from "@cdp/lib/trace";
+import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
+import { Result } from "@cdp/lib/types";
+import OTPEmail from "@cdp/ui/emails/OTPEmail";
 
-import { auth } from "@/lib/auth";
+import { OTP_EXPIRES_IN_SECONDS, auth } from "@/lib/auth";
+import sendEmail from "@/lib/mailing/sendEmail";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
-import { Result } from "@/lib/types";
 
 export default async function sendOTPToEmail(inputs: {
   email: string;
-}): Promise<Result<{ success: boolean }>> {
+}): Promise<Result<null>> {
   const trace = new Trace(`sendOTPToEmail`);
   try {
     const parsedInputs = z
@@ -19,30 +21,56 @@ export default async function sendOTPToEmail(inputs: {
       .safeParse(inputs);
 
     if (!parsedInputs.success) {
-      trace.push([JSON.stringify(inputs), parsedInputs.error.message]);
+      trace.push([toObfuscatedUser(inputs), parsedInputs.error.message]);
+      trace.log(400);
       return { success: false, error: "bad_request" };
     }
 
     trace.push(obfuscateEmail(parsedInputs.data.email));
     const user = await selectUserFromEmail({ email: parsedInputs.data.email });
-    trace.push(JSON.stringify({ user: user ?? "not_found" }));
+    trace.push(
+      JSON.stringify({ user: user ? toObfuscatedUser(user) : "not_found" }),
+    );
 
     if (user?.role !== "admin") {
       trace.log(401);
       return { success: false, error: "unauthorized" };
     }
 
-    const data = await auth.api.sendVerificationOTP({
+    const otp = await auth.api.createVerificationOTP({
       body: {
         email: parsedInputs.data.email,
         type: "sign-in",
       },
     });
 
-    if (!data.success) throw new Error(`cannot send otp`);
+    if (
+      process.env.MAILING_SERVICE_STATUS === "disabled" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      trace.push(["mailing disabled", `[${otp}]`]);
+      trace.log();
+      return { success: true, data: null };
+    }
+
+    const { error } = await sendEmail({
+      to: parsedInputs.data.email,
+      subject: `Code de validation ${otp}`,
+      react: OTPEmail({
+        appName: "CMS",
+        otp,
+        expiresInMinutes: OTP_EXPIRES_IN_SECONDS / 60,
+      }),
+    });
+
+    if (error) {
+      trace.push(`${error.name} ${error.message}`);
+      trace.log(500);
+      return { success: false, error: "email_not_sent" };
+    }
 
     trace.log();
-    return { success: true, data };
+    return { success: true, data: null };
   } catch (error) {
     trace.pushError(error);
     trace.log(500);

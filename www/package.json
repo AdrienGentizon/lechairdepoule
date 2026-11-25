@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit",
-    "email:preview": "email dev --dir components/Email --port 30000"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@cdp/lib": "workspace:*",
@@ -36,10 +35,10 @@
     "pusher-js": "^8.6.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-email": "^6.11.1",
+    "react-email": "catalog:",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "resend": "^4.8.0",
+    "resend": "catalog:",
     "tailwind-merge": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:"
@@ -49,7 +48,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@react-email/ui": "^6.11.1",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
     "eslint-config-next": "catalog:",
     "postcss": "^8.5.29",

@@ -3,13 +3,13 @@
 import z from "zod";
 
 import { toObfuscatedUser } from "@cdp/lib/trace";
+import { Result } from "@cdp/lib/types";
+import OTPEmail from "@cdp/ui/emails/OTPEmail";
 
-import OTPEmail from "@/components/Email/OTPEmail";
 import { OTP_EXPIRES_IN_SECONDS, auth } from "@/lib/auth";
 import sendEmail from "@/lib/mailing/sendEmail";
 import { obfuscateEmail } from "@/lib/string";
 import Trace from "@/lib/trace";
-import { Result } from "@/lib/types";
 
 export default async function sendOTPToEmail(inputs: {
   email: string;
@@ -47,6 +47,7 @@ export default async function sendOTPToEmail(inputs: {
       to: parsedInputs.data.email,
       subject: `Code de validation ${otp}`,
       react: OTPEmail({
+        appName: "forum",
         otp,
         expiresInMinutes: OTP_EXPIRES_IN_SECONDS / 60,
       }),

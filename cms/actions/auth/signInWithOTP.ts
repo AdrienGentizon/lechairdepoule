@@ -1,71 +1,119 @@
 "use server";
 
-import { isAPIError } from "better-auth/api";
+import { isAPIError as isBetterAuthError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import z from "zod";
 
 import { obfuscateEmail } from "@cdp/lib/string";
-import Trace from "@cdp/lib/trace";
+import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
+import { AuthErrorKeys, Result } from "@cdp/lib/types";
 
 import { auth } from "@/lib/auth";
+import sql from "@/lib/db";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
-import { ErrorKeys, Result } from "@/lib/types";
 
-const AUTH_ERROR_KEYS: Record<string, ErrorKeys> = {
-  INVALID_OTP: "invalid_otp",
-  OTP_EXPIRED: "expired_otp",
-  TOO_MANY_ATTEMPTS: "expired_otp",
-};
+async function updateBetterAuthUser(inputs: {
+  email: string;
+  authId: string;
+}): Promise<Result<{ id: string }>> {
+  try {
+    const updatedUser = (
+      await sql<{ id: string }[]>`
+      UPDATE users SET
+        auth_provider = 'better-auth',
+        auth_id = ${inputs.authId}
+      WHERE
+        email = ${inputs.email}
+      RETURNING
+        id::text;`
+    ).at(0);
 
-function toAuthErrorKey(error: unknown) {
-  if (!isAPIError(error)) return undefined;
+    if (!updatedUser) {
+      return { success: false, error: "upsert_user_failed" };
+    }
 
-  return AUTH_ERROR_KEYS[error.body?.code ?? ""];
+    return { success: true, data: updatedUser };
+  } catch {
+    return { success: false, error: "upsert_user_failed" };
+  }
 }
 
 export default async function signInWithOTP(inputs: {
   email: string;
   otp: string;
-}): Promise<Result<void>> {
+}): Promise<Result<null>> {
   const trace = new Trace(`signInWithOTP`);
   try {
     const parsedInputs = z
       .object({
         email: z.email().max(254).toLowerCase(),
-        otp: z.string().max(6),
+        otp: z.string(),
       })
       .safeParse(inputs);
 
     if (!parsedInputs.success) {
-      trace.push([JSON.stringify(inputs), parsedInputs.error.message]);
+      trace.push([toObfuscatedUser(inputs), parsedInputs.error.message]);
+      trace.log(400);
       return { success: false, error: "bad_request" };
     }
 
     trace.push(obfuscateEmail(parsedInputs.data.email));
-    const user = await selectUserFromEmail({ email: parsedInputs.data.email });
-    trace.push(JSON.stringify({ user: user ?? "not_found" }));
+    const existingUser = await selectUserFromEmail({
+      email: parsedInputs.data.email,
+    });
+    trace.push(
+      JSON.stringify({
+        user: existingUser ? toObfuscatedUser(existingUser) : "not_found",
+      }),
+    );
 
-    if (user?.role !== "admin") {
+    if (existingUser?.role !== "admin") {
       trace.log(401);
       return { success: false, error: "unauthorized" };
     }
 
-    await auth.api.signInEmailOTP({
+    const session = await auth.api.signInEmailOTP({
       body: {
         email: parsedInputs.data.email,
         otp: parsedInputs.data.otp,
       },
       headers: await headers(),
     });
+
+    const isLinkedToBetterAuth =
+      existingUser.authProvider === "better-auth" &&
+      existingUser.authId === session.user.id;
+
+    if (!isLinkedToBetterAuth) {
+      const updatedUser = await updateBetterAuthUser({
+        email: parsedInputs.data.email,
+        authId: session.user.id,
+      });
+
+      if (!updatedUser.success) {
+        await sql`DELETE FROM auth_sessions WHERE token = ${session.token};`;
+        trace.push([updatedUser.error, "session revoked"]);
+        trace.log(500);
+        return { success: false, error: "upsert_user_failed" };
+      }
+    }
+
     trace.log();
   } catch (error) {
     trace.pushError(error);
 
-    const otpErrorKey = toAuthErrorKey(error);
-    if (otpErrorKey) {
-      trace.log(400);
-      return { success: false, error: otpErrorKey };
+    if (isBetterAuthError(error)) {
+      const qualifiedErrors: AuthErrorKeys[] = [
+        "INVALID_OTP",
+        "OTP_EXPIRED",
+        "TOO_MANY_ATTEMPTS",
+      ];
+      const errorKey =
+        qualifiedErrors.find((errorKey) => error?.body?.code === errorKey) ??
+        "UNKNOWN_AUTH_ERROR";
+      trace.log(error.statusCode);
+      return { success: false, error: errorKey };
     }
 
     trace.log(500);

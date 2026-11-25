@@ -7,12 +7,12 @@ import z from "zod";
 
 import { obfuscateEmail } from "@cdp/lib/string";
 import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
-import { AuthErrorKeys } from "@cdp/lib/types";
+import { AuthErrorKeys, Result } from "@cdp/lib/types";
 
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/auth/selectUserFromEmail";
 import sql from "@/lib/db";
-import { CacheKey, Result } from "@/lib/types";
+import { CacheKey } from "@/lib/types";
 
 async function upsertBetterAuthUser(inputs: {
   email: string;
@@ -40,18 +40,15 @@ async function upsertBetterAuthUser(inputs: {
     }
 
     return { success: true, data: upsertedUser };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
+  } catch {
+    return { success: false, error: "upsert_user_failed" };
   }
 }
 
 export default async function signInWithOTP(inputs: {
   email: string;
   otp: string;
-}): Promise<Result<{ userId: string }>> {
+}): Promise<Result<null>> {
   const trace = new Trace(`signInWithOTP`);
   try {
     const parsedInputs = z
@@ -90,7 +87,7 @@ export default async function signInWithOTP(inputs: {
       existingUser.authId === session.user.id
     ) {
       trace.log();
-      return { success: true, data: { userId: existingUser.id } };
+      return { success: true, data: null };
     }
 
     const upsertedUser = await upsertBetterAuthUser({
@@ -107,7 +104,7 @@ export default async function signInWithOTP(inputs: {
 
     revalidateTag("users" satisfies CacheKey, {});
     trace.log();
-    return { success: true, data: { userId: upsertedUser.data.id } };
+    return { success: true, data: null };
   } catch (error) {
     trace.pushError(error);
 

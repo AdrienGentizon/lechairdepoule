@@ -1,4 +1,7 @@
 type Env = {
+  // EMAILING - RESEND
+  RESEND_API_KEY: string;
+
   // DATABASE - NEONDB
   PG_CONNECTION_STRING: string;
 };
@@ -14,6 +17,7 @@ function getEnvVar(key: string, defaultValue = "", required = true) {
 export default function env() {
   if (!envVars) {
     envVars = {
+      RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       PG_CONNECTION_STRING: getEnvVar("PG_CONNECTION_STRING"),
     };
   }

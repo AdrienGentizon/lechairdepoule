@@ -1,9 +1,3 @@
-import { ErrorKeys } from "@cdp/lib/types";
-
-export type Result<T = unknown> =
-  | { success: true; data: T }
-  | { success: false; error: (string & {}) | ErrorKeys };
-
 export type User = {
   id: string;
   pseudo: string | null;

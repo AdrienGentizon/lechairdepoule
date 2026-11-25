@@ -5,9 +5,15 @@ import { PostgresJSDialect } from "kysely-postgres-js";
 
 import sql from "./db";
 
+export const OTP_EXPIRES_IN_SECONDS = 5 * 60;
+const SESSION_EXPIRES_IN_SECONDS = 28 * 24 * 60 * 60;
+
 export const auth = betterAuth({
   user: { modelName: "auth_users" },
-  session: { modelName: "auth_sessions" },
+  session: {
+    modelName: "auth_sessions",
+    expiresIn: SESSION_EXPIRES_IN_SECONDS,
+  },
   account: { modelName: "auth_accounts" },
   verification: { modelName: "auth_verifications" },
   database: {
@@ -16,16 +22,11 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        if (type === "sign-in") {
-          if (process.env.NODE_ENV === "development") {
-            return console.log(`[Auth] emailOTP signin ${email}:${otp}`);
-          }
-        } else if (type === "email-verification") {
-          // Send the OTP for email verification
-        } else {
-          // Send the OTP for password reset
-        }
+      expiresIn: OTP_EXPIRES_IN_SECONDS,
+      async sendVerificationOTP() {
+        throw new Error(
+          `not implemented, use actions/auth/sendOTPToEmail instead`,
+        );
       },
     }),
     nextCookies(),
