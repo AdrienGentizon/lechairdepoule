@@ -9,7 +9,6 @@ import OTPEmail from "@cdp/ui/emails/OTPEmail";
 
 import { OTP_EXPIRES_IN_SECONDS, auth } from "@/lib/auth";
 import sendEmail from "@/lib/mailing/sendEmail";
-import selectUserFromEmail from "@/lib/selectUserFromEmail";
 
 export default async function sendOTPToEmail(inputs: {
   email: string;
@@ -27,16 +26,6 @@ export default async function sendOTPToEmail(inputs: {
     }
 
     trace.push(obfuscateEmail(parsedInputs.data.email));
-    const user = await selectUserFromEmail({ email: parsedInputs.data.email });
-    trace.push(
-      JSON.stringify({ user: user ? toObfuscatedUser(user) : "not_found" }),
-    );
-
-    if (user?.role !== "admin") {
-      trace.log(401);
-      return { success: false, error: "unauthorized" };
-    }
-
     const otp = await auth.api.createVerificationOTP({
       body: {
         email: parsedInputs.data.email,

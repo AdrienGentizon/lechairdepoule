@@ -13,27 +13,29 @@ import { auth } from "@/lib/auth";
 import sql from "@/lib/db";
 import selectUserFromEmail from "@/lib/selectUserFromEmail";
 
-async function updateBetterAuthUser(inputs: {
+async function upsertBetterAuthUser(inputs: {
   email: string;
   authId: string;
 }): Promise<Result<{ id: string }>> {
   try {
-    const updatedUser = (
+    const upsertedUser = (
       await sql<{ id: string }[]>`
-      UPDATE users SET
-        auth_provider = 'better-auth',
-        auth_id = ${inputs.authId}
-      WHERE
-        email = ${inputs.email}
+      INSERT INTO users
+        (email, auth_provider, auth_id, created_at)
+      VALUES
+        (${inputs.email}, 'better-auth', ${inputs.authId}, NOW())
+      ON CONFLICT (email) DO UPDATE SET
+        auth_provider = EXCLUDED.auth_provider,
+        auth_id = EXCLUDED.auth_id
       RETURNING
         id::text;`
     ).at(0);
 
-    if (!updatedUser) {
+    if (!upsertedUser) {
       return { success: false, error: "upsert_user_failed" };
     }
 
-    return { success: true, data: updatedUser };
+    return { success: true, data: upsertedUser };
   } catch {
     return { success: false, error: "upsert_user_failed" };
   }
@@ -68,11 +70,6 @@ export default async function signInWithOTP(inputs: {
       }),
     );
 
-    if (existingUser?.role !== "admin") {
-      trace.log(401);
-      return { success: false, error: "unauthorized" };
-    }
-
     const session = await auth.api.signInEmailOTP({
       body: {
         email: parsedInputs.data.email,
@@ -82,18 +79,18 @@ export default async function signInWithOTP(inputs: {
     });
 
     const isLinkedToBetterAuth =
-      existingUser.authProvider === "better-auth" &&
+      existingUser?.authProvider === "better-auth" &&
       existingUser.authId === session.user.id;
 
     if (!isLinkedToBetterAuth) {
-      const updatedUser = await updateBetterAuthUser({
+      const upsertedUser = await upsertBetterAuthUser({
         email: parsedInputs.data.email,
         authId: session.user.id,
       });
 
-      if (!updatedUser.success) {
+      if (!upsertedUser.success) {
         await sql`DELETE FROM auth_sessions WHERE token = ${session.token};`;
-        trace.push([updatedUser.error, "session revoked"]);
+        trace.push([upsertedUser.error, "session revoked"]);
         trace.log(500);
         return { success: false, error: "upsert_user_failed" };
       }
