@@ -1,4 +1,4 @@
-import { ErrorKeys } from "@cdp/lib/errors";
+import { ErrorKeys } from "@cdp/lib/types";
 
 export type Result<T = unknown> =
   | { success: true; data: T }

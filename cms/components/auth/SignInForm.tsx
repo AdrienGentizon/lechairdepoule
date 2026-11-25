@@ -10,16 +10,16 @@ import { useState, useTransition } from "react";
 
 import z from "zod";
 
+import dictionaries from "@cdp/lib/i18n/dictionaries/auth";
+import { toErrorMessage } from "@cdp/lib/i18n/utils";
 import Button from "@cdp/ui/Button";
 import { InputField } from "@cdp/ui/Form";
 import cn from "@cdp/ui/cn";
 
 import sendOTPToEmail from "@/actions/auth/sendOTPToEmail";
 import signInWithOTP from "@/actions/auth/signInWithOTP";
-import dictionaries from "@/components/auth/dictionaries";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import useT from "@/components/i18n/useT";
-import errorDictionaries from "@/lib/i18n/dictionaries/errors";
 
 function EmailForm({
   defaultEmail,
@@ -33,7 +33,6 @@ function EmailForm({
   const locale = useLocale();
   const zodError = z.locales[locale]().localeError;
   const dictionary = useT(dictionaries);
-  const errorDictionary = useT(errorDictionaries);
 
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<{
@@ -58,7 +57,7 @@ function EmailForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [errorDictionary[response.error]] });
+        return setErrors({ submit: [toErrorMessage(response.error, locale)] });
       }
 
       onOTPSent(parsedInputs.data.email);
@@ -114,7 +113,6 @@ function OTPForm({
   const locale = useLocale();
   const zodError = z.locales[locale]().localeError;
   const dictionary = useT(dictionaries);
-  const errorDictionary = useT(errorDictionaries);
 
   const [isPending, startTransition] = useTransition();
   const [isResending, startResendTransition] = useTransition();
@@ -130,7 +128,7 @@ function OTPForm({
       const response = await sendOTPToEmail({ email });
 
       if (!response.success) {
-        return setErrors({ resend: [errorDictionary[response.error]] });
+        return setErrors({ resend: [toErrorMessage(response.error, locale)] });
       }
 
       console.log("OTP resent");
@@ -158,7 +156,7 @@ function OTPForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [errorDictionary[response.error]] });
+        return setErrors({ submit: [toErrorMessage(response.error, locale)] });
       }
     });
   };
