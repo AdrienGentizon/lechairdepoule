@@ -1,9 +1,12 @@
 import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
+import SignInForm from "@cdp/ui/auth/SignInForm";
 
-import SignInForm from "@/components/auth/SignInForm";
-import { t } from "@/lib/i18n";
+import sendOTPToEmail from "@/actions/auth/sendOTPToEmail";
+import signInWithOTP from "@/actions/auth/signInWithOTP";
+import { getLocale, t } from "@/lib/i18n";
 
 export default async function LoginPage() {
+  const locale = await getLocale();
   const dictionary = await t(dictionaries);
 
   return (
@@ -14,7 +17,12 @@ export default async function LoginPage() {
       <h1 className="py-4 text-2xl font-thin uppercase">
         {dictionary.log_in_h1}
       </h1>
-      <SignInForm className="h-full w-full max-w-sm justify-center" />
+      <SignInForm
+        locale={locale}
+        sendOTPToEmail={sendOTPToEmail}
+        signInWithOTP={signInWithOTP}
+        className="h-full w-full max-w-sm justify-center"
+      />
     </main>
   );
 }

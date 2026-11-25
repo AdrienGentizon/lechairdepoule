@@ -10,23 +10,28 @@ import { useState, useTransition } from "react";
 
 import z from "zod";
 
+import dictionaries from "@cdp/lib/i18n/dictionaries/auth";
 import { toErrorMessage } from "@cdp/lib/i18n/utils";
-import Button from "@cdp/ui/Button";
-import { InputField } from "@cdp/ui/Form";
-import cn from "@cdp/ui/cn";
+import { Locale, Result } from "@cdp/lib/types";
 
-import sendOTPToEmail from "@/actions/auth/sendOTPToEmail";
-import signInWithOTP from "@/actions/auth/signInWithOTP";
+import cn from "../../lib/cn";
+import Button from "../Button";
+import { InputField } from "../Form";
 
 function EmailForm({
+  locale,
+  sendOTPToEmail,
   defaultEmail,
   className,
   onOTPSent,
 }: {
+  locale: Locale;
+  sendOTPToEmail: (inputs: { email: string }) => Promise<Result<null>>;
   defaultEmail: string | undefined;
   className?: string;
   onOTPSent: (email: string) => void;
 }) {
+  const dictionary = dictionaries[locale];
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<{
     email?: string[];
@@ -39,7 +44,7 @@ function EmailForm({
     const parsedInputs = z
       .object({ email: z.email().max(254).toLowerCase() })
       .safeParse(Object.fromEntries(new FormData(form).entries()), {
-        error: z.locales.fr().localeError,
+        error: z.locales[locale]().localeError,
       });
 
     if (!parsedInputs.success) {
@@ -52,7 +57,7 @@ function EmailForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [toErrorMessage(response.error)] });
+        return setErrors({ submit: [toErrorMessage(response.error, locale)] });
       }
 
       onOTPSent(parsedInputs.data.email);
@@ -70,7 +75,7 @@ function EmailForm({
       }}
     >
       <InputField
-        label={`Email`}
+        label={dictionary.email_label}
         id="email"
         name="email"
         type="email"
@@ -87,7 +92,7 @@ function EmailForm({
         className="mt-2 uppercase"
         aria-disabled={isPending}
       >
-        Continuer
+        {dictionary.continue}
         {isPending ? (
           <ArrowsClockwiseIcon
             className="motion-safe:animate-spin"
@@ -98,23 +103,33 @@ function EmailForm({
         )}
       </Button>
       <p role="status" className="sr-only">
-        {isPending ? `Envoi du code…` : ""}
+        {isPending ? dictionary.sending_code : ""}
       </p>
     </form>
   );
 }
 
 function OTPForm({
+  locale,
+  sendOTPToEmail,
+  signInWithOTP,
   email,
   className,
   onChangeEmail,
   onSuccess,
 }: {
+  locale: Locale;
+  sendOTPToEmail: (inputs: { email: string }) => Promise<Result<null>>;
+  signInWithOTP: (inputs: {
+    email: string;
+    otp: string;
+  }) => Promise<Result<null>>;
   email: string;
   className?: string;
   onChangeEmail: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }) {
+  const dictionary = dictionaries[locale];
   const [isPending, startTransition] = useTransition();
   const [isResending, startResendTransition] = useTransition();
   const isBusy = isPending || isResending;
@@ -130,7 +145,7 @@ function OTPForm({
       const response = await sendOTPToEmail({ email });
 
       if (!response.success) {
-        return setErrors({ resend: [toErrorMessage(response.error)] });
+        return setErrors({ resend: [toErrorMessage(response.error, locale)] });
       }
 
       setErrors({});
@@ -147,7 +162,7 @@ function OTPForm({
         otp: z.string().min(1).max(6),
       })
       .safeParse(Object.fromEntries(new FormData(form).entries()), {
-        error: z.locales.fr().localeError,
+        error: z.locales[locale]().localeError,
       });
 
     if (!parsedInputs.success) {
@@ -161,10 +176,10 @@ function OTPForm({
       });
 
       if (!response.success) {
-        return setErrors({ submit: [toErrorMessage(response.error)] });
+        return setErrors({ submit: [toErrorMessage(response.error, locale)] });
       }
 
-      onSuccess();
+      onSuccess?.();
     });
   };
 
@@ -181,7 +196,7 @@ function OTPForm({
       <input type="hidden" name="email" value={email} />
 
       <InputField
-        label={"Code de vérification"}
+        label={dictionary.otp_label}
         id="otp"
         name="otp"
         type="text"
@@ -193,9 +208,7 @@ function OTPForm({
         errors={[errors.submit, errors.otp, errors.resend].flat()}
         hint={
           <span>
-            {hasResent
-              ? `Un nouveau code a été envoyé à`
-              : `Le code a été envoyé à`}{" "}
+            {hasResent ? dictionary.new_code_sent_to : dictionary.code_sent_to}{" "}
             <strong>{email}</strong>.
             <span className="inline-flex w-full items-center justify-center gap-4">
               <button
@@ -204,16 +217,16 @@ function OTPForm({
                 disabled={isBusy}
                 onClick={onChangeEmail}
               >
-                {`Changer l'email`}
+                {dictionary.change_email}
               </button>
-              {"ou"}
+              {dictionary.or}
               <button
                 type="button"
                 className="underline"
                 disabled={isBusy}
                 onClick={resend}
               >
-                {`Renvoyer un code`}
+                {dictionary.resend_code}
               </button>
             </span>
           </span>
@@ -231,10 +244,10 @@ function OTPForm({
           ) : (
             <SignInIcon aria-hidden />
           )}
-          {`Se connecter`}
+          {dictionary.sign_in}
         </Button>
         <p role="status" className="sr-only">
-          {isPending ? `Connexion en cours…` : ""}
+          {isPending ? dictionary.signing_in : ""}
         </p>
       </div>
     </form>
@@ -242,11 +255,20 @@ function OTPForm({
 }
 
 export default function SignInForm({
+  locale,
+  sendOTPToEmail,
+  signInWithOTP,
   className,
   onSuccess,
 }: {
+  locale: Locale;
+  sendOTPToEmail: (inputs: { email: string }) => Promise<Result<null>>;
+  signInWithOTP: (inputs: {
+    email: string;
+    otp: string;
+  }) => Promise<Result<null>>;
   className?: string;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }) {
   const [state, setState] = useState<
     { step: "email"; email?: string } | { step: "otp"; email: string }
@@ -255,6 +277,9 @@ export default function SignInForm({
   if (state.step === "otp") {
     return (
       <OTPForm
+        locale={locale}
+        sendOTPToEmail={sendOTPToEmail}
+        signInWithOTP={signInWithOTP}
         email={state.email}
         className={className}
         onChangeEmail={() => setState({ step: "email", email: state.email })}
@@ -265,6 +290,8 @@ export default function SignInForm({
 
   return (
     <EmailForm
+      locale={locale}
+      sendOTPToEmail={sendOTPToEmail}
       defaultEmail={state.email}
       className={className}
       onOTPSent={(email) => setState({ step: "otp", email })}

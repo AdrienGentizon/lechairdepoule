@@ -20,7 +20,8 @@
     "postgres": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-email": "^6.11.1",
+    "react-email": "catalog:",
+    "resend": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:"
   },

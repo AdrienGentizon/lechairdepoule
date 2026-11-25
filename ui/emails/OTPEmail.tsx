@@ -12,11 +12,12 @@ import {
 } from "react-email";
 
 type Props = {
+  appName: string;
   otp: string;
   expiresInMinutes: number;
 };
 
-export default function OTPEmail({ otp, expiresInMinutes }: Props) {
+export default function OTPEmail({ appName, otp, expiresInMinutes }: Props) {
   return (
     <Html lang="fr">
       <Head />
@@ -25,13 +26,13 @@ export default function OTPEmail({ otp, expiresInMinutes }: Props) {
         <Body className="bg-neutral-100 py-10 font-sans">
           <Container className="mx-auto max-w-[480px] rounded-lg bg-white px-8 py-10">
             <Text className="m-0 text-sm font-semibold uppercase">
-              Le Chair de Poule - Forum
+              {`Le Chair de Poule - ${appName}`}
             </Text>
             <Heading className="mb-0 mt-6 text-2xl font-semibold text-neutral-900">
               Votre code de validation
             </Heading>
             <Text className="mt-0 text-base text-neutral-600">
-              Saisissez ce code pour vous connecter au forum.
+              {`Saisissez ce code pour vous connecter au ${appName}.`}
             </Text>
             <Section className="my-6 rounded-md bg-neutral-50 py-4 text-center">
               <Text className="m-0 font-mono text-4xl font-medium text-black">
