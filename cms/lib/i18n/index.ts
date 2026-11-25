@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { Dictionaries, SUPPORTED_LOCALES } from "@/lib/i18n/types";
+import { Dictionaries, SUPPORTED_LOCALES } from "@cdp/lib/types";
 
 export async function getLocale() {
   const language = (await headers()).get("accept-language")?.split(",").at(0);

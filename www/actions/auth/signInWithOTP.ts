@@ -5,9 +5,9 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
 
-import { AuthErrorKeys } from "@cdp/lib/errors";
 import { obfuscateEmail } from "@cdp/lib/string";
 import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
+import { AuthErrorKeys } from "@cdp/lib/types";
 
 import { auth } from "@/lib/auth";
 import selectUserFromEmail from "@/lib/auth/selectUserFromEmail";

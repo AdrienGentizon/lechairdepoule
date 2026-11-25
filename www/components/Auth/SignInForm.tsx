@@ -10,7 +10,7 @@ import { useState, useTransition } from "react";
 
 import z from "zod";
 
-import { toErrorMessage } from "@cdp/lib/errors";
+import { toErrorMessage } from "@cdp/lib/i18n/utils";
 import Button from "@cdp/ui/Button";
 import { InputField } from "@cdp/ui/Form";
 import cn from "@cdp/ui/cn";

@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-import { Locale } from "@/lib/i18n/types";
+import { Locale } from "@cdp/lib/types";
 
 const LocaleContext = createContext<Locale>("en");
 

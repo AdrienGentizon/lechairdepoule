@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Courier_Prime, Manrope } from "next/font/google";
 
+import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
+
 import LocaleProvider from "@/components/i18n/LocaleProvider";
 import { getLocale, t } from "@/lib/i18n";
-import dictionaries from "@/lib/i18n/dictionaries/rootLayout";
 
 import "./globals.css";
 
@@ -39,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             href="#main"
             className="bg-foreground text-background sr-only absolute left-2 top-2 focus:not-sr-only focus:absolute focus:px-2"
           >
-            {dictionary.skip_content}
+            {dictionary.root_skip_content}
           </a>
           {children}
         </LocaleProvider>
