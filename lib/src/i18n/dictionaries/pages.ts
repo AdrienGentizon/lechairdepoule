@@ -6,6 +6,19 @@ const en = {
   organizations_h1: "Organizations",
   nav_back: (label: string) => `Back to ${label}`,
   nav_back_landmark: "Page navigation",
+  not_found: (label: string) => `${label} not found`,
+  organization: "Organization",
+  event_create: "Create an event",
+  event_create_type_titles: {
+    EVENT: "New event",
+    RELEASE: "New release",
+  },
+  event_create_step_type: "Step 1 of 2: choose the event type",
+  event_create_step_inputs: "Step 2 of 2: fill in the details",
+  event_edit: (title: string) => `Edit ${title}`,
+  event_delete: (title: string) => `Delete ${title}`,
+  event_delete_confirm: (title: string) =>
+    `You are about to delete "${title}". Continue?`,
 };
 
 const fr = {
@@ -16,6 +29,19 @@ const fr = {
   organizations_h1: "Organisations",
   nav_back: (label: string) => `Retour à ${label}`,
   nav_back_landmark: "Navigation de la page",
+  not_found: (label: string) => `${label} introuvable`,
+  organization: "Organisation",
+  event_create: "Créer un événement",
+  event_create_type_titles: {
+    EVENT: "Nouvel événement",
+    RELEASE: "Nouvelle sortie",
+  },
+  event_create_step_type: "Étape 1 sur 2 : choisir le type d'événement",
+  event_create_step_inputs: "Étape 2 sur 2 : remplir les informations",
+  event_edit: (title: string) => `Modifier ${title}`,
+  event_delete: (title: string) => `Supprimer ${title}`,
+  event_delete_confirm: (title: string) =>
+    `Vous êtes sur le point de supprimer « ${title} ». Continuer ?`,
 } satisfies typeof en;
 
 const dictionaries = { en, fr };

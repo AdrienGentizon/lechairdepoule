@@ -24,8 +24,8 @@ const courier = Courier_Prime({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lechairdepoule.fr"),
-  title: "Le Chair de poule",
-  description: "Le site web du bar Le Chair de Poule et du Peine perdue aussi",
+  title: "Orgas - Le Chair de poule",
+  description: "Créez et partagez vos événements avec les fins connaisseurs.",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

@@ -35,7 +35,7 @@ export default async function insertEvent(
       }[]
     >`
     INSERT INTO
-      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, timezone, price, venue, url, organization_id, venue_id, created_by, created_at, updated_at)
+      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, timezone, price, venue, url, organization_id, venue_id, created_by, visibility, published_at, created_at, updated_at)
     SELECT
       ${inputs.type},
       ${inputs.title},
@@ -54,6 +54,8 @@ export default async function insertEvent(
       o.id,
       CASE WHEN o.type = 'VENUE' THEN o.id END,
       ${inputs.createdBy}::int,
+      'PUBLIC',
+      NOW(),
       NOW(),
       NOW()
     FROM organizations o
