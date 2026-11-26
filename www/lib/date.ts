@@ -3,7 +3,6 @@ const ONE_HOUR_IN_MS = 60 * ONE_MINUTE_IN_MS;
 const ONE_DAY_IN_MS = 24 * ONE_HOUR_IN_MS;
 const ONE_WEEK_IN_MS = 7 * ONE_DAY_IN_MS;
 
-export const LOCALE = "fr-FR";
 export const DANGEROUS_FALLBACK_TZ = "Europe/Paris";
 
 function getTimeSince(date: Date) {
@@ -71,12 +70,6 @@ export function getMonthSpanUTC(date?: Date | null) {
     firstDay: getDateSpanUTC(firstMonthDay).from,
     lastDay: new Date(getDateSpanUTC(firstDayOfNextMonth).from.getTime() - 1),
   };
-}
-
-export function getEventTime(time: string) {
-  const [hours, minutes] = time.split(":");
-  if (hours === "00" && minutes === "00") return "minuit";
-  return minutes === "00" ? `${hours}H` : `${hours}H${minutes}`;
 }
 
 export function getDateAndTimeInTimezone(dateStr: string, timeZone: string) {

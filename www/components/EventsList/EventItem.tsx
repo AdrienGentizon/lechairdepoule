@@ -1,88 +1,14 @@
 import type { ReactNode } from "react";
 
+import Details from "@cdp/ui/Details";
+import EventSummary from "@cdp/ui/EventSummary";
+
 import PeinePerdue from "@/components/png/PeinePerdue";
-import { LOCALE, getEventTime } from "@/lib/date";
 import { Event } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 import EventUrl from "../ConversationsList/EventUrl";
 import EventItemActions from "./EventItemActions";
 import ImportToCalendarButton from "./ImportToCalendarButton";
-
-function Datestamp({ startDate }: { startDate: string }) {
-  return (
-    <time
-      aria-hidden
-      dateTime={startDate}
-      className="flex h-full min-h-16 flex-col items-center justify-center uppercase leading-none"
-    >
-      <span className="text-xs font-light leading-none">
-        {new Date(startDate).toLocaleDateString(LOCALE, {
-          timeZone: "UTC",
-          weekday: "short",
-        })}
-      </span>
-      <span className="text-4xl font-black leading-none">
-        {new Date(startDate).toLocaleDateString(LOCALE, {
-          timeZone: "UTC",
-          day: "2-digit",
-        })}
-      </span>
-      <span className="text-sm font-black leading-none">
-        {new Date(startDate).toLocaleDateString(LOCALE, {
-          timeZone: "UTC",
-          month: "short",
-        })}
-      </span>
-    </time>
-  );
-}
-
-function SummaryTitle({ title }: { title: string }) {
-  return (
-    <span className="text-balance text-xl font-semibold uppercase leading-none">
-      {title}
-    </span>
-  );
-}
-
-function SummaryDescription({
-  description,
-  variant,
-}: {
-  description?: string | null;
-  variant: "CDP" | "PP" | "HORS_LES_MURS";
-}) {
-  if (!description) return null;
-  return (
-    <span
-      className={cn(
-        "font-light leading-none",
-        ["CDP", "PP"].includes(variant) && "text-purple-300",
-      )}
-    >
-      {description}
-    </span>
-  );
-}
-
-function TimetableAndEntryFee({
-  startTime,
-  price,
-}: {
-  startTime: string | null;
-  price: string | null;
-}) {
-  if (!startTime && !price) return null;
-  return (
-    <span className="flex items-center leading-none text-purple-300">
-      {startTime && <time dateTime={startTime}>{getEventTime(startTime)}</time>}
-
-      {startTime && price && <>&nbsp;&middot;&nbsp;</>}
-      {price && <span className="leading-none">{price}</span>}
-    </span>
-  );
-}
 
 export default function EventItem({
   summary,
@@ -101,41 +27,23 @@ export default function EventItem({
   };
   variant: "CDP" | "PP" | "HORS_LES_MURS";
 }) {
-  const showTimetableAndEntryFee = !["CDP", "PP"].includes(variant ?? "");
-
   return (
     <li className="border-foreground relative isolate border-b py-2 first:border-t">
-      <details
-        id={event.id}
-        name="events"
-        className="relative isolate cursor-pointer scroll-mt-6"
-      >
-        <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
-          <span className="sr-only">{aria.title}</span>
-          <Datestamp startDate={event.startDate} />
-          <div
-            aria-hidden
-            className="flex flex-col justify-center gap-1.5 leading-none"
-          >
-            <SummaryTitle title={summary.title} />
-
-            <div className="flex flex-col gap-0.5">
-              <SummaryDescription
-                description={summary.description}
-                variant={variant}
-              />
-              {showTimetableAndEntryFee && (
-                <TimetableAndEntryFee
-                  startTime={event.startTime}
-                  price={event.price}
-                />
-              )}
-            </div>
-          </div>
+      <Details id={event.id} name="events">
+        <Details.Summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
+          <EventSummary
+            startDate={event.startDate}
+            startTime={event.startTime}
+            price={event.price}
+            title={summary.title}
+            description={summary.description}
+            aria={aria}
+            variant={variant}
+          />
           {variant === "PP" && (
             <PeinePerdue className="absolute right-4 top-1/2 z-10 size-16 origin-center -translate-y-1/2 rotate-12" />
           )}
-        </summary>
+        </Details.Summary>
         <ImportToCalendarButton
           ics={{
             title: summary.title,
@@ -146,7 +54,7 @@ export default function EventItem({
             timezone: event.timezone,
           }}
         />
-        <div className="flex flex-col gap-4 p-4">
+        <Details.Content>
           {image}
           {details && (
             <div className="font-courier whitespace-pre-wrap font-light leading-tight">
@@ -154,8 +62,8 @@ export default function EventItem({
             </div>
           )}
           <EventUrl event={event} />
-        </div>
-      </details>
+        </Details.Content>
+      </Details>
       {["HORS_LES_MURS"].includes(variant) && (
         <EventItemActions event={event} />
       )}

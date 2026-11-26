@@ -2,16 +2,20 @@
 
 import { useEffect } from "react";
 
-export default function ScrollOpenedEventIntoView() {
+export default function DetailsScrollIntoViewOnOpen({
+  name,
+}: {
+  name: string;
+}) {
   useEffect(() => {
     const abortController = new AbortController();
 
     document.addEventListener(
       "toggle",
-      (e) => {
-        const details = e.target;
+      (event) => {
+        const details = event.target;
         if (!(details instanceof HTMLDetailsElement)) return;
-        if (details.name !== "events" || !details.open) return;
+        if (details.name !== name || !details.open) return;
 
         details.scrollIntoView({ behavior: "smooth", block: "start" });
       },
@@ -21,7 +25,7 @@ export default function ScrollOpenedEventIntoView() {
     return () => {
       abortController.abort();
     };
-  }, []);
+  }, [name]);
 
   return null;
 }

@@ -16,5 +16,5 @@ Postgres does not index foreign keys automatically. `PRIMARY KEY` and `UNIQUE` c
 ## Not needed
 
 - `created_by = ${userId}` filters — always combined with `id = ...`, PK already narrows it
-- `events.starts_at` — `selectEvents` filters on `(starts_at AT TIME ZONE timezone)::date`, a plain index would not be used; full scan is fine at current volume
+- `events(start_date)` — `selectEvents` filters on `start_date` and `COALESCE(end_date, start_date)`, a plain index would serve the upper bound only; full scan is fine at current volume
 - `deleted_at IS NULL`, `reported_at IS NULL`, `banned_at` — low selectivity / small tables

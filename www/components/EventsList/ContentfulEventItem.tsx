@@ -2,7 +2,8 @@
 
 import Markdown from "react-markdown";
 
-import { LOCALE } from "@/lib/date";
+import { LOCALE } from "@cdp/lib/date";
+
 import getContentfulEvents from "@/queries/getContentfulEvents";
 
 import ContentfulImage from "../ContentfulImage";

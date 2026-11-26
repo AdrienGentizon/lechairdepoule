@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 
+import { LOCALE, getEventTime } from "@cdp/lib/date";
+
 import CreateEventButton from "@/components/CreateEventButton/CreateEventButton";
 import EventItem from "@/components/EventsList/EventItem";
 import EventsList from "@/components/EventsList/EventsList";
 import TextParser from "@/components/TextParser";
-import { LOCALE, getEventTime } from "@/lib/date";
 import getCachedEvents from "@/lib/events/getChachedEvents";
 
 export const metadata: Metadata = {

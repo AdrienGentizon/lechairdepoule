@@ -3,10 +3,12 @@ import Markdown from "react-markdown";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { LOCALE } from "@cdp/lib/date";
+
 import ContactForm from "@/components/ContactForm/ContactForm";
 import ChairDePoule from "@/components/png/ChairDePoule";
 import PeinePerdue from "@/components/png/PeinePerdue";
-import { DANGEROUS_FALLBACK_TZ, LOCALE, getValidDate } from "@/lib/date";
+import { DANGEROUS_FALLBACK_TZ, getValidDate } from "@/lib/date";
 import getContactPage, {
   ContactPage as ContactPageType,
 } from "@/queries/getContactPage";

@@ -2,12 +2,13 @@ import { Children, HTMLAttributes } from "react";
 
 import Image from "next/image";
 
+import DetailsScrollIntoViewOnOpen from "@cdp/ui/DetailsScrollIntoViewOnOpen";
+
 import { cn } from "@/lib/utils";
 import Ampoule from "@/public/ampoule.png";
 
 import RefreshOnFocus from "../RefreshOnFocus/RefreshOnFocus";
 import OpenEventFromSearchParam from "./OpenEventFromSearchParam";
-import ScrollOpenedEventIntoView from "./ScrollOpenedEventIntoView";
 
 function EmptyMessage({ heading, body }: { heading: string; body: string }) {
   return (
@@ -54,7 +55,7 @@ export default function EventsList({
       {...props}
     >
       {children}
-      <ScrollOpenedEventIntoView />
+      <DetailsScrollIntoViewOnOpen name="events" />
       <OpenEventFromSearchParam />
       <RefreshOnFocus />
     </ul>
