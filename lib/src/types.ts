@@ -16,6 +16,7 @@ export type ErrorKeys =
   | "file_too_large"
   | "unsupported_file_type"
   | "upload_failed"
+  | "pseudo_taken"
   | AuthErrorKeys;
 
 export type Result<T = unknown> =

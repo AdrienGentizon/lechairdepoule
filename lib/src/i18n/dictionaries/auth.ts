@@ -11,6 +11,11 @@ const en = {
   sign_in: "Sign in",
   signing_in: "Signing in…",
   sign_out: "Sign out",
+  pseudo_label: "Pseudo",
+  update: "Update",
+  updating: "Updating…",
+  my_profile: "My profile",
+  unread_notifications: "unread notifications",
 };
 
 const fr = {
@@ -26,6 +31,11 @@ const fr = {
   sign_in: "Se connecter",
   signing_in: "Connexion en cours…",
   sign_out: "Se déconnecter",
+  pseudo_label: "Pseudo",
+  update: "Modifier",
+  updating: "Modification en cours…",
+  my_profile: "Mon profil",
+  unread_notifications: "notifications non lues",
 } satisfies typeof en;
 
 const dictionaries = { en, fr };

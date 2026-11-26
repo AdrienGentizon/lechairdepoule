@@ -1,70 +1,26 @@
 "use client";
 
-import { UserCircleIcon } from "@phosphor-icons/react";
+import SharedUserButton, { UserIcon } from "@cdp/ui/auth/UserButton";
+import UserNotifications from "@cdp/ui/auth/UserNotifications";
 
-import Link from "next/link";
-
-import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import useUserNotifications from "@/lib/forum/useUserNotifications";
 
-function UserButton() {
+export default function UserButton() {
+  const { me, isFetching, error } = useMe();
   const { unread } = useUserNotifications();
 
   return (
-    <Link
-      href={`/profile`}
-      className="text-foreground cursor-pointer hover:text-purple-300"
+    <SharedUserButton
+      locale="fr"
+      me={me}
+      isFetching={isFetching}
+      error={error}
+      className="landscape:p-1"
     >
-      <UserCircleIcon aria-hidden className="size-8" />
-      <span
-        className="sr-only"
-        aria-live="polite"
-      >{`Mes notifications - ${unread} non lues`}</span>
-      {unread > 0 && (
-        <span
-          className="absolute -right-0.5 -top-0.5 flex size-3 items-center justify-center rounded-full bg-red-500 font-mono text-[0.5rem] text-white"
-          aria-hidden
-        >
-          {unread}
-        </span>
-      )}
-    </Link>
+      <UserNotifications locale="fr" unread={unread}>
+        <UserIcon />
+      </UserNotifications>
+    </SharedUserButton>
   );
-}
-
-function UnauthUserButton() {
-  return (
-    <LogInButton
-      type="button"
-      className="scale-100 cursor-pointer rounded-full border-transparent transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900 landscape:border-2 landscape:p-1"
-    >
-      <UserCircleIcon
-        aria-hidden
-        className="bg-background size-8 rounded-full text-purple-300"
-      />
-      <span className="sr-only">Se connecter</span>
-    </LogInButton>
-  );
-}
-
-function UnknownUserPlaceholder() {
-  return (
-    <span className="landscape:p-1">
-      <UserCircleIcon
-        aria-hidden
-        className="bg-background size-8 rounded-full text-purple-300 opacity-50"
-      />
-    </span>
-  );
-}
-
-export default function Fetcher() {
-  const { me, isFetching, error } = useMe();
-
-  if (isFetching) return null;
-  if (!me && error) return <UnknownUserPlaceholder />;
-  if (!me) return <UnauthUserButton />;
-
-  return <UserButton />;
 }

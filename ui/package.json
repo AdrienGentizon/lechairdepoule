@@ -23,6 +23,7 @@
     "tailwind-merge": "catalog:"
   },
   "peerDependencies": {
+    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "zod": "catalog:"
@@ -32,6 +33,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
+    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "zod": "catalog:"
