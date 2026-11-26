@@ -17,6 +17,8 @@ const en = {
   event_create_step_inputs: "Step 2 of 2: fill in the details",
   event_edit: (title: string) => `Edit ${title}`,
   event_delete: (title: string) => `Delete ${title}`,
+  event_published: "Published",
+  event_published_aria: (title: string) => `Published ${title}`,
   event_delete_confirm: (title: string) =>
     `You are about to delete "${title}". Continue?`,
 };
@@ -40,6 +42,8 @@ const fr = {
   event_create_step_inputs: "Étape 2 sur 2 : remplir les informations",
   event_edit: (title: string) => `Modifier ${title}`,
   event_delete: (title: string) => `Supprimer ${title}`,
+  event_published: "Publié",
+  event_published_aria: (title: string) => `Publié ${title}`,
   event_delete_confirm: (title: string) =>
     `Vous êtes sur le point de supprimer « ${title} ». Continuer ?`,
 } satisfies typeof en;

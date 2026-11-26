@@ -32,6 +32,7 @@ export default async function insertEvent(
         publishedAt: string | null;
         createdAt: string;
         updatedAt: string;
+        deletedAt: string | null;
       }[]
     >`
     INSERT INTO
@@ -81,6 +82,7 @@ export default async function insertEvent(
       visibility,
       published_at::text,
       created_at::text,
-      updated_at::text;`
+      updated_at::text,
+      deleted_at::text;`
   ).at(0);
 }

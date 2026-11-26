@@ -1,11 +1,13 @@
 "use client";
 
 import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
+import Toggle from "@cdp/ui/Toggle";
 
 import useMe from "@/components/auth/useMe";
 import EventForm from "@/components/event/EventForm";
 import useOrganizationEvent from "@/components/event/useOrganizationEvent";
 import useUpdateEvent from "@/components/event/useUpdateEvent";
+import useUpdateEventStatus from "@/components/event/useUpdateEventStatus";
 import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
 import PageHeader from "@/components/layout/PageHeader";
@@ -29,6 +31,8 @@ export default function EventPage({
     organizationId,
     eventId,
   );
+  const { updateEventStatus, isPending: isStatusPending } =
+    useUpdateEventStatus(organizationId);
 
   if (!me) return null;
 
@@ -48,18 +52,27 @@ export default function EventPage({
     <Main className="grid min-h-0 grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
       <PageHeader
         heading={event.title}
-        subHeading={
-          <p className="font-courier text-sm">
-            {event.type === "EVENT" ? "Événement" : "Sortie"} ·{" "}
-            {event.publishedAt ? "publié" : "brouillon"} · {event.visibility}
-          </p>
-        }
+
         navBack={{
           href: `/organizations/${organization.id}`,
           label: dictionary.nav_back(organization.name),
           landmarkLabel: dictionary.nav_back_landmark,
         }}
-      />
+      >
+        <Toggle
+          checked={!event.deletedAt}
+          labelPosition="right"
+          disabled={isStatusPending}
+          onClick={() =>
+            updateEventStatus({
+              eventId: event.id,
+              status: event.deletedAt ? "PUBLISHED" : "UNPUBLISHED",
+            })
+          }
+        >
+          {dictionary.event_published}
+        </Toggle>
+      </PageHeader>
       <div className="relative mx-auto w-full max-w-3xl overflow-y-auto">
         <EventForm
           key={event.updatedAt}

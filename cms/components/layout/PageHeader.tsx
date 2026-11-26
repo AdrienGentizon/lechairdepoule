@@ -16,7 +16,7 @@ export default function PageHeader({
   navBack?: { href: string; label: string; landmarkLabel: string };
 }) {
   return (
-    <header className="inline-flex items-center gap-4">
+    <header className="inline-flex items-center gap-4 pr-4">
       {navBack && (
         <nav aria-label={navBack.landmarkLabel}>
           <Link href={navBack.href}>

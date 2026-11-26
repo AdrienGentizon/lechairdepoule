@@ -28,6 +28,7 @@ export default async function selectOrganizationEvents({
       publishedAt: string | null;
       createdAt: string;
       updatedAt: string;
+      deletedAt: string | null;
     }[]
   >`
     SELECT
@@ -48,12 +49,12 @@ export default async function selectOrganizationEvents({
       e.visibility,
       e.published_at::text,
       e.created_at::text,
-      e.updated_at::text
+      e.updated_at::text,
+      e.deleted_at::text
     FROM events e JOIN organizations o ON e.organization_id = o.id
     WHERE
       o.id = ${organizationId}
       AND o.managed_by = ${userId}
       AND o.deleted_at IS NULL
-      AND e.deleted_at IS NULL
     ORDER BY e.start_date DESC, e.start_time DESC NULLS LAST;`;
 }

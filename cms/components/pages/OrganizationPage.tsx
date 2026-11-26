@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  PencilSimpleIcon,
-  PlusCircleIcon,
-  TrashIcon,
-} from "@phosphor-icons/react";
+import { PencilSimpleIcon, PlusCircleIcon } from "@phosphor-icons/react";
 
 import { useState } from "react";
 
@@ -18,13 +14,14 @@ import Details from "@cdp/ui/Details";
 import DetailsScrollIntoViewOnOpen from "@cdp/ui/DetailsScrollIntoViewOnOpen";
 import Dialog from "@cdp/ui/Dialog";
 import EventSummary from "@cdp/ui/EventSummary";
+import Toggle from "@cdp/ui/Toggle";
 
 import useMe from "@/components/auth/useMe";
 import EventForm from "@/components/event/EventForm";
 import SelectEventType from "@/components/event/SelectEventType";
 import useCreateEvent from "@/components/event/useCreateEvent";
-import useDeleteEvent from "@/components/event/useDeleteEvent";
 import useOrganizationEvents from "@/components/event/useOrganizationEvents";
+import useUpdateEventStatus from "@/components/event/useUpdateEventStatus";
 import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
 import PageHeader from "@/components/layout/PageHeader";
@@ -41,7 +38,8 @@ export default function OrganizationPage({
   const { events } = useOrganizationEvents(organizationId);
   const { createEvent, isPending, error, reset } =
     useCreateEvent(organizationId);
-  const { deleteEvent } = useDeleteEvent(organizationId);
+  const { updateEventStatus, isPending: isStatusPending } =
+    useUpdateEventStatus(organizationId);
 
   const [step, setStep] = useState<
     | { name: "HIDDEN" }
@@ -160,32 +158,40 @@ export default function OrganizationPage({
                       }}
                     />
                     <div className="flex items-center gap-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
-                      <Link
-                        href={`/organizations/${organizationId}/events/${event.id}`}
-                      >
-                        <PencilSimpleIcon size={24} aria-hidden />
-                        <span className="sr-only">
-                          {dictionary.event_edit(event.title)}
+                      {event.deletedAt ? (
+                        <span aria-disabled className="opacity-50">
+                          <PencilSimpleIcon size={24} aria-hidden />
+                          <span className="sr-only">
+                            {dictionary.event_edit(event.title)}
+                          </span>
                         </span>
-                      </Link>
-                      <button
-                        type="button"
-                        className="text-red-500 transition-colors hover:text-red-300"
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              dictionary.event_delete_confirm(event.title),
-                            )
-                          ) {
-                            deleteEvent(event.id);
-                          }
-                        }}
+                      ) : (
+                        <Link
+                          href={`/organizations/${organizationId}/events/${event.id}`}
+                        >
+                          <PencilSimpleIcon size={24} aria-hidden />
+                          <span className="sr-only">
+                            {dictionary.event_edit(event.title)}
+                          </span>
+                        </Link>
+                      )}
+                      <Toggle
+                        checked={!event.deletedAt}
+                        aria-label={dictionary.event_published_aria(
+                          event.title,
+                        )}
+                        disabled={isStatusPending}
+                        onClick={() =>
+                          updateEventStatus({
+                            eventId: event.id,
+                            status: event.deletedAt
+                              ? "PUBLISHED"
+                              : "UNPUBLISHED",
+                          })
+                        }
                       >
-                        <TrashIcon size={24} aria-hidden />
-                        <span className="sr-only">
-                          {dictionary.event_delete(event.title)}
-                        </span>
-                      </button>
+                        {dictionary.event_published}
+                      </Toggle>
                     </div>
                   </Details.Summary>
                   <Details.Content>

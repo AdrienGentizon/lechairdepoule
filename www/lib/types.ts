@@ -63,7 +63,12 @@ export type Message = {
 
 export type Event = Omit<
   SharedEvent,
-  "imageUrl" | "imageWidth" | "imageHeight" | "visibility" | "publishedAt"
+  | "imageUrl"
+  | "imageWidth"
+  | "imageHeight"
+  | "visibility"
+  | "publishedAt"
+  | "deletedAt"
 > & {
   coverUrl: string | null;
   coverWidth: number | null;

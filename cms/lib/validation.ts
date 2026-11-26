@@ -71,3 +71,9 @@ export const EventUpdateInputSchema = EventInputSchema.omit({
 });
 
 export type EventUpdateInput = z.infer<typeof EventUpdateInputSchema>;
+
+export const EventStatusInputSchema = z.object({
+  status: z.enum(["PUBLISHED", "UNPUBLISHED"]),
+});
+
+export type EventStatusInput = z.infer<typeof EventStatusInputSchema>;

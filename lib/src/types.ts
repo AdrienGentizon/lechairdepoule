@@ -57,4 +57,5 @@ export type Event = {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  deletedAt: string | null;
 };

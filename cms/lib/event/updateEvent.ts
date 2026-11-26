@@ -33,6 +33,7 @@ export default async function updateEvent(
         publishedAt: string | null;
         createdAt: string;
         updatedAt: string;
+        deletedAt: string | null;
       }[]
     >`
     UPDATE events e
@@ -77,6 +78,7 @@ export default async function updateEvent(
       e.visibility,
       e.published_at::text,
       e.created_at::text,
-      e.updated_at::text;`
+      e.updated_at::text,
+      e.deleted_at::text;`
   ).at(0);
 }
