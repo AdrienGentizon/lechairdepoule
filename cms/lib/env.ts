@@ -4,6 +4,10 @@ type Env = {
 
   // DATABASE - NEONDB
   PG_CONNECTION_STRING: string;
+
+  // WWW - WEBHOOK
+  WWW_URL: string;
+  CMS_WEBHOOK_SECRET: string;
 };
 
 let envVars: undefined | Env = undefined;
@@ -19,6 +23,8 @@ export default function env() {
     envVars = {
       RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       PG_CONNECTION_STRING: getEnvVar("PG_CONNECTION_STRING"),
+      WWW_URL: getEnvVar("WWW_URL"),
+      CMS_WEBHOOK_SECRET: getEnvVar("CMS_WEBHOOK_SECRET"),
     };
   }
 

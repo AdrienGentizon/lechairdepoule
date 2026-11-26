@@ -15,6 +15,7 @@ import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import deleteEvent from "@/lib/event/deleteEvent";
 import selectOrganizationEvent from "@/lib/event/selectOrganizationEvent";
 import updateEvent from "@/lib/event/updateEvent";
+import revalidateWww from "@/lib/revalidateWww";
 import { EventUpdateInputSchema } from "@/lib/validation";
 
 export async function GET(
@@ -136,6 +137,9 @@ export async function PATCH(
       await deleteObject({ key: currentEvent.imageKey });
     }
 
+    const revalidation = await revalidateWww();
+    if (!revalidation.success) trace.pushError("www revalidation failed");
+
     const { imageKey, ...event } = updatedEvent;
 
     trace.push({ updatedEvent });
@@ -176,6 +180,9 @@ export async function DELETE(
     if (deletedEvent.imageKey) {
       await deleteObject({ key: deletedEvent.imageKey });
     }
+
+    const revalidation = await revalidateWww();
+    if (!revalidation.success) trace.pushError("www revalidation failed");
 
     trace.push({ deletedEvent });
     trace.log();

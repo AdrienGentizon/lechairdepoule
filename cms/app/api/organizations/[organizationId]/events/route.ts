@@ -15,6 +15,7 @@ import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import insertEvent from "@/lib/event/insertEvent";
 import selectOrganizationEvents from "@/lib/event/selectOrganizationEvents";
 import selectUserOrganization from "@/lib/organization/selectUserOrganization";
+import revalidateWww from "@/lib/revalidateWww";
 import { EventInputSchema } from "@/lib/validation";
 
 export async function GET(
@@ -105,6 +106,9 @@ export async function POST(
       if (cover) await deleteObject({ key: cover.objectKey });
       throw new CustomError("unknown_error");
     }
+
+    const revalidation = await revalidateWww();
+    if (!revalidation.success) trace.pushError("www revalidation failed");
 
     const { imageKey, ...event } = insertedEvent;
 
