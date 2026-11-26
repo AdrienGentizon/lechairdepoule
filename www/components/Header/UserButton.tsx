@@ -13,7 +13,7 @@ function UserButton() {
 
   return (
     <Link
-      href={`/user`}
+      href={`/profile`}
       className="text-foreground cursor-pointer hover:text-purple-300"
     >
       <UserCircleIcon aria-hidden className="size-8" />
