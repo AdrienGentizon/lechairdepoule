@@ -12,12 +12,12 @@ function getConversationFromRaw(
     coverWidth: string | null;
     coverHeight: string | null;
     type: string;
-    is_pinned: boolean;
-    created_by: string;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-    reported_at: string | null;
+    isPinned: boolean;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    reportedAt: string | null;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
 ): Conversation {
@@ -29,12 +29,12 @@ function getConversationFromRaw(
     coverUrl: raw.coverUrl,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
-    isPinned: raw.is_pinned,
+    isPinned: raw.isPinned,
     createdBy,
-    createdAt: raw.created_at,
-    updatedAt: raw.updated_at,
-    deletedAt: raw.deleted_at,
-    reportedAt: raw.reported_at,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt,
+    deletedAt: raw.deletedAt,
+    reportedAt: raw.reportedAt,
     messages: [],
   };
 }
@@ -66,12 +66,12 @@ export default async function insertConversation({
           coverWidth: string | null;
           coverHeight: string | null;
           type: string;
-          is_pinned: boolean;
-          created_by: string;
-          created_at: string;
-          updated_at: string;
-          deleted_at: string | null;
-          reported_at: string | null;
+          isPinned: boolean;
+          createdBy: string;
+          createdAt: string;
+          updatedAt: string;
+          deletedAt: string | null;
+          reportedAt: string | null;
         }[]
       >`
     INSERT INTO

@@ -10,14 +10,14 @@ function getEventFromRaw(
     coverUrl: string | null;
     coverWidth: string | null;
     coverHeight: string | null;
-    starts_at: string;
-    ends_at: string | null;
+    startsAt: string;
+    endsAt: string | null;
     timezone: string;
     price: string | null;
     venue: string | null;
     url: string | null;
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
   },
   createdBy: { id: string; pseudo: string; bannedAt: string | null },
 ): Event {
@@ -29,14 +29,14 @@ function getEventFromRaw(
     coverUrl: raw.coverUrl,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
-    startsAt: raw.starts_at,
-    endsAt: raw.ends_at,
+    startsAt: raw.startsAt,
+    endsAt: raw.endsAt,
     timezone: raw.timezone,
     price: raw.price,
     venue: raw.venue,
     url: raw.url,
-    createdAt: raw.created_at,
-    updatedAt: raw.updated_at,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt,
     createdBy,
   };
 }
@@ -82,14 +82,14 @@ export default async function insertEvent({
         coverUrl: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
-        starts_at: string;
-        ends_at: string | null;
+        startsAt: string;
+        endsAt: string | null;
         timezone: string;
         price: string | null;
         venue: string | null;
         url: string | null;
-        created_at: string;
-        updated_at: string;
+        createdAt: string;
+        updatedAt: string;
       }[]
     >`
     INSERT INTO

@@ -35,13 +35,13 @@ export type BannedUser = User & {
 export type RawMessage = {
   id: string;
   body: string;
-  created_at: string;
-  updated_at: string | null;
-  reported_at: string | null;
-  conversation_id: string;
-  parent_message_id: string | null;
-  user_id: string;
-  reported_by: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+  reportedAt: string | null;
+  conversationId: string;
+  parentMessageId: string | null;
+  userId: string;
+  reportedBy: string | null;
 };
 
 export type Message = {
