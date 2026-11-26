@@ -20,11 +20,15 @@ type Env = {
   PUSHER_KEY: string;
   PUSHER_SECRET: string;
   PUSHER_CLUSTER: string;
+
+  // LOGS - AXIOM
+  LOGS_API_KEY: string;
+  LOGS_API_URL: string;
 };
 
 let envVars: undefined | Env = undefined;
 
-function getEnvVar(key: string, defaultValue = "", required = true) {
+function getEnvVar(key: keyof Env, defaultValue = "", required = true) {
   if (required && !process.env[key])
     throw new Error(`[Error] getEnvVar: ${key} is required.`);
   return process.env[key] ?? defaultValue;
@@ -45,6 +49,8 @@ export default function env() {
       PUSHER_KEY: getEnvVar("PUSHER_KEY"),
       PUSHER_SECRET: getEnvVar("PUSHER_SECRET"),
       PUSHER_CLUSTER: getEnvVar("PUSHER_CLUSTER"),
+      LOGS_API_KEY: getEnvVar("LOGS_API_KEY", "", false),
+      LOGS_API_URL: getEnvVar("LOGS_API_URL", "", false),
     };
   }
 

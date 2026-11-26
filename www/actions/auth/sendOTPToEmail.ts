@@ -2,14 +2,13 @@
 
 import z from "zod";
 
-import { toObfuscatedUser } from "@cdp/lib/trace";
+import Trace, { toObfuscatedUser } from "@cdp/lib/trace";
 import { Result } from "@cdp/lib/types";
 import OTPEmail from "@cdp/ui/emails/OTPEmail";
 
 import { OTP_EXPIRES_IN_SECONDS, auth } from "@/lib/auth";
 import sendEmail from "@/lib/mailing/sendEmail";
 import { obfuscateEmail } from "@/lib/string";
-import Trace from "@/lib/trace";
 
 export default async function sendOTPToEmail(inputs: {
   email: string;
