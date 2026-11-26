@@ -1,7 +1,5 @@
 import z from "zod";
 
-import { ALLOWED_IMAGE_MIMES, MAX_IMAGE_SIZE_IN_BYTES } from "@cdp/lib/file";
-
 export function nullableString(max: number) {
   return z
     .string()
@@ -32,11 +30,6 @@ export const OrganizationInputSchema = z.object({
 });
 
 export type OrganizationInput = z.infer<typeof OrganizationInputSchema>;
-
-export const ImageUploadInputSchema = z.object({
-  contentType: z.enum(ALLOWED_IMAGE_MIMES),
-  size: z.number().int().positive().max(MAX_IMAGE_SIZE_IN_BYTES),
-});
 
 export const EventInputSchema = z.object({
   type: z.enum(["EVENT", "RELEASE"]),

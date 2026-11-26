@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import CustomError from "@cdp/lib/CustomError";
+import uploadImage from "@cdp/lib/image/uploadImage";
 
-import uploadImage from "@/lib/image/uploadImage";
 import { Event } from "@/lib/types";
 import { EventInput } from "@/lib/validation";
 
@@ -38,7 +38,10 @@ export default function useCreateEvent(
             ...inputs,
             cover:
               cover.action === "REPLACE"
-                ? await uploadImage(organizationId, cover.file)
+                ? await uploadImage({
+                    file: cover.file,
+                    uploadUrlEndpoint: `/api/organizations/${organizationId}/images/upload-url`,
+                  })
                 : null,
           } satisfies EventInput),
         },

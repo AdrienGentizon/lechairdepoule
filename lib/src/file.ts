@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const ALLOWED_IMAGE_TYPES = [
   { mime: "image/jpeg", extensions: [".jpg", ".jpeg"] },
   { mime: "image/png", extensions: [".png"] },
@@ -13,3 +15,8 @@ export function isAllowedImageMime(
 ): mime is (typeof ALLOWED_IMAGE_MIMES)[number] {
   return ALLOWED_IMAGE_MIMES.some((allowedMime) => allowedMime === mime);
 }
+
+export const ImageUploadInputSchema = z.object({
+  contentType: z.enum(ALLOWED_IMAGE_MIMES),
+  size: z.number().int().positive().max(MAX_IMAGE_SIZE_IN_BYTES),
+});

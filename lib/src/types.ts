@@ -21,6 +21,11 @@ export type ErrorKeys =
 export type Result<T = unknown> =
   { success: true; data: T } | { success: false; error: ErrorKeys };
 
+export type ImageUploadUrl = {
+  objectKey: string;
+  url: string;
+};
+
 export type User = {
   id: string;
   pseudo: string | null;

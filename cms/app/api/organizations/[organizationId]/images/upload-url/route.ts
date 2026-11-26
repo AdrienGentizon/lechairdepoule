@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import CustomError from "@cdp/lib/CustomError";
+import { ImageUploadInputSchema } from "@cdp/lib/file";
 import getLoggableUser from "@cdp/lib/getLoggableUser";
+import { signUploadUrl, toOrganizationObjectKey } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
+import { ImageUploadUrl } from "@cdp/lib/types";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import selectUserOrganization from "@/lib/organization/selectUserOrganization";
-import { signUploadUrl, toOrganizationObjectKey } from "@/lib/s3";
-import { ImageUploadUrl } from "@/lib/types";
-import { ImageUploadInputSchema } from "@/lib/validation";
 
 export async function POST(
   req: NextRequest,

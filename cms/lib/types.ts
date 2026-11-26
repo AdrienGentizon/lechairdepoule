@@ -38,9 +38,4 @@ export type Event = {
   updatedAt: string;
 };
 
-export type ImageUploadUrl = {
-  objectKey: string;
-  url: string;
-};
-
 export type Me = User & { organizations: Organization[] };

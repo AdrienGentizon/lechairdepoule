@@ -1,24 +1,12 @@
-import "server-only";
-
 import CustomError from "@cdp/lib/CustomError";
 import { MAX_IMAGE_SIZE_IN_BYTES, isAllowedImageMime } from "@cdp/lib/file";
-
-import {
-  deleteObject,
-  isOrganizationObjectKey,
-  selectObjectMetadata,
-} from "@/lib/s3";
+import { deleteObject, selectObjectMetadata } from "@cdp/lib/s3";
 
 export default async function assertUploadedImage(inputs: {
   objectKey: string;
-  organizationId: string;
+  keyPrefix: string;
 }) {
-  if (
-    !isOrganizationObjectKey({
-      key: inputs.objectKey,
-      organizationId: inputs.organizationId,
-    })
-  ) {
+  if (!inputs.objectKey.startsWith(inputs.keyPrefix)) {
     throw new CustomError("unauthorized", {}, 403);
   }
 

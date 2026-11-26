@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 import CustomError from "@cdp/lib/CustomError";
 import getLoggableUser from "@cdp/lib/getLoggableUser";
+import assertUploadedImage from "@cdp/lib/image/assertUploadedImage";
+import {
+  deleteObject,
+  toOrganizationObjectKeyPrefix,
+  toPublicUrl,
+} from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import selectOrganizationEvent from "@/lib/event/selectOrganizationEvent";
 import updateEvent from "@/lib/event/updateEvent";
-import assertUploadedImage from "@/lib/image/assertUploadedImage";
-import { deleteObject, toPublicUrl } from "@/lib/s3";
 import { Event } from "@/lib/types";
 import { EventUpdateInputSchema } from "@/lib/validation";
 
@@ -80,7 +84,10 @@ export async function PATCH(
 
     if (cover.action === "REPLACE") {
       trace.push({ objectKey: cover.objectKey });
-      await assertUploadedImage({ objectKey: cover.objectKey, organizationId });
+      await assertUploadedImage({
+        objectKey: cover.objectKey,
+        keyPrefix: toOrganizationObjectKeyPrefix(organizationId),
+      });
     }
 
     const image =
