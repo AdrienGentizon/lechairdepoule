@@ -1,3 +1,5 @@
+import { Event as SharedEvent } from "@cdp/lib/types";
+
 export type User = {
   id: string;
   pseudo: string | null;
@@ -59,26 +61,13 @@ export type Message = {
   };
 };
 
-export type Event = {
-  id: string;
-  type: "EVENT" | "RELEASE";
-  title: string;
-  description: string | null;
+export type Event = Omit<
+  SharedEvent,
+  "imageUrl" | "imageWidth" | "imageHeight" | "visibility" | "publishedAt"
+> & {
   coverUrl: string | null;
   coverWidth: number | null;
   coverHeight: number | null;
-  startDate: string;
-  startTime: string | null;
-  endDate: string | null;
-  endTime: string | null;
-  startsAt: string;
-  endsAt: string | null;
-  timezone: string;
-  price: string | null;
-  venue: string | null;
-  url: string | null;
-  createdAt: string;
-  updatedAt: string;
   createdBy: {
     id: string;
     pseudo: string;
@@ -126,14 +115,6 @@ export function isConversationType(
     type as Conversation["type"],
   );
 }
-
-export type PublicConversation = Omit<
-  Conversation,
-  "messages" | "reportedAt" | "isPinned" | "createdBy"
-> & {
-  createdBy: Omit<Conversation["createdBy"], "bannedAt">;
-  startsAt: string;
-};
 
 export type SimpleConversation = Omit<Conversation, "messages" | "createdBy">;
 

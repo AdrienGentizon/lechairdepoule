@@ -16,26 +16,4 @@ export type Organization = {
   updatedAt: string;
 };
 
-export type Event = {
-  id: string;
-  type: "EVENT" | "RELEASE";
-  title: string;
-  description: string | null;
-  imageUrl: string | null;
-  imageWidth: number | null;
-  imageHeight: number | null;
-  startDate: string;
-  startTime: string | null;
-  endDate: string | null;
-  endTime: string | null;
-  timezone: string;
-  price: string | null;
-  venue: string | null;
-  url: string | null;
-  visibility: string;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
 export type Me = User & { organizations: Organization[] };

@@ -10,9 +10,10 @@ export async function GET(req: NextRequest) {
 
   const title = searchParams.get("title");
   const startDate = searchParams.get("startDate");
+  const timezone = searchParams.get("timezone");
 
-  if (!title || !startDate) {
-    trace.pushError("missing required params (title, startDate)");
+  if (!title || !startDate || !timezone) {
+    trace.pushError("missing required params (title, startDate, timezone)");
     trace.log(400);
     return new Response(null, { status: 400 });
   }
@@ -20,9 +21,10 @@ export async function GET(req: NextRequest) {
   const ics = buildIcsCalendar({
     title,
     startDate,
+    startTime: searchParams.get("startTime"),
     endDate: searchParams.get("endDate"),
-    startsAt: searchParams.get("startsAt"),
-    endsAt: searchParams.get("endsAt"),
+    endTime: searchParams.get("endTime"),
+    timezone,
   });
 
   trace.push({ ics });

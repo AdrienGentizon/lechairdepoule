@@ -40,8 +40,8 @@ export default function ContentfulEventItem({
       aria={{
         title: [
           event.title,
-          new Date(event.startsAt).toLocaleDateString(LOCALE, {
-            timeZone: event.timezone,
+          new Date(event.startDate).toLocaleDateString(LOCALE, {
+            timeZone: "UTC",
             weekday: "long",
             day: "numeric",
             month: "long",

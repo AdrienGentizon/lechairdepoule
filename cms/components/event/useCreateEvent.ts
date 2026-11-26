@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import CustomError from "@cdp/lib/CustomError";
 import uploadImage from "@cdp/lib/image/uploadImage";
+import { Event } from "@cdp/lib/types";
 
-import { Event } from "@/lib/types";
 import { EventInput } from "@/lib/validation";
 
 export default function useCreateEvent(

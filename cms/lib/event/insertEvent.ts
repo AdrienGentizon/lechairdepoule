@@ -35,7 +35,7 @@ export default async function insertEvent(
       }[]
     >`
     INSERT INTO
-      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, starts_at, ends_at, timezone, price, venue, url, organization_id, venue_id, created_by, created_at, updated_at)
+      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, timezone, price, venue, url, organization_id, venue_id, created_by, created_at, updated_at)
     SELECT
       ${inputs.type},
       ${inputs.title},
@@ -47,8 +47,6 @@ export default async function insertEvent(
       ${inputs.startTime}::time,
       ${inputs.endDate}::date,
       ${inputs.endTime}::time,
-      (${inputs.startDate}::date + COALESCE(${inputs.startTime}::time, '00:00')) AT TIME ZONE ${inputs.timezone},
-      (${inputs.endDate}::date + COALESCE(${inputs.endTime}::time, '00:00')) AT TIME ZONE ${inputs.timezone},
       ${inputs.timezone},
       ${inputs.price},
       ${inputs.venue},
@@ -74,8 +72,7 @@ export default async function insertEvent(
       start_date::text,
       to_char(start_time, 'HH24:MI') AS start_time,
       end_date::text,
-      to_char(end_time, 'HH24:MI') AS end_time,
-      timezone,
+      to_char(end_time, 'HH24:MI') AS end_time,      timezone,
       price,
       venue,
       url,

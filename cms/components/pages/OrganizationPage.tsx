@@ -7,6 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
+import { Event } from "@cdp/lib/types";
 import Button from "@cdp/ui/Button";
 import Dialog from "@cdp/ui/Dialog";
 import Table from "@cdp/ui/Table";
@@ -19,7 +20,6 @@ import useOrganizationEvents from "@/components/event/useOrganizationEvents";
 import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
 import PageHeader from "@/components/layout/PageHeader";
-import { Event } from "@/lib/types";
 
 const TOS_HREF = "https://lechairdepoule.fr/forum/cgu";
 

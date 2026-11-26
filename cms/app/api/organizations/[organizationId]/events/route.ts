@@ -9,12 +9,12 @@ import {
   toPublicUrl,
 } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
+import { Event } from "@cdp/lib/types";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import insertEvent from "@/lib/event/insertEvent";
 import selectOrganizationEvents from "@/lib/event/selectOrganizationEvents";
 import selectUserOrganization from "@/lib/organization/selectUserOrganization";
-import { Event } from "@/lib/types";
 import { EventInputSchema } from "@/lib/validation";
 
 export async function GET(

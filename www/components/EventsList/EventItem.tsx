@@ -9,34 +9,28 @@ import EventUrl from "../ConversationsList/EventUrl";
 import EventItemActions from "./EventItemActions";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
-function Datestamp({
-  startsAt,
-  timezone,
-}: {
-  startsAt: string;
-  timezone: string;
-}) {
+function Datestamp({ startDate }: { startDate: string }) {
   return (
     <time
       aria-hidden
-      dateTime={startsAt}
+      dateTime={startDate}
       className="flex h-full min-h-16 flex-col items-center justify-center uppercase leading-none"
     >
       <span className="text-xs font-light leading-none">
-        {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: timezone,
+        {new Date(startDate).toLocaleDateString(LOCALE, {
+          timeZone: "UTC",
           weekday: "short",
         })}
       </span>
       <span className="text-4xl font-black leading-none">
-        {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: timezone,
+        {new Date(startDate).toLocaleDateString(LOCALE, {
+          timeZone: "UTC",
           day: "2-digit",
         })}
       </span>
       <span className="text-sm font-black leading-none">
-        {new Date(startsAt).toLocaleDateString(LOCALE, {
-          timeZone: timezone,
+        {new Date(startDate).toLocaleDateString(LOCALE, {
+          timeZone: "UTC",
           month: "short",
         })}
       </span>
@@ -118,7 +112,7 @@ export default function EventItem({
       >
         <summary className="grid grid-cols-[5rem_1fr] gap-2 pr-4">
           <span className="sr-only">{aria.title}</span>
-          <Datestamp startsAt={event.startsAt} timezone={event.timezone} />
+          <Datestamp startDate={event.startDate} />
           <div
             aria-hidden
             className="flex flex-col justify-center gap-1.5 leading-none"
@@ -146,9 +140,10 @@ export default function EventItem({
           ics={{
             title: summary.title,
             startDate: event.startDate,
+            startTime: event.startTime,
             endDate: event.endDate,
-            startsAt: event.startTime ? event.startsAt : null,
-            endsAt: event.endTime ? event.endsAt : null,
+            endTime: event.endTime,
+            timezone: event.timezone,
           }}
         />
         <div className="flex flex-col gap-4 p-4">

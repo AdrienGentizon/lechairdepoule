@@ -46,8 +46,6 @@ function toEvent(raw: RawEvent) {
     startTime: start.time,
     endDate: null,
     endTime: null,
-    startsAt: raw.date,
-    endsAt: null,
     timezone: DANGEROUS_FALLBACK_TZ,
     price: null,
     venue: null,
@@ -127,8 +125,8 @@ export default async function getContentfulEvents() {
       )
     )?.data?.eventCollection.items ?? []
   )
-    .map(toEvent)
     .sort((a, b) => {
-      return new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime();
-    });
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    })
+    .map(toEvent);
 }

@@ -17,8 +17,6 @@ export default async function selectEventFromId(eventId: string) {
         startTime: string | null;
         endDate: string | null;
         endTime: string | null;
-        startsAt: string;
-        endsAt: string | null;
         timezone: string;
         price: string | null;
         venue: string | null;
@@ -42,8 +40,6 @@ export default async function selectEventFromId(eventId: string) {
       to_char(e.start_time, 'HH24:MI') as "startTime",
       e.end_date::text as "endDate",
       to_char(e.end_time, 'HH24:MI') as "endTime",
-      e.starts_at::text as "startsAt",
-      e.ends_at::text as "endsAt",
       e.timezone,
       e.price,
       e.venue,

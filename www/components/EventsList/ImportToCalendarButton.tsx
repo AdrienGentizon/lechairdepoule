@@ -5,19 +5,21 @@ import { CalendarIcon } from "@phosphor-icons/react";
 type ICS = {
   title: string;
   startDate: string;
+  startTime: string | null;
   endDate: string | null;
-  startsAt: string | null;
-  endsAt: string | null;
+  endTime: string | null;
+  timezone: string;
 };
 
 function buildHref(ics: ICS) {
   const params = new URLSearchParams({
     title: ics.title,
     startDate: ics.startDate,
+    timezone: ics.timezone,
   });
+  if (ics.startTime) params.set("startTime", ics.startTime);
   if (ics.endDate) params.set("endDate", ics.endDate);
-  if (ics.startsAt) params.set("startsAt", ics.startsAt);
-  if (ics.endsAt) params.set("endsAt", ics.endsAt);
+  if (ics.endTime) params.set("endTime", ics.endTime);
 
   return `/api/ics?${params.toString()}`;
 }

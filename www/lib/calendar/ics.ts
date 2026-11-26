@@ -9,6 +9,10 @@ function toIcsDate(dateStr: string): string {
   );
 }
 
+function toIcsLocalDateTime(localDateTime: Date): string {
+  return localDateTime.toISOString().replace(/[-:]/g, "").split(".")[0];
+}
+
 function toIcsAllDayDate(date: string): string {
   return date.replace(/-/g, "");
 }
@@ -29,32 +33,37 @@ function escapeIcsText(text: string): string {
 
 function getIcsTimeRange(inputs: {
   startDate: string;
+  startTime: string | null;
   endDate: string | null;
-  startsAt: string | null;
-  endsAt: string | null;
+  endTime: string | null;
+  timezone: string;
 }) {
-  if (!inputs.startsAt) {
+  if (!inputs.startTime) {
     return [
       `DTSTART;VALUE=DATE:${toIcsAllDayDate(inputs.startDate)}`,
       `DTEND;VALUE=DATE:${toIcsAllDayDate(getNextDay(inputs.endDate ?? inputs.startDate))}`,
     ];
   }
 
-  const end =
-    inputs.endsAt ??
-    new Date(
-      new Date(inputs.startsAt).getTime() + ONE_HOUR_IN_MS,
-    ).toISOString();
+  const localStart = new Date(`${inputs.startDate}T${inputs.startTime}:00Z`);
+  const localEnd =
+    inputs.endDate && inputs.endTime
+      ? new Date(`${inputs.endDate}T${inputs.endTime}:00Z`)
+      : new Date(localStart.getTime() + ONE_HOUR_IN_MS);
 
-  return [`DTSTART:${toIcsDate(inputs.startsAt)}`, `DTEND:${toIcsDate(end)}`];
+  return [
+    `DTSTART;TZID=${inputs.timezone}:${toIcsLocalDateTime(localStart)}`,
+    `DTEND;TZID=${inputs.timezone}:${toIcsLocalDateTime(localEnd)}`,
+  ];
 }
 
 export function buildIcsCalendar(inputs: {
   title: string;
   startDate: string;
+  startTime: string | null;
   endDate: string | null;
-  startsAt: string | null;
-  endsAt: string | null;
+  endTime: string | null;
+  timezone: string;
 }): string {
   const exportedAt = toIcsDate(new Date().toISOString());
   const uid = createHash("sha256")

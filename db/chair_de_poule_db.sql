@@ -146,7 +146,7 @@ CREATE TABLE events (
     image_width INTEGER,
     image_height INTEGER,
     image_key TEXT,
-    starts_at TIMESTAMPTZ NOT NULL,
+    starts_at TIMESTAMPTZ,
     ends_at TIMESTAMPTZ,
     start_date DATE,
     start_time TIME,

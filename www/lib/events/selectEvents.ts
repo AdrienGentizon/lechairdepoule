@@ -24,8 +24,6 @@ export default async function selectEvents({
         startTime: string | null;
         endDate: string | null;
         endTime: string | null;
-        startsAt: string;
-        endsAt: string | null;
         timezone: string;
         price: string | null;
         venue: string | null;
@@ -49,8 +47,6 @@ export default async function selectEvents({
       to_char(e.start_time, 'HH24:MI') as "startTime",
       e.end_date::text as "endDate",
       to_char(e.end_time, 'HH24:MI') as "endTime",
-      e.starts_at::text as "startsAt",
-      e.ends_at::text as "endsAt",
       e.timezone,
       e.price,
       e.venue,
@@ -67,11 +63,12 @@ export default async function selectEvents({
       e.deleted_at IS NULL
       AND (
         ${to ?? null}::timestamptz IS NULL
-        OR (e.starts_at AT TIME ZONE e.timezone)::date <= (${to ?? null}::timestamptz AT TIME ZONE 'UTC')::date
+        OR e.start_date <= (${to ?? null}::timestamptz AT TIME ZONE 'UTC')::date
       )
-      AND (COALESCE(e.ends_at, e.starts_at) AT TIME ZONE e.timezone)::date >= (${from}::timestamptz AT TIME ZONE 'UTC')::date
+      AND COALESCE(e.end_date, e.start_date) >= (${from}::timestamptz AT TIME ZONE 'UTC')::date
     ORDER BY
-      e.starts_at ASC;`
+      e.start_date ASC,
+      e.start_time ASC NULLS FIRST;`
   ).map(
     ({
       type,

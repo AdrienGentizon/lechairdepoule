@@ -11,6 +11,7 @@ import { useState } from "react";
 
 import z from "zod";
 
+import { Event } from "@cdp/lib/types";
 import Button, { buttonClassName } from "@cdp/ui/Button";
 import {
   ErrorMessage,
@@ -22,7 +23,6 @@ import {
 import UploadFileButton from "@cdp/ui/UploadFileButton";
 import cn from "@cdp/ui/cn";
 
-import { Event } from "@/lib/types";
 import { EventInput, EventInputSchema, frErrorMap } from "@/lib/validation";
 
 const EVENT_TYPE_LABELS = {

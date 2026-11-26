@@ -2,9 +2,8 @@
 
 import { ArrowRightIcon } from "@phosphor-icons/react";
 
+import { Event } from "@cdp/lib/types";
 import Button from "@cdp/ui/Button";
-
-import { Event } from "@/lib/types";
 
 const EVENT_TYPES = [
   {

@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import CustomError from "@cdp/lib/CustomError";
-
-import { Event } from "@/lib/types";
+import { Event } from "@cdp/lib/types";
 
 export default function useOrganizationEvents(organizationId: string) {
   const {

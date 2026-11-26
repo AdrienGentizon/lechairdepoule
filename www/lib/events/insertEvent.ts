@@ -16,8 +16,6 @@ function getEventFromRaw(
     startTime: string | null;
     endDate: string | null;
     endTime: string | null;
-    startsAt: string;
-    endsAt: string | null;
     timezone: string;
     price: string | null;
     venue: string | null;
@@ -39,8 +37,6 @@ function getEventFromRaw(
     startTime: raw.startTime,
     endDate: raw.endDate,
     endTime: raw.endTime,
-    startsAt: raw.startsAt,
-    endsAt: raw.endsAt,
     timezone: raw.timezone,
     price: raw.price,
     venue: raw.venue,
@@ -100,8 +96,6 @@ export default async function insertEvent({
         startTime: string | null;
         endDate: string | null;
         endTime: string | null;
-        startsAt: string;
-        endsAt: string | null;
         timezone: string;
         price: string | null;
         venue: string | null;
@@ -111,7 +105,7 @@ export default async function insertEvent({
       }[]
     >`
     INSERT INTO
-      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
+      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, timezone, price, venue, url, created_by, created_at, updated_at)
     VALUES (
       ${type},
       ${title},
@@ -123,8 +117,6 @@ export default async function insertEvent({
       ${startTime}::time,
       ${endDate}::date,
       ${endTime}::time,
-      (${startDate}::date + COALESCE(${startTime}::time, '00:00')) AT TIME ZONE ${timezone},
-      (${endDate}::date + COALESCE(${endTime}::time, '00:00')) AT TIME ZONE ${timezone},
       ${timezone},
       ${price ?? null},
       ${venue ?? null},
@@ -145,8 +137,6 @@ export default async function insertEvent({
       to_char(start_time, 'HH24:MI') AS start_time,
       end_date::text,
       to_char(end_time, 'HH24:MI') AS end_time,
-      starts_at::text,
-      ends_at::text,
       timezone,
       price,
       venue,

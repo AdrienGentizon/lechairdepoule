@@ -18,10 +18,6 @@ export const metadata: Metadata = {
 export default async function AgendaPage() {
   const events = await getCachedEvents();
 
-  const sortedEvents = events.toSorted((a, b) =>
-    a.startsAt.localeCompare(b.startsAt),
-  );
-
   return (
     <>
       <h1 className="sr-only">Agenda hors les murs</h1>
@@ -31,7 +27,7 @@ export default async function AgendaPage() {
           body: "Les prochaines animations seront annoncées bientôt.",
         }}
       >
-        {sortedEvents.map((event) => {
+        {events.map((event) => {
           return (
             <EventItem
               key={event.id}
@@ -63,8 +59,8 @@ export default async function AgendaPage() {
                 title: [
                   event.title,
                   event.venue,
-                  new Date(event.startsAt).toLocaleDateString(LOCALE, {
-                    timeZone: event.timezone,
+                  new Date(event.startDate).toLocaleDateString(LOCALE, {
+                    timeZone: "UTC",
                     weekday: "long",
                     day: "numeric",
                     month: "long",

@@ -46,8 +46,6 @@ export default async function updateEventFromId({
         startTime: string | null;
         endDate: string | null;
         endTime: string | null;
-        startsAt: string;
-        endsAt: string | null;
         timezone: string;
         price: string | null;
         venue: string | null;
@@ -65,8 +63,6 @@ export default async function updateEventFromId({
       start_time = ${startTime}::time,
       end_date = ${endDate}::date,
       end_time = ${endTime}::time,
-      starts_at = (${startDate}::date + COALESCE(${startTime}::time, '00:00')) AT TIME ZONE ${timezone},
-      ends_at = (${endDate}::date + COALESCE(${endTime}::time, '00:00')) AT TIME ZONE ${timezone},
       timezone = ${timezone},
       price = ${price},
       venue = ${venue},
@@ -88,8 +84,6 @@ export default async function updateEventFromId({
       to_char(start_time, 'HH24:MI') AS "startTime",
       end_date::text AS "endDate",
       to_char(end_time, 'HH24:MI') AS "endTime",
-      starts_at::text AS "startsAt",
-      ends_at::text AS "endsAt",
       timezone,
       price,
       venue,
