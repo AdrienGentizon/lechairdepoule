@@ -75,7 +75,7 @@ export default function OrganizationPage({
             setStep(open ? { name: "EVENT_TYPE" } : { name: "HIDDEN" });
           }}
         >
-          <Dialog.Trigger render={Button}>
+          <Dialog.Trigger render={<Button />}>
             <PlusCircleIcon size={18} aria-hidden />
             Créer un événement
           </Dialog.Trigger>

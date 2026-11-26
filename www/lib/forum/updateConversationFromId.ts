@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { isConversationType } from "../types";
 
@@ -20,7 +22,7 @@ export default async function updateConversationFromId({
         description: string;
         type: string;
         isPinned: boolean;
-        coverUrl: string | null;
+        coverKey: string | null;
         coverWidth: number | null;
         coverHeight: number | null;
         updatedAt: string;
@@ -43,7 +45,7 @@ export default async function updateConversationFromId({
           title,
           description,
           type,
-          image_url AS "coverUrl",
+          image_key AS "coverKey",
           image_width::integer AS "coverWidth",
           image_height::integer AS "coverHeight",
           is_pinned AS "isPinned",
@@ -51,9 +53,10 @@ export default async function updateConversationFromId({
           deleted_at::text AS "deletedAt",
           reported_at::text AS "reportedAt"`
   )
-    .map(({ type, ...conversation }) => ({
+    .map(({ type, coverKey, ...conversation }) => ({
       ...conversation,
       type: isConversationType(type) ? type : "TOPIC",
+      coverUrl: coverKey ? toPublicUrl(coverKey) : null,
     }))
     .at(0);
 }

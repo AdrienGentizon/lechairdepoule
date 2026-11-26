@@ -7,7 +7,6 @@ export default async function updateEvent(
     organizationId: string;
     userId: string;
     imageKey: string | null;
-    imageUrl: string | null;
     imageWidth: number | null;
     imageHeight: number | null;
   },
@@ -20,7 +19,6 @@ export default async function updateEvent(
         title: string;
         description: string | null;
         imageKey: string | null;
-        imageUrl: string | null;
         imageWidth: number | null;
         imageHeight: number | null;
         startDate: string;
@@ -52,7 +50,6 @@ export default async function updateEvent(
       venue = ${inputs.venue},
       url = ${inputs.url},
       image_key = ${inputs.imageKey},
-      image_url = ${inputs.imageUrl},
       image_width = ${inputs.imageWidth}::int,
       image_height = ${inputs.imageHeight}::int,
       updated_at = NOW()
@@ -70,7 +67,6 @@ export default async function updateEvent(
       e.title,
       e.description,
       e.image_key,
-      e.image_url,
       e.image_width,
       e.image_height,
       e.start_date::text,

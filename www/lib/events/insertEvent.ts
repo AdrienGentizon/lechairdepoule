@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { Event, isEventType } from "../types";
 
@@ -7,9 +9,13 @@ function getEventFromRaw(
     type: string;
     title: string;
     description: string | null;
-    coverUrl: string | null;
+    coverKey: string | null;
     coverWidth: string | null;
     coverHeight: string | null;
+    startDate: string;
+    startTime: string | null;
+    endDate: string | null;
+    endTime: string | null;
     startsAt: string;
     endsAt: string | null;
     timezone: string;
@@ -26,9 +32,13 @@ function getEventFromRaw(
     type: isEventType(raw.type) ? raw.type : "EVENT",
     title: raw.title,
     description: raw.description,
-    coverUrl: raw.coverUrl,
+    coverUrl: raw.coverKey ? toPublicUrl(raw.coverKey) : null,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
+    startDate: raw.startDate,
+    startTime: raw.startTime,
+    endDate: raw.endDate,
+    endTime: raw.endTime,
     startsAt: raw.startsAt,
     endsAt: raw.endsAt,
     timezone: raw.timezone,
@@ -47,8 +57,10 @@ export default async function insertEvent({
   description,
   cover,
   user,
-  startsAt,
-  endsAt,
+  startDate,
+  startTime,
+  endDate,
+  endTime,
   timezone,
   price,
   venue,
@@ -58,13 +70,15 @@ export default async function insertEvent({
   title: string;
   description: string;
   cover?: {
-    url: string;
+    objectKey: string;
     width: number;
     height: number;
   };
   user: { id: string; pseudo: string; bannedAt: string | null };
-  startsAt: string;
-  endsAt?: string | null;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
   timezone: string;
   price?: string | null;
   venue?: string | null;
@@ -79,9 +93,13 @@ export default async function insertEvent({
         type: string;
         title: string;
         description: string | null;
-        coverUrl: string | null;
+        coverKey: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
+        startDate: string;
+        startTime: string | null;
+        endDate: string | null;
+        endTime: string | null;
         startsAt: string;
         endsAt: string | null;
         timezone: string;
@@ -93,17 +111,40 @@ export default async function insertEvent({
       }[]
     >`
     INSERT INTO
-      events (type, title, description, image_url, image_width, image_height, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
-    VALUES
-      (${type}, ${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${startsAt}, ${endsAt ?? null}, ${timezone}, ${price ?? null}, ${venue ?? null}, ${url ?? null}, ${user.id}, ${now}, ${now})
+      events (type, title, description, image_key, image_width, image_height, start_date, start_time, end_date, end_time, starts_at, ends_at, timezone, price, venue, url, created_by, created_at, updated_at)
+    VALUES (
+      ${type},
+      ${title},
+      ${description},
+      ${cover?.objectKey ?? null},
+      ${cover?.width ?? null},
+      ${cover?.height ?? null},
+      ${startDate}::date,
+      ${startTime}::time,
+      ${endDate}::date,
+      ${endTime}::time,
+      (${startDate}::date + COALESCE(${startTime}::time, '00:00')) AT TIME ZONE ${timezone},
+      (${endDate}::date + COALESCE(${endTime}::time, '00:00')) AT TIME ZONE ${timezone},
+      ${timezone},
+      ${price ?? null},
+      ${venue ?? null},
+      ${url ?? null},
+      ${user.id},
+      ${now},
+      ${now}
+    )
     RETURNING
       id::text,
       type,
       title,
       description,
-      image_url as "coverUrl",
+      image_key as "coverKey",
       image_width as "coverWidth",
       image_height as "coverHeight",
+      start_date::text,
+      to_char(start_time, 'HH24:MI') AS start_time,
+      end_date::text,
+      to_char(end_time, 'HH24:MI') AS end_time,
       starts_at::text,
       ends_at::text,
       timezone,

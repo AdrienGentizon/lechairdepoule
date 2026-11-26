@@ -1,9 +1,22 @@
 import { createHash } from "crypto";
 
+const ONE_HOUR_IN_MS = 60 * 60 * 1000;
+const ONE_DAY_IN_MS = 24 * ONE_HOUR_IN_MS;
+
 function toIcsDate(dateStr: string): string {
   return (
     new Date(dateStr).toISOString().replace(/[-:]/g, "").split(".")[0] + "Z"
   );
+}
+
+function toIcsAllDayDate(date: string): string {
+  return date.replace(/-/g, "");
+}
+
+function getNextDay(date: string): string {
+  return new Date(new Date(`${date}T00:00:00Z`).getTime() + ONE_DAY_IN_MS)
+    .toISOString()
+    .slice(0, 10);
 }
 
 function escapeIcsText(text: string): string {
@@ -14,23 +27,39 @@ function escapeIcsText(text: string): string {
     .replace(/,/g, "\\,");
 }
 
-export function buildIcsCalendar({
-  title,
-  startsAt,
-  endsAt,
-}: {
+function getIcsTimeRange(inputs: {
+  startDate: string;
+  endDate: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+}) {
+  if (!inputs.startsAt) {
+    return [
+      `DTSTART;VALUE=DATE:${toIcsAllDayDate(inputs.startDate)}`,
+      `DTEND;VALUE=DATE:${toIcsAllDayDate(getNextDay(inputs.endDate ?? inputs.startDate))}`,
+    ];
+  }
+
+  const end =
+    inputs.endsAt ??
+    new Date(
+      new Date(inputs.startsAt).getTime() + ONE_HOUR_IN_MS,
+    ).toISOString();
+
+  return [`DTSTART:${toIcsDate(inputs.startsAt)}`, `DTEND:${toIcsDate(end)}`];
+}
+
+export function buildIcsCalendar(inputs: {
   title: string;
-  startsAt: string;
+  startDate: string;
+  endDate: string | null;
+  startsAt: string | null;
   endsAt: string | null;
 }): string {
-  const start = toIcsDate(startsAt);
-  const end = endsAt
-    ? toIcsDate(endsAt)
-    : toIcsDate(
-        new Date(new Date(startsAt).getTime() + 60 * 60 * 1000).toISOString(),
-      );
   const exportedAt = toIcsDate(new Date().toISOString());
-  const uid = createHash("sha256").update(`${title}|${startsAt}`).digest("hex");
+  const uid = createHash("sha256")
+    .update(`${inputs.title}|${inputs.startDate}`)
+    .digest("hex");
 
   return [
     "BEGIN:VCALENDAR",
@@ -41,9 +70,8 @@ export function buildIcsCalendar({
     "BEGIN:VEVENT",
     `UID:${uid}@lechairdepoule.fr`,
     `DTSTAMP:${exportedAt}`,
-    `DTSTART:${start}`,
-    `DTEND:${end}`,
-    `SUMMARY:${escapeIcsText(title)}`,
+    ...getIcsTimeRange(inputs),
+    `SUMMARY:${escapeIcsText(inputs.title)}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");

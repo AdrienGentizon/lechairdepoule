@@ -2,18 +2,19 @@
 
 import { updateTag } from "next/cache";
 
+import assertUploadedImage from "@cdp/lib/image/assertUploadedImage";
+import { deleteObject, toUserObjectKeyPrefix } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import deleteImage from "@/lib/deleteImage";
+import { CoverInputSchema } from "@/lib/schemas";
 import { CacheKey, Event } from "@/lib/types";
-import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 import updateEventCoverOrCleanup from "./updateEventCoverOrCleanup";
 
 export default async function updateEventCoverAction(
   eventId: string,
-  formData: FormData,
+  cover: { objectKey: string; width: number; height: number },
 ): Promise<
   | {
       success: true;
@@ -30,30 +31,25 @@ export default async function updateEventCoverAction(
       return { success: false, error: "non autorisé" };
     }
 
-    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
-    if (!imageFileWithMetadata.success) {
-      trace.push({ formData });
-      trace.pushError("invalid payload");
+    const parsedCover = CoverInputSchema.safeParse(cover);
+    if (!parsedCover.success) {
+      trace.push({ cover });
+      trace.pushError(parsedCover.error);
       trace.log(400);
       return { success: false, error: "image non valide." };
     }
 
-    const uploadedImage = await uploadImage(imageFileWithMetadata.data);
-    if (!uploadedImage.success) {
-      trace.push({ uploadError: uploadedImage.error });
-      trace.pushError("upload failed");
-      trace.log(500);
-      return { success: false, error: "l'image n'a pas pu être chargée" };
-    }
+    trace.push({ objectKey: parsedCover.data.objectKey });
+    await assertUploadedImage({
+      objectKey: parsedCover.data.objectKey,
+      keyPrefix: toUserObjectKeyPrefix(user.id),
+    });
 
-    const updateResult = await updateEventCoverOrCleanup(
-      {
-        userId: user.id,
-        eventId,
-        cover: uploadedImage.data,
-      },
-      trace,
-    );
+    const updateResult = await updateEventCoverOrCleanup({
+      userId: user.id,
+      eventId,
+      cover: parsedCover.data,
+    });
     if (!updateResult.success) {
       trace.pushError(updateResult.error);
       trace.log(500);
@@ -62,7 +58,7 @@ export default async function updateEventCoverAction(
     const updatedEvent = updateResult.data;
 
     if (!updatedEvent) {
-      trace.push({ eventId, uploadedImage: uploadedImage.data });
+      trace.push({ eventId });
       trace.pushError("cannot update event cover");
       trace.log(500);
       return {
@@ -71,8 +67,8 @@ export default async function updateEventCoverAction(
       };
     }
 
-    if (updatedEvent.previousCoverUrl) {
-      await deleteImage(updatedEvent.previousCoverUrl, trace);
+    if (updatedEvent.previousCoverKey) {
+      await deleteObject({ key: updatedEvent.previousCoverKey });
     }
 
     updateTag("cachedEvents" satisfies CacheKey);

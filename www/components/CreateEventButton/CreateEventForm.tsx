@@ -18,25 +18,13 @@ import Form, {
   inputClassName,
 } from "../Form/Form";
 
-function getDateTimeAsInputValue(date?: Date): { date: string; time: string } {
-  if (!date) return { date: "", time: "" };
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return { date: `${year}-${month}-${day}`, time: `${hours}:${minutes}` };
-}
-
-function getDateTime(dateStr: string, timeStr: string): Date {
-  return new Date(`${dateStr}T${timeStr || "00:00"}`);
-}
-
 export type EventFormValues = {
   title: string;
   description: string;
-  startsAt: string;
-  endsAt?: string | null;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
   timezone: string;
   price?: string | null;
   venue?: string | null;
@@ -49,8 +37,10 @@ type Props = {
   initialValues?: {
     title?: string;
     description?: string | null;
-    startsAt?: Date;
-    endsAt?: Date;
+    startDate?: string;
+    startTime?: string | null;
+    endDate?: string | null;
+    endTime?: string | null;
     price?: string | null;
     venue?: string | null;
     url?: string | null;
@@ -79,24 +69,20 @@ export default function CreateEventForm({
   const [form, setForm] = useState<{
     title?: string;
     description?: string;
-    startsAtDate?: string;
-    startsAtTime?: string;
-    endsAtDate?: string;
-    endsAtTime?: string;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
     price?: string;
     venue?: string;
     url?: string;
   }>({
     title: initialValues?.title,
     description: initialValues?.description ?? undefined,
-    startsAtDate:
-      getDateTimeAsInputValue(initialValues?.startsAt).date ?? undefined,
-    startsAtTime:
-      getDateTimeAsInputValue(initialValues?.startsAt).time ?? undefined,
-    endsAtDate:
-      getDateTimeAsInputValue(initialValues?.endsAt).date ?? undefined,
-    endsAtTime:
-      getDateTimeAsInputValue(initialValues?.endsAt).time ?? undefined,
+    startDate: initialValues?.startDate,
+    startTime: initialValues?.startTime ?? undefined,
+    endDate: initialValues?.endDate ?? undefined,
+    endTime: initialValues?.endTime ?? undefined,
     price: initialValues?.price ?? undefined,
     venue: initialValues?.venue ?? undefined,
     url: initialValues?.url ?? undefined,
@@ -105,7 +91,7 @@ export default function CreateEventForm({
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
-    startsAt?: string;
+    startDate?: string;
     url?: string;
     rules?: string;
   }>({});
@@ -139,15 +125,10 @@ export default function CreateEventForm({
           type: eventType,
           title: form.title ?? "",
           description: form.description ?? "",
-          startsAt: form.startsAtDate
-            ? getDateTime(
-                form.startsAtDate,
-                form.startsAtTime ?? "",
-              ).toISOString()
-            : undefined,
-          endsAt: form.endsAtDate
-            ? getDateTime(form.endsAtDate, form.endsAtTime ?? "").toISOString()
-            : undefined,
+          startDate: form.startDate ?? "",
+          startTime: eventType === "EVENT" ? form.startTime : null,
+          endDate: eventType === "EVENT" ? form.endDate : null,
+          endTime: eventType === "EVENT" && form.endDate ? form.endTime : null,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           price: form.price,
           venue: form.venue || undefined,
@@ -161,7 +142,7 @@ export default function CreateEventForm({
           return setErrors({
             title: fieldErrors.title?.[0],
             description: fieldErrors.description?.[0],
-            startsAt: fieldErrors.startsAt?.[0],
+            startDate: fieldErrors.startDate?.[0],
             url: fieldErrors.url?.[0],
             rules: rulesNotAccepted
               ? "Veuillez accepter les règles du forum"
@@ -172,8 +153,10 @@ export default function CreateEventForm({
         onSubmit({
           title: parsed.data.title,
           description: parsed.data.description,
-          startsAt: parsed.data.startsAt,
-          endsAt: parsed.data.endsAt,
+          startDate: parsed.data.startDate,
+          startTime: parsed.data.startTime,
+          endDate: parsed.data.endDate,
+          endTime: parsed.data.endTime,
           timezone: parsed.data.timezone,
           price: parsed.data.price,
           venue: parsed.data.venue,
@@ -224,58 +207,58 @@ export default function CreateEventForm({
         </FormField>
         <div className="grid grid-cols-2">
           <FormField>
-            <Label htmlFor="startsAtDate" aria-required>
+            <Label htmlFor="startDate" aria-required>
               {eventType === "EVENT" ? "Date de début" : "Date de sortie"}
             </Label>
             <div className="flex gap-2">
               <Input
-                id="startsAtDate"
+                id="startDate"
                 type="date"
-                value={form.startsAtDate ?? ""}
+                value={form.startDate ?? ""}
                 required
                 onChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    startsAtDate: e.target.value,
+                    startDate: e.target.value,
                   }))
                 }
               />
               {eventType === "EVENT" && (
                 <Input
-                  id="startsAtTime"
+                  id="startTime"
                   type="time"
-                  disabled={!form.startsAtDate}
-                  value={form.startsAtTime ?? ""}
+                  disabled={!form.startDate}
+                  value={form.startTime ?? ""}
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
-                      startsAtTime: e.target.value,
+                      startTime: e.target.value,
                     }))
                   }
                 />
               )}
             </div>
-            <FieldError>{errors.startsAt}</FieldError>
+            <FieldError>{errors.startDate}</FieldError>
           </FormField>
           {eventType === "EVENT" && (
             <FormField>
-              <Label htmlFor="endsAtDate">Date de fin</Label>
+              <Label htmlFor="endDate">Date de fin</Label>
               <div className="flex gap-2">
                 <Input
-                  id="endsAtDate"
+                  id="endDate"
                   type="date"
-                  value={form.endsAtDate ?? ""}
+                  value={form.endDate ?? ""}
                   onChange={(e) =>
-                    setForm((prev) => ({ ...prev, endsAtDate: e.target.value }))
+                    setForm((prev) => ({ ...prev, endDate: e.target.value }))
                   }
                 />
                 <Input
-                  id="endsAtTime"
+                  id="endTime"
                   type="time"
-                  disabled={!form.endsAtDate}
-                  value={form.endsAtTime ?? ""}
+                  disabled={!form.endDate}
+                  value={form.endTime ?? ""}
                   onChange={(e) =>
-                    setForm((prev) => ({ ...prev, endsAtTime: e.target.value }))
+                    setForm((prev) => ({ ...prev, endTime: e.target.value }))
                   }
                 />
               </div>

@@ -43,7 +43,7 @@ export async function GET(
     return NextResponse.json<Event>(
       {
         ...event,
-        imageUrl: imageKey ? toPublicUrl(imageKey) : event.imageUrl,
+        imageUrl: imageKey ? toPublicUrl(imageKey) : null,
       },
       { status: 200 },
     );
@@ -94,20 +94,17 @@ export async function PATCH(
       cover.action === "KEEP"
         ? {
             imageKey: currentEvent.imageKey,
-            imageUrl: currentEvent.imageUrl,
             imageWidth: currentEvent.imageWidth,
             imageHeight: currentEvent.imageHeight,
           }
         : cover.action === "REPLACE"
           ? {
               imageKey: cover.objectKey,
-              imageUrl: null,
               imageWidth: cover.width,
               imageHeight: cover.height,
             }
           : {
               imageKey: null,
-              imageUrl: null,
               imageWidth: null,
               imageHeight: null,
             };
@@ -145,7 +142,7 @@ export async function PATCH(
     return NextResponse.json<Event>(
       {
         ...event,
-        imageUrl: imageKey ? toPublicUrl(imageKey) : event.imageUrl,
+        imageUrl: imageKey ? toPublicUrl(imageKey) : null,
       },
       { status: 200 },
     );

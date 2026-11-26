@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { Event, isEventType } from "../types";
 
@@ -7,8 +9,10 @@ export default async function updateEventFromId({
   type,
   title,
   description,
-  startsAt,
-  endsAt,
+  startDate,
+  startTime,
+  endDate,
+  endTime,
   timezone,
   price,
   venue,
@@ -19,8 +23,10 @@ export default async function updateEventFromId({
   type: Event["type"];
   title: string;
   description: string;
-  startsAt: string;
-  endsAt: string | null;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
   timezone: string;
   price: string | null;
   venue: string | null;
@@ -33,9 +39,13 @@ export default async function updateEventFromId({
         type: string;
         title: string;
         description: string | null;
-        coverUrl: string | null;
+        coverKey: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
+        startDate: string;
+        startTime: string | null;
+        endDate: string | null;
+        endTime: string | null;
         startsAt: string;
         endsAt: string | null;
         timezone: string;
@@ -51,8 +61,12 @@ export default async function updateEventFromId({
       type = ${type},
       title = ${title},
       description = ${description},
-      starts_at = ${startsAt},
-      ends_at = ${endsAt},
+      start_date = ${startDate}::date,
+      start_time = ${startTime}::time,
+      end_date = ${endDate}::date,
+      end_time = ${endTime}::time,
+      starts_at = (${startDate}::date + COALESCE(${startTime}::time, '00:00')) AT TIME ZONE ${timezone},
+      ends_at = (${endDate}::date + COALESCE(${endTime}::time, '00:00')) AT TIME ZONE ${timezone},
       timezone = ${timezone},
       price = ${price},
       venue = ${venue},
@@ -67,9 +81,13 @@ export default async function updateEventFromId({
       type,
       title,
       description,
-      image_url AS "coverUrl",
+      image_key AS "coverKey",
       image_width AS "coverWidth",
       image_height AS "coverHeight",
+      start_date::text AS "startDate",
+      to_char(start_time, 'HH24:MI') AS "startTime",
+      end_date::text AS "endDate",
+      to_char(end_time, 'HH24:MI') AS "endTime",
       starts_at::text AS "startsAt",
       ends_at::text AS "endsAt",
       timezone,
@@ -82,14 +100,13 @@ export default async function updateEventFromId({
 
   if (!updatedEvent) return undefined;
 
+  const { coverKey, ...event } = updatedEvent;
+
   return {
-    ...updatedEvent,
-    type: isEventType(updatedEvent.type) ? updatedEvent.type : "EVENT",
-    coverWidth: updatedEvent.coverWidth
-      ? parseInt(updatedEvent.coverWidth)
-      : null,
-    coverHeight: updatedEvent.coverHeight
-      ? parseInt(updatedEvent.coverHeight)
-      : null,
+    ...event,
+    type: isEventType(event.type) ? event.type : "EVENT",
+    coverUrl: coverKey ? toPublicUrl(coverKey) : null,
+    coverWidth: event.coverWidth ? parseInt(event.coverWidth) : null,
+    coverHeight: event.coverHeight ? parseInt(event.coverHeight) : null,
   };
 }

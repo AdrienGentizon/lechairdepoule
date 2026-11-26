@@ -9,16 +9,21 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
 
   const title = searchParams.get("title");
-  const startsAt = searchParams.get("startsAt");
-  const endsAt = searchParams.get("endsAt");
+  const startDate = searchParams.get("startDate");
 
-  if (!title || !startsAt) {
-    trace.pushError("missing required params (title, startsAt)");
+  if (!title || !startDate) {
+    trace.pushError("missing required params (title, startDate)");
     trace.log(400);
     return new Response(null, { status: 400 });
   }
 
-  const ics = buildIcsCalendar({ title, startsAt, endsAt });
+  const ics = buildIcsCalendar({
+    title,
+    startDate,
+    endDate: searchParams.get("endDate"),
+    startsAt: searchParams.get("startsAt"),
+    endsAt: searchParams.get("endsAt"),
+  });
 
   trace.push({ ics });
   trace.log();

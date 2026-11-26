@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { isEventType } from "../types";
 
@@ -15,9 +17,13 @@ export default async function selectEvents({
         type: string;
         title: string;
         description: string | null;
-        coverUrl: string | null;
+        coverKey: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
+        startDate: string;
+        startTime: string | null;
+        endDate: string | null;
+        endTime: string | null;
         startsAt: string;
         endsAt: string | null;
         timezone: string;
@@ -36,9 +42,13 @@ export default async function selectEvents({
       e.type,
       e.title,
       e.description,
-      e.image_url as "coverUrl",
+      e.image_key as "coverKey",
       e.image_width as "coverWidth",
       e.image_height as "coverHeight",
+      e.start_date::text as "startDate",
+      to_char(e.start_time, 'HH24:MI') as "startTime",
+      e.end_date::text as "endDate",
+      to_char(e.end_time, 'HH24:MI') as "endTime",
       e.starts_at::text as "startsAt",
       e.ends_at::text as "endsAt",
       e.timezone,
@@ -68,14 +78,14 @@ export default async function selectEvents({
       userId,
       userPseudo,
       userBannedAt,
-      coverUrl,
+      coverKey,
       coverWidth,
       coverHeight,
       ...event
     }) => ({
       ...event,
       type: isEventType(type) ? type : "EVENT",
-      coverUrl,
+      coverUrl: coverKey ? toPublicUrl(coverKey) : null,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,
       createdBy: {

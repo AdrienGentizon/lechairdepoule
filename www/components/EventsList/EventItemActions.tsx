@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 
+import uploadImage from "@cdp/lib/image/uploadImage";
 import Dialog from "@cdp/ui/Dialog";
 
 import useMe from "@/lib/auth/useMe";
@@ -9,7 +10,6 @@ import deleteEventAction from "@/lib/events/deleteEventAction";
 import deleteEventCoverAction from "@/lib/events/deleteEventCoverAction";
 import updateEventAction from "@/lib/events/updateEventAction";
 import updateEventCoverAction from "@/lib/events/updateEventCoverAction";
-import { resizeImage } from "@/lib/resizeImage";
 import { Event } from "@/lib/types";
 
 import Button from "../Button/Button";
@@ -28,11 +28,7 @@ function UpdateEventButton({ event }: { event: Event }) {
       <Dialog.Content>
         <Dialog.Title>{`Modification de l'événement`}</Dialog.Title>
         <CreateEventForm
-          initialValues={{
-            ...event,
-            startsAt: new Date(event.startsAt),
-            endsAt: event.endsAt ? new Date(event.endsAt) : undefined,
-          }}
+          initialValues={event}
           eventType={event.type}
           isPending={isPending}
           error={error}
@@ -40,18 +36,19 @@ function UpdateEventButton({ event }: { event: Event }) {
           coverUrl={event.coverUrl ?? undefined}
           onUpdateCover={(cover) => {
             startTransition(async () => {
-              const resized = await resizeImage(cover);
-              if (!resized) {
-                setError(new Error("image non valide."));
-                return;
+              try {
+                const uploadedCover = await uploadImage({
+                  file: cover,
+                  uploadUrlEndpoint: "/api/images/upload-url",
+                });
+                const result = await updateEventCoverAction(
+                  event.id,
+                  uploadedCover,
+                );
+                if (!result.success) setError(new Error(result.error));
+              } catch (error) {
+                setError(error as Error);
               }
-              const body = new FormData();
-              body.set("coverFile", resized.file);
-              body.set("coverWidth", resized.width.toString());
-              body.set("coverHeight", resized.height.toString());
-
-              const result = await updateEventCoverAction(event.id, body);
-              if (!result.success) setError(new Error(result.error));
             });
           }}
           onDeleteCover={() => {
@@ -67,8 +64,10 @@ function UpdateEventButton({ event }: { event: Event }) {
                 type: event.type,
                 title: values.title,
                 description: values.description,
-                startsAt: values.startsAt,
-                endsAt: values.endsAt ?? null,
+                startDate: values.startDate,
+                startTime: values.startTime,
+                endDate: values.endDate,
+                endTime: values.endTime,
                 timezone: values.timezone,
                 price: values.price ?? null,
                 venue: values.venue,

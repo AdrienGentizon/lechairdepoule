@@ -37,7 +37,7 @@ export async function GET(
     return NextResponse.json<Event[]>(
       events.map(({ imageKey, ...event }) => ({
         ...event,
-        imageUrl: imageKey ? toPublicUrl(imageKey) : event.imageUrl,
+        imageUrl: imageKey ? toPublicUrl(imageKey) : null,
       })),
       { status: 200 },
     );
@@ -113,7 +113,7 @@ export async function POST(
     return NextResponse.json<Event>(
       {
         ...event,
-        imageUrl: imageKey ? toPublicUrl(imageKey) : event.imageUrl,
+        imageUrl: imageKey ? toPublicUrl(imageKey) : null,
       },
       { status: 200 },
     );

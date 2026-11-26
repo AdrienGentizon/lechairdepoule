@@ -2,10 +2,10 @@
 
 import { updateTag } from "next/cache";
 
+import { deleteObject } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import deleteImage from "@/lib/deleteImage";
 import { CacheKey } from "@/lib/types";
 
 import deleteEventFromId from "./deleteEventFromId";
@@ -33,8 +33,8 @@ export default async function deleteEventAction(
       return { success: false, error: "introuvable" };
     }
 
-    if (event.coverUrl) {
-      await deleteImage(event.coverUrl, trace);
+    if (event.coverKey) {
+      await deleteObject({ key: event.coverKey });
     }
 
     updateTag("cachedEvents" satisfies CacheKey);

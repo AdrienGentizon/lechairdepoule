@@ -2,12 +2,13 @@
 
 import { updateTag } from "next/cache";
 
+import assertUploadedImage from "@cdp/lib/image/assertUploadedImage";
+import { toUserObjectKeyPrefix } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import { EventFormSchema } from "@/lib/schemas";
+import { CoverInputSchema, EventFormSchema } from "@/lib/schemas";
 import { CacheKey, Event } from "@/lib/types";
-import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 import insertEventOrCleanupCover from "./insertEventOrCleanupCover";
 
@@ -32,39 +33,40 @@ export default async function insertEventAction(
       return { success: false, error: "événement non valide ne sera pas créé" };
     }
 
-    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
-    let cover: { url: string; width: number; height: number } | undefined =
-      undefined;
+    const parsedCover = CoverInputSchema.safeParse({
+      objectKey: payload.coverObjectKey,
+      width: payload.coverWidth,
+      height: payload.coverHeight,
+    });
+    const cover = parsedCover.success ? parsedCover.data : undefined;
 
-    if (imageFileWithMetadata.success) {
-      const uploadResult = await uploadImage(imageFileWithMetadata.data);
-      if (uploadResult.success) {
-        cover = uploadResult.data;
-      } else {
-        trace.push({ uploadError: uploadResult.error });
-      }
+    if (cover) {
+      trace.push({ objectKey: cover.objectKey });
+      await assertUploadedImage({
+        objectKey: cover.objectKey,
+        keyPrefix: toUserObjectKeyPrefix(user.id),
+      });
     }
 
-    const insertResult = await insertEventOrCleanupCover(
-      {
-        type: parsedInputs.data.type,
-        title: parsedInputs.data.title,
-        description: parsedInputs.data.description,
-        user: {
-          id: user.id,
-          pseudo: user.pseudo ?? "",
-          bannedAt: user.bannedAt,
-        },
-        cover,
-        startsAt: parsedInputs.data.startsAt,
-        endsAt: parsedInputs.data.endsAt,
-        timezone: parsedInputs.data.timezone,
-        price: parsedInputs.data.price,
-        venue: parsedInputs.data.venue,
-        url: parsedInputs.data.url,
+    const insertResult = await insertEventOrCleanupCover({
+      type: parsedInputs.data.type,
+      title: parsedInputs.data.title,
+      description: parsedInputs.data.description,
+      user: {
+        id: user.id,
+        pseudo: user.pseudo ?? "",
+        bannedAt: user.bannedAt,
       },
-      trace,
-    );
+      cover,
+      startDate: parsedInputs.data.startDate,
+      startTime: parsedInputs.data.startTime,
+      endDate: parsedInputs.data.endDate,
+      endTime: parsedInputs.data.endTime,
+      timezone: parsedInputs.data.timezone,
+      price: parsedInputs.data.price,
+      venue: parsedInputs.data.venue,
+      url: parsedInputs.data.url,
+    });
     if (!insertResult.success) {
       trace.pushError(insertResult.error);
       trace.log(500);

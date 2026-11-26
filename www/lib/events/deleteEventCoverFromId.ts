@@ -7,18 +7,26 @@ export default async function deleteEventCoverFromId({
   eventId: string;
   userId: string;
 }) {
-  return (
-    await sql<
-      {
-        id: string;
-        coverUrl: string | null;
-        coverWidth: number | null;
-        coverHeight: number | null;
-      }[]
-    >`
+  return sql.begin(async (sql) => {
+    const previousCoverKey =
+      (
+        await sql<{ imageKey: string | null }[]>`
+          SELECT image_key
+          FROM public.events
+          WHERE id = ${eventId} AND created_by = ${userId}`
+      ).at(0)?.imageKey ?? null;
+
+    const updatedEvent = (
+      await sql<
+        {
+          id: string;
+          coverWidth: number | null;
+          coverHeight: number | null;
+        }[]
+      >`
         UPDATE public.events
         SET
-          image_url = NULL,
+          image_key = NULL,
           image_width = NULL,
           image_height = NULL,
           updated_at = ${new Date()}
@@ -27,8 +35,16 @@ export default async function deleteEventCoverFromId({
           AND created_by = ${userId}
         RETURNING
           id::text,
-          image_url AS "coverUrl",
           image_width::integer AS "coverWidth",
           image_height::integer AS "coverHeight";`
-  ).at(0);
+    ).at(0);
+
+    if (!updatedEvent) return undefined;
+
+    return {
+      ...updatedEvent,
+      coverUrl: null,
+      previousCoverKey,
+    };
+  });
 }

@@ -2,9 +2,17 @@ import z from "zod";
 
 export const NullishDateSchema = z.preprocess(
   (v) => (v === "" ? null : v),
-  z
-    .string()
-    .datetime({ offset: true })
+  z.iso
+    .date()
+    .nullable()
+    .optional()
+    .transform((v) => v ?? null),
+);
+
+export const NullishTimeSchema = z.preprocess(
+  (v) => (v === "" ? null : v),
+  z.iso
+    .time({ precision: -1 })
     .nullable()
     .optional()
     .transform((v) => v ?? null),
@@ -32,6 +40,18 @@ export const ConversationFormSchema = z.object({
     .max(500, "Description trop longue (500 caractères max)"),
 });
 
+export const CoverInputSchema = z.object({
+  objectKey: z.string().min(1),
+  width: z.coerce.number().int().positive(),
+  height: z.coerce.number().int().positive(),
+});
+
+export const ConversationInputSchema = ConversationFormSchema.extend({
+  cover: CoverInputSchema.nullable(),
+});
+
+export type ConversationInput = z.infer<typeof ConversationInputSchema>;
+
 export const BanAppealFormSchema = z.object({
   body: z
     .string()
@@ -58,14 +78,15 @@ export const EventFormSchema = z.object({
     .string()
     .min(1, "Description obligatoire")
     .max(500, "Description trop longue (500 caractères max)"),
-  startsAt: z.iso.datetime({
-    offset: true,
+  startDate: z.iso.date({
     error: (issue) =>
-      issue.input === undefined
+      issue.input === undefined || issue.input === ""
         ? "Date de début obligatoire"
         : "Date de début invalide",
   }),
-  endsAt: NullishDateSchema,
+  startTime: NullishTimeSchema,
+  endDate: NullishDateSchema,
+  endTime: NullishTimeSchema,
   timezone: TimezoneSchema,
   price: PriceSchema,
   venue: z.string().nullish(),

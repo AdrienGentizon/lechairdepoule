@@ -7,12 +7,12 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
+import uploadImage from "@cdp/lib/image/uploadImage";
 import Dialog from "@cdp/ui/Dialog";
 
 import LogInButton from "@/components/Auth/LogInButton";
 import useMe from "@/lib/auth/useMe";
 import insertEventAction from "@/lib/events/insertEventAction";
-import { resizeImage } from "@/lib/resizeImage";
 import { Event, isEventType } from "@/lib/types";
 
 import BannedUserDialogTrigger from "../BannedUserDialogTrigger/BannedUserDialogTrigger";
@@ -64,18 +64,26 @@ function Form({
           body.set("type", selectedEventType);
           body.set("title", values.title);
           body.set("description", values.description);
-          body.set("startsAt", values.startsAt);
-          if (values.endsAt) body.set("endsAt", values.endsAt);
+          body.set("startDate", values.startDate);
+          if (values.startTime) body.set("startTime", values.startTime);
+          if (values.endDate) body.set("endDate", values.endDate);
+          if (values.endTime) body.set("endTime", values.endTime);
           body.set("timezone", values.timezone);
           if (values.price) body.set("price", values.price);
           if (values.venue) body.set("venue", values.venue);
           if (values.url) body.set("url", values.url);
           if (values.cover) {
-            const resized = await resizeImage(values.cover);
-            if (resized) {
-              body.set("coverFile", resized.file);
-              body.set("coverWidth", resized.width.toString());
-              body.set("coverHeight", resized.height.toString());
+            try {
+              const cover = await uploadImage({
+                file: values.cover,
+                uploadUrlEndpoint: "/api/images/upload-url",
+              });
+              body.set("coverObjectKey", cover.objectKey);
+              body.set("coverWidth", cover.width.toString());
+              body.set("coverHeight", cover.height.toString());
+            } catch (error) {
+              setError(error as Error);
+              return;
             }
           }
 

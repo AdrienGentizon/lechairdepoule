@@ -1,5 +1,5 @@
 import { fetchCollectionGraphQL } from "@/lib/contentful";
-import { DANGEROUS_FALLBACK_TZ } from "@/lib/date";
+import { DANGEROUS_FALLBACK_TZ, getDateAndTimeInTimezone } from "@/lib/date";
 import { ContentfulEvent } from "@/lib/types";
 
 // type ExpectedDate =
@@ -30,6 +30,8 @@ type RawEvent = {
 };
 
 function toEvent(raw: RawEvent) {
+  const start = getDateAndTimeInTimezone(raw.date, DANGEROUS_FALLBACK_TZ);
+
   return {
     id: raw.sys.id,
     title: raw.title,
@@ -40,6 +42,10 @@ function toEvent(raw: RawEvent) {
     coverUrl: raw.picture?.url ?? null,
     coverWidth: raw.picture?.width ?? null,
     coverHeight: raw.picture?.height ?? null,
+    startDate: start.date,
+    startTime: start.time,
+    endDate: null,
+    endTime: null,
     startsAt: raw.date,
     endsAt: null,
     timezone: DANGEROUS_FALLBACK_TZ,

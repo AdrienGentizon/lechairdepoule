@@ -67,6 +67,10 @@ export type Event = {
   coverUrl: string | null;
   coverWidth: number | null;
   coverHeight: number | null;
+  startDate: string;
+  startTime: string | null;
+  endDate: string | null;
+  endTime: string | null;
   startsAt: string;
   endsAt: string | null;
   timezone: string;

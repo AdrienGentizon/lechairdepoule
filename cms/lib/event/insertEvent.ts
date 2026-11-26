@@ -18,7 +18,6 @@ export default async function insertEvent(
         title: string;
         description: string | null;
         imageKey: string | null;
-        imageUrl: string | null;
         imageWidth: number | null;
         imageHeight: number | null;
         startDate: string;
@@ -70,7 +69,6 @@ export default async function insertEvent(
       title,
       description,
       image_key,
-      image_url,
       image_width,
       image_height,
       start_date::text,

@@ -1,15 +1,16 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+import assertUploadedImage from "@cdp/lib/image/assertUploadedImage";
+import { toUserObjectKeyPrefix } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import insertConversation from "@/lib/forum/insertConversation";
 import selectConversations from "@/lib/forum/selectConversations";
-import { ConversationFormSchema } from "@/lib/schemas";
+import { ConversationInputSchema } from "@/lib/schemas";
 import { CacheKey, Conversation } from "@/lib/types";
-import uploadImage, { getImageFileWithMetadata } from "@/lib/uploadImage";
 
 export async function POST(req: NextRequest) {
   const trace = new Trace(req);
@@ -23,10 +24,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "non autorisé" }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const payload = Object.fromEntries(formData.entries());
-
-    const parsedInputs = ConversationFormSchema.safeParse(payload);
+    const payload = await req.json();
+    const parsedInputs = ConversationInputSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
       trace.push({ payload });
@@ -38,17 +37,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const imageFileWithMetadata = await getImageFileWithMetadata(formData);
-    let cover: { url: string; width: number; height: number } | undefined =
-      undefined;
+    const { cover } = parsedInputs.data;
 
-    if (imageFileWithMetadata.success) {
-      const uploadResult = await uploadImage(imageFileWithMetadata.data);
-      if (uploadResult.success) {
-        cover = uploadResult.data;
-      } else {
-        trace.push({ uploadError: uploadResult.error });
-      }
+    if (cover) {
+      trace.push({ objectKey: cover.objectKey });
+      await assertUploadedImage({
+        objectKey: cover.objectKey,
+        keyPrefix: toUserObjectKeyPrefix(user.id),
+      });
     }
 
     const insertedConversation = await insertConversation({

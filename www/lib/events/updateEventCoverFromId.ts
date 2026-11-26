@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 
 export default async function updateEventCoverFromId({
@@ -8,32 +10,32 @@ export default async function updateEventCoverFromId({
   eventId: string;
   userId: string;
   cover: {
-    url: string;
+    objectKey: string;
     width: number;
     height: number;
   };
 }) {
   return sql.begin(async (sql) => {
-    const previousCoverUrl =
+    const previousCoverKey =
       (
-        await sql<{ imageUrl: string | null }[]>`
-          SELECT image_url AS "imageUrl"
+        await sql<{ imageKey: string | null }[]>`
+          SELECT image_key
           FROM public.events
           WHERE id = ${eventId} AND created_by = ${userId}`
-      ).at(0)?.imageUrl ?? null;
+      ).at(0)?.imageKey ?? null;
 
     const updatedEvent = (
       await sql<
         {
           id: string;
-          coverUrl: string | null;
+          coverKey: string | null;
           coverWidth: number | null;
           coverHeight: number | null;
         }[]
       >`
         UPDATE public.events
         SET
-          image_url = ${cover.url},
+          image_key = ${cover.objectKey},
           image_width = ${cover.width},
           image_height = ${cover.height},
           updated_at = ${new Date()}
@@ -43,16 +45,19 @@ export default async function updateEventCoverFromId({
           AND deleted_at IS NULL
         RETURNING
           id::text,
-          image_url AS "coverUrl",
+          image_key AS "coverKey",
           image_width::integer AS "coverWidth",
           image_height::integer AS "coverHeight";`
     ).at(0);
 
     if (!updatedEvent) return undefined;
 
+    const { coverKey, ...event } = updatedEvent;
+
     return {
-      ...updatedEvent,
-      previousCoverUrl,
+      ...event,
+      coverUrl: coverKey ? toPublicUrl(coverKey) : null,
+      previousCoverKey,
     };
   });
 }

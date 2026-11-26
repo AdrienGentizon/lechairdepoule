@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { resizeImage } from "../resizeImage";
+import uploadImage from "@cdp/lib/image/uploadImage";
+
+import { ConversationInput } from "../schemas";
 import { CacheKey, Conversation } from "../types";
 
 export default function usePostConversation() {
@@ -21,22 +23,19 @@ export default function usePostConversation() {
       type: string;
       cover?: File;
     }) => {
-      const body = new FormData();
-      body.set("title", title);
-      body.set("description", description);
-      body.set("type", type);
-      if (cover) {
-        const resizedImage = await resizeImage(cover);
-        if (resizedImage) {
-          body.set("coverFile", resizedImage.file);
-          body.set("coverWidth", resizedImage.width.toString());
-          body.set("coverHeight", resizedImage.height.toString());
-        }
-      }
-
       const response = await fetch(`/api/conversations`, {
         method: "POST",
-        body,
+        body: JSON.stringify({
+          title,
+          description,
+          type,
+          cover: cover
+            ? await uploadImage({
+                file: cover,
+                uploadUrlEndpoint: "/api/images/upload-url",
+              })
+            : null,
+        } satisfies ConversationInput & { type: string }),
       });
 
       if (!response.ok)

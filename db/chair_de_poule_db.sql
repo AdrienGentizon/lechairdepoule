@@ -71,6 +71,7 @@ CREATE TABLE conversations (
     image_url TEXT,
     image_width INTEGER,
     image_height INTEGER,
+    image_key TEXT,
 	created_by INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,

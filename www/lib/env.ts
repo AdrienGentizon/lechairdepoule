@@ -12,9 +12,6 @@ type Env = {
   // DATABASE - NEONDB
   PG_CONNECTION_STRING: string;
 
-  // STORAGE - VERCEL BLOB
-  BLOB_READ_WRITE_TOKEN: string;
-
   // WS - PUSHER
   PUSHER_APP_ID: string;
   PUSHER_KEY: string;
@@ -40,7 +37,6 @@ export default function env() {
       RESEND_API_KEY: getEnvVar("RESEND_API_KEY"),
       RESEND_TO_EMAIL: getEnvVar("RESEND_TO_EMAIL"),
       PG_CONNECTION_STRING: getEnvVar("PG_CONNECTION_STRING"),
-      BLOB_READ_WRITE_TOKEN: getEnvVar("BLOB_READ_WRITE_TOKEN"),
       PUSHER_APP_ID: getEnvVar("PUSHER_APP_ID"),
       PUSHER_KEY: getEnvVar("PUSHER_KEY"),
       PUSHER_SECRET: getEnvVar("PUSHER_SECRET"),

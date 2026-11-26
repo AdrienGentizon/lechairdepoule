@@ -11,7 +11,7 @@ export default async function deleteEventFromId({
     await sql<
       {
         id: string;
-        coverUrl: string | null;
+        coverKey: string | null;
       }[]
     >`UPDATE public.events
       SET deleted_at = ${new Date()}
@@ -20,6 +20,6 @@ export default async function deleteEventFromId({
         AND created_by = ${userId}
       RETURNING
         id::text,
-        image_url AS "coverUrl";`
+        image_key AS "coverKey";`
   ).at(0);
 }

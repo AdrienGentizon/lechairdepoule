@@ -73,18 +73,29 @@ export function getMonthSpanUTC(date?: Date | null) {
   };
 }
 
-export function getEventTime(dateStr: string, timeZone: string) {
-  const date = new Date(dateStr);
-  const hours = parseInt(
-    date.toLocaleString(LOCALE, { timeZone, hour: "numeric" }),
-  );
-  const minutes = parseInt(
-    date.toLocaleString(LOCALE, { timeZone, minute: "numeric" }),
-  );
-  if (hours === 0 && minutes === 0) return "minuit";
-  return minutes === 0
-    ? `${hours.toString().padStart(2, "0")}H`
-    : `${hours.toString().padStart(2, "0")}H${minutes.toString().padStart(2, "0")}`;
+export function getEventTime(time: string) {
+  const [hours, minutes] = time.split(":");
+  if (hours === "00" && minutes === "00") return "minuit";
+  return minutes === "00" ? `${hours}H` : `${hours}H${minutes}`;
+}
+
+export function getDateAndTimeInTimezone(dateStr: string, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(dateStr));
+  const getPart = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  return {
+    date: `${getPart("year")}-${getPart("month")}-${getPart("day")}`,
+    time: `${getPart("hour")}:${getPart("minute")}`,
+  };
 }
 
 export function getValidDate(dateStr: string) {

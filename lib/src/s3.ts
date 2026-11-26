@@ -2,6 +2,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  NoSuchKey,
   NotFound,
   PutObjectCommand,
   S3Client,
@@ -93,6 +94,37 @@ export async function selectObjectMetadata(inputs: { key: string }) {
     if (error instanceof NotFound) return;
     throw error;
   }
+}
+
+export async function selectObject(inputs: { key: string }) {
+  try {
+    const object = await s3.send(
+      new GetObjectCommand({ Bucket: S3_BUCKET, Key: inputs.key }),
+    );
+    if (!object.Body) return;
+    return {
+      body: object.Body.transformToWebStream(),
+      contentType: object.ContentType,
+    };
+  } catch (error) {
+    if (error instanceof NoSuchKey) return;
+    throw error;
+  }
+}
+
+export async function putObject(inputs: {
+  key: string;
+  body: Uint8Array;
+  contentType: string;
+}) {
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: inputs.key,
+      Body: inputs.body,
+      ContentType: inputs.contentType,
+    }),
+  );
 }
 
 export async function deleteObject(inputs: { key: string }) {

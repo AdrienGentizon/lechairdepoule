@@ -73,19 +73,18 @@ function SummaryDescription({
 }
 
 function TimetableAndEntryFee({
-  startsAt,
-  timezone,
+  startTime,
   price,
 }: {
-  startsAt: string;
-  timezone: string;
+  startTime: string | null;
   price: string | null;
 }) {
+  if (!startTime && !price) return null;
   return (
     <span className="flex items-center leading-none text-purple-300">
-      <time dateTime={startsAt}>{getEventTime(startsAt, timezone)}</time>
+      {startTime && <time dateTime={startTime}>{getEventTime(startTime)}</time>}
 
-      {price && <>&nbsp;&middot;&nbsp;</>}
+      {startTime && price && <>&nbsp;&middot;&nbsp;</>}
       {price && <span className="leading-none">{price}</span>}
     </span>
   );
@@ -133,8 +132,7 @@ export default function EventItem({
               />
               {showTimetableAndEntryFee && (
                 <TimetableAndEntryFee
-                  startsAt={event.startsAt}
-                  timezone={event.timezone}
+                  startTime={event.startTime}
                   price={event.price}
                 />
               )}
@@ -147,8 +145,10 @@ export default function EventItem({
         <ImportToCalendarButton
           ics={{
             title: summary.title,
-            startsAt: event.startsAt,
-            endsAt: event.endsAt,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            startsAt: event.startTime ? event.startsAt : null,
+            endsAt: event.endTime ? event.endsAt : null,
           }}
         />
         <div className="flex flex-col gap-4 p-4">

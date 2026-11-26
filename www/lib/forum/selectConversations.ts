@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { isConversationType } from "../types";
 
@@ -8,7 +10,7 @@ export default async function selectConversations() {
         id: string;
         title: string;
         description: string | null;
-        coverUrl: string | null;
+        coverKey: string | null;
         coverWidth: string | null;
         coverHeight: string | null;
         type: string;
@@ -26,7 +28,7 @@ export default async function selectConversations() {
       c.id::text,
       c.title,
       c.description,
-      c.image_url as "coverUrl",
+      c.image_key as "coverKey",
       c.image_width as "coverWidth",
       c.image_height as "coverHeight",
       c.type,
@@ -51,14 +53,14 @@ export default async function selectConversations() {
       userId,
       userPseudo,
       userBannedAt,
-      coverUrl,
+      coverKey,
       coverWidth,
       coverHeight,
       ...conversation
     }) => ({
       ...conversation,
       type: isConversationType(type) ? type : "TOPIC",
-      coverUrl,
+      coverUrl: coverKey ? toPublicUrl(coverKey) : null,
       coverWidth: coverWidth ? parseInt(coverWidth) : null,
       coverHeight: coverHeight ? parseInt(coverHeight) : null,
       createdBy: {

@@ -17,7 +17,7 @@ Admin and content management are moving to [cms](../cms), a dedicated app with i
 - Postgres (Neon) — shares the database with cms
 - [Pusher](https://pusher.com) — realtime
 - [Resend](https://resend.com) — emails
-- [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — image storage
+- [Cloudflare R2](https://developers.cloudflare.com/r2) — image storage, shared with cms
 - [`@cdp/ui`](../ui) — shared UI components
 
 ## Development

@@ -2,14 +2,13 @@
 
 import { updateTag } from "next/cache";
 
+import { deleteObject } from "@cdp/lib/s3";
 import Trace from "@cdp/lib/trace";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import deleteImage from "@/lib/deleteImage";
 import { CacheKey, Event } from "@/lib/types";
 
 import deleteEventCoverFromId from "./deleteEventCoverFromId";
-import selectEventFromId from "./selectEventFromId";
 
 export default async function deleteEventCoverAction(eventId: string): Promise<
   | {
@@ -27,13 +26,6 @@ export default async function deleteEventCoverAction(eventId: string): Promise<
       return { success: false, error: "non autorisé" };
     }
 
-    const event = await selectEventFromId(eventId);
-    if (!event) {
-      trace.pushError("not found");
-      trace.log(404);
-      return { success: false, error: "introuvable" };
-    }
-
     const updatedEvent = await deleteEventCoverFromId({
       eventId,
       userId: user.id,
@@ -45,15 +37,23 @@ export default async function deleteEventCoverAction(eventId: string): Promise<
       return { success: false, error: "impossible de supprimer l'image" };
     }
 
-    if (event.coverUrl) {
-      await deleteImage(event.coverUrl, trace);
+    if (updatedEvent.previousCoverKey) {
+      await deleteObject({ key: updatedEvent.previousCoverKey });
     }
 
     updateTag("cachedEvents" satisfies CacheKey);
 
     trace.push({ eventId: updatedEvent.id });
     trace.log();
-    return { success: true, data: updatedEvent };
+    return {
+      success: true,
+      data: {
+        id: updatedEvent.id,
+        coverUrl: updatedEvent.coverUrl,
+        coverWidth: updatedEvent.coverWidth,
+        coverHeight: updatedEvent.coverHeight,
+      },
+    };
   } catch (error) {
     trace.pushError(error);
     trace.log(500);

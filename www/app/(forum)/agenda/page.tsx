@@ -69,7 +69,7 @@ export default async function AgendaPage() {
                     day: "numeric",
                     month: "long",
                   }),
-                  getEventTime(event.startsAt, event.timezone),
+                  event.startTime && getEventTime(event.startTime),
                   event.price,
                 ]
                   .filter(Boolean)

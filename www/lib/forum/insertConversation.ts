@@ -1,3 +1,5 @@
+import { toPublicUrl } from "@cdp/lib/s3";
+
 import sql from "../db";
 import { Conversation, isConversationType } from "../types";
 
@@ -8,7 +10,7 @@ function getConversationFromRaw(
     id: string;
     title: string;
     description: string | null;
-    coverUrl: string | null;
+    coverKey: string | null;
     coverWidth: string | null;
     coverHeight: string | null;
     type: string;
@@ -26,7 +28,7 @@ function getConversationFromRaw(
     type: isConversationType(raw.type) ? raw.type : "TOPIC",
     title: raw.title,
     description: raw.description,
-    coverUrl: raw.coverUrl,
+    coverUrl: raw.coverKey ? toPublicUrl(raw.coverKey) : null,
     coverWidth: raw.coverWidth ? parseInt(raw.coverWidth) : null,
     coverHeight: raw.coverHeight ? parseInt(raw.coverHeight) : null,
     isPinned: raw.isPinned,
@@ -47,11 +49,11 @@ export default async function insertConversation({
 }: {
   title: string;
   description: string;
-  cover?: {
-    url: string;
+  cover: {
+    objectKey: string;
     width: number;
     height: number;
-  };
+  } | null;
   user: { id: string; pseudo: string; bannedAt: string | null };
 }) {
   return sql.begin(async (sql) => {
@@ -62,7 +64,7 @@ export default async function insertConversation({
           id: string;
           title: string;
           description: string | null;
-          coverUrl: string | null;
+          coverKey: string | null;
           coverWidth: string | null;
           coverHeight: string | null;
           type: string;
@@ -75,14 +77,14 @@ export default async function insertConversation({
         }[]
       >`
     INSERT INTO
-      conversations (title, description, image_url, image_width, image_height, type, created_by, created_at, updated_at)
+      conversations (title, description, image_key, image_width, image_height, type, created_by, created_at, updated_at)
     VALUES
-      (${title}, ${description}, ${cover?.url ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${DEFAULT_TYPE}, ${user.id}, ${now}, ${now})
+      (${title}, ${description}, ${cover?.objectKey ?? null}, ${cover?.width ?? null}, ${cover?.height ?? null}, ${DEFAULT_TYPE}, ${user.id}, ${now}, ${now})
     RETURNING
       id::text,
       title,
       description,
-      image_url as "coverUrl",
+      image_key as "coverKey",
       image_width as "coverWidth",
       image_height as "coverHeight",
       type,

@@ -27,7 +27,7 @@ export default function HomePage() {
     <Main>
       <header className="inline-flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger render={Button}>
+          <Dialog.Trigger render={<Button />}>
             <PlusCircleIcon size={18} aria-hidden />
             Créer une organisation
           </Dialog.Trigger>
