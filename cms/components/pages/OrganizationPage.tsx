@@ -18,6 +18,7 @@ import useCreateEvent from "@/components/event/useCreateEvent";
 import useOrganizationEvents from "@/components/event/useOrganizationEvents";
 import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
+import PageHeader from "@/components/layout/PageHeader";
 import { Event } from "@/lib/types";
 
 const TOS_HREF = "https://lechairdepoule.fr/forum/cgu";
@@ -66,8 +67,14 @@ export default function OrganizationPage({
 
   return (
     <Main>
-      <header className="inline-flex items-center justify-between">
-        <h1 className="text-2xl font-thin uppercase">{organization.name}</h1>
+      <PageHeader
+        heading={organization.name}
+        navBack={{
+          label: dictionary.nav_back(dictionary.home_h1),
+          landmarkLabel: dictionary.nav_back_landmark,
+          href: `/`,
+        }}
+      >
         <Dialog
           open={step.name !== "HIDDEN"}
           onOpenChange={(open) => {
@@ -117,7 +124,7 @@ export default function OrganizationPage({
             )}
           </Dialog.Content>
         </Dialog>
-      </header>
+      </PageHeader>
       <Table>
         <Table.Caption>Événements</Table.Caption>
         <Table.THead>

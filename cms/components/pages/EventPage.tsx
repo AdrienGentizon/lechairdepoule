@@ -1,14 +1,14 @@
 "use client";
 
-import { ArrowLeftIcon } from "@phosphor-icons/react";
-
-import Link from "next/link";
+import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
 
 import useMe from "@/components/auth/useMe";
 import EventForm from "@/components/event/EventForm";
 import useOrganizationEvent from "@/components/event/useOrganizationEvent";
 import useUpdateEvent from "@/components/event/useUpdateEvent";
+import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
+import PageHeader from "@/components/layout/PageHeader";
 
 const TOS_HREF = "https://lechairdepoule.fr/forum/cgu";
 
@@ -19,6 +19,7 @@ export default function EventPage({
   organizationId: string;
   eventId: string;
 }) {
+  const dictionary = useT(dictionaries);
   const { me } = useMe();
   const { event, error: errorEvent } = useOrganizationEvent(
     organizationId,
@@ -44,34 +45,34 @@ export default function EventPage({
   if (!event) return null;
 
   return (
-    <Main className="grid min-h-0 max-w-2xl grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)]">
-      <nav>
-        <Link
-          href={`/organizations/${organization.id}`}
-          className="inline-flex items-center gap-2 hover:underline"
-        >
-          <ArrowLeftIcon size={18} aria-hidden />
-          {organization.name}
-        </Link>
-      </nav>
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-thin uppercase">{event.title}</h1>
-        <p className="font-courier text-sm">
-          {event.type === "EVENT" ? "Événement" : "Sortie"} ·{" "}
-          {event.publishedAt ? "publié" : "brouillon"} · {event.visibility}
-        </p>
-      </header>
-      <EventForm
-        key={event.updatedAt}
-        eventType={event.type}
-        defaultValue={event}
-        tosHref={TOS_HREF}
-        isPending={isPending}
-        error={error}
-        onSubmit={({ type: _, ...inputs }, cover) => {
-          updateEvent({ inputs, cover });
+    <Main className="grid min-h-0 grid-cols-1 grid-rows-[auto_minmax(0,1fr)]">
+      <PageHeader
+        heading={event.title}
+        subHeading={
+          <p className="font-courier text-sm">
+            {event.type === "EVENT" ? "Événement" : "Sortie"} ·{" "}
+            {event.publishedAt ? "publié" : "brouillon"} · {event.visibility}
+          </p>
+        }
+        navBack={{
+          href: `/organizations/${organization.id}`,
+          label: dictionary.nav_back(organization.name),
+          landmarkLabel: dictionary.nav_back_landmark,
         }}
       />
+      <div className="relative mx-auto w-full max-w-3xl overflow-y-auto">
+        <EventForm
+          key={event.updatedAt}
+          eventType={event.type}
+          defaultValue={event}
+          tosHref={TOS_HREF}
+          isPending={isPending}
+          error={error}
+          onSubmit={({ type: _, ...inputs }, cover) => {
+            updateEvent({ inputs, cover });
+          }}
+        />
+      </div>
     </Main>
   );
 }
