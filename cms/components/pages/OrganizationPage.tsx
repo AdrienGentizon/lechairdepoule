@@ -30,6 +30,8 @@ import useUpdateEventStatus from "@/components/event/useUpdateEventStatus";
 import useT from "@/components/i18n/useT";
 import Main from "@/components/layout/Main";
 import PageHeader from "@/components/layout/PageHeader";
+import OrganizationForm from "@/components/organization/OrganizationForm";
+import useUpdateOrganization from "@/components/organization/useUpdateOrganization";
 
 const TOS_HREF = "https://lechairdepoule.fr/forum/cgu";
 
@@ -45,6 +47,10 @@ export default function OrganizationPage({
     useCreateEvent(organizationId);
   const { updateEventStatus, isPending: isStatusPending } =
     useUpdateEventStatus(organizationId);
+  const { updateOrganization, isPending: isOrganizationPending } =
+    useUpdateOrganization(organizationId);
+
+  const [isEditOrganizationOpen, setIsEditOrganizationOpen] = useState(false);
 
   const [step, setStep] = useState<
     | { name: "HIDDEN" }
@@ -124,6 +130,28 @@ export default function OrganizationPage({
                 }}
               />
             )}
+          </Dialog.Content>
+        </Dialog>
+        <Dialog
+          open={isEditOrganizationOpen}
+          onOpenChange={setIsEditOrganizationOpen}
+        >
+          <Dialog.Trigger render={<Button variant="secondary" />}>
+            <PencilSimpleIcon size={18} aria-hidden />
+            {dictionary.organization_edit}
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Title>{dictionary.organization_edit}</Dialog.Title>
+            <OrganizationForm
+              defaultValue={organization}
+              submitLabel={dictionary.organization_save}
+              isPending={isOrganizationPending}
+              onSubmit={(inputs) => {
+                updateOrganization(inputs, {
+                  onSuccess: () => setIsEditOrganizationOpen(false),
+                });
+              }}
+            />
           </Dialog.Content>
         </Dialog>
       </PageHeader>

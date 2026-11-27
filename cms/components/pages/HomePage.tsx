@@ -38,6 +38,7 @@ export default function HomePage() {
             <Dialog.Content>
               <Dialog.Title>{dictionary.organization_create}</Dialog.Title>
               <OrganizationForm
+                submitLabel={dictionary.organization_activate}
                 isPending={isPending}
                 onSubmit={(inputs) => {
                   createOrganization(inputs, {
@@ -63,6 +64,7 @@ export default function HomePage() {
           </div>
           <div className="w-full max-w-sm">
             <OrganizationForm
+              submitLabel={dictionary.organization_activate}
               isPending={isPending}
               onSubmit={(inputs) => createOrganization(inputs)}
             />

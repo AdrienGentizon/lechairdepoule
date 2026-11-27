@@ -21,10 +21,12 @@ import { frErrorMap } from "@/lib/validation";
 
 export default function OrganizationForm({
   defaultValue,
+  submitLabel,
   isPending,
   onSubmit,
 }: {
   defaultValue?: Organization;
+  submitLabel: string;
   isPending: boolean;
   onSubmit: (inputs: OrganizationInput) => void;
 }) {
@@ -222,7 +224,7 @@ export default function OrganizationForm({
       <footer className="pt-8 text-right">
         <Button type="submit" className="w-full" aria-disabled={isPending}>
           <FloppyDiskBackIcon size={18} aria-hidden />
-          Activer mon orga
+          {submitLabel}
         </Button>
       </footer>
     </form>
