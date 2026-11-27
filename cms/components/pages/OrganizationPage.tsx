@@ -120,9 +120,22 @@ export default function OrganizationPage({
         </Dialog>
       </PageHeader>
       {events.length === 0 && (
-        <p className="text-center text-purple-100">
-          {dictionary.empty_array_message}
-        </p>
+        <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold">
+              {dictionary.events_empty_heading}
+            </h2>
+            <Button
+              variant="text"
+              onClick={() => {
+                reset();
+                setStep({ name: "EVENT_TYPE" });
+              }}
+            >
+              {dictionary.events_empty}
+            </Button>
+          </div>
+        </div>
       )}
       {events.length > 0 && (
         <ul role="list" className="flex flex-col pb-4 pt-6">

@@ -2,6 +2,7 @@
 
 import {
   FloppyDiskBackIcon,
+  MapPinAreaIcon,
   PlusCircleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
@@ -64,6 +65,7 @@ export default function OrganizationForm({
         id="name"
         name="name"
         required
+        placeholder="Mon orga"
         defaultValue={defaultValue?.name}
         errors={errors.name}
         onResetError={() => setErrors((prev) => ({ ...prev, name: undefined }))}
@@ -139,31 +141,39 @@ export default function OrganizationForm({
         name="country"
         value={defaultValue?.country ?? "FR"}
       />
-      <div className="grid grid-cols-[1fr_2fr] gap-4">
-        <InputField
-          label="Code postal"
-          id="zipcode"
-          name="zipcode"
-          autoComplete="postal-code"
-          required
-          defaultValue={defaultValue?.zipcode}
-          errors={errors.zipcode}
-          onResetError={() =>
-            setErrors((prev) => ({ ...prev, zipcode: undefined }))
-          }
-        />
-        <InputField
-          label="Ville"
-          id="city"
-          name="city"
-          autoComplete="address-level2"
-          required
-          defaultValue={defaultValue?.city}
-          errors={errors.city}
-          onResetError={() =>
-            setErrors((prev) => ({ ...prev, city: undefined }))
-          }
-        />
+      <div>
+        <p className="inline-flex items-center gap-1 text-sm text-neutral-200">
+          <MapPinAreaIcon size={16} aria-hidden />
+          Pour proposer vos événements aux gens du coin.
+        </p>
+        <div className="grid grid-cols-[1fr_2fr] gap-4">
+          <InputField
+            label="Code postal"
+            id="zipcode"
+            name="zipcode"
+            autoComplete="postal-code"
+            required
+            placeholder="75"
+            defaultValue={defaultValue?.zipcode}
+            errors={errors.zipcode}
+            onResetError={() =>
+              setErrors((prev) => ({ ...prev, zipcode: undefined }))
+            }
+          />
+          <InputField
+            label="Ville"
+            id="city"
+            name="city"
+            autoComplete="address-level2"
+            required
+            placeholder="La capitale"
+            defaultValue={defaultValue?.city}
+            errors={errors.city}
+            onResetError={() =>
+              setErrors((prev) => ({ ...prev, city: undefined }))
+            }
+          />
+        </div>
       </div>
       <div
         className={cn(
@@ -210,9 +220,9 @@ export default function OrganizationForm({
       </div>
 
       <footer className="pt-8 text-right">
-        <Button type="submit" aria-disabled={isPending}>
+        <Button type="submit" className="w-full" aria-disabled={isPending}>
           <FloppyDiskBackIcon size={18} aria-hidden />
-          Enregistrer
+          Activer mon orga
         </Button>
       </footer>
     </form>

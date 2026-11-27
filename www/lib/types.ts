@@ -73,6 +73,7 @@ export type Event = Omit<
   coverUrl: string | null;
   coverWidth: number | null;
   coverHeight: number | null;
+  organizationId: string;
   createdBy: {
     id: string;
     pseudo: string;

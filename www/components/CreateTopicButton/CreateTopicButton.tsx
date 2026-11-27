@@ -2,7 +2,6 @@ import { PlusIcon } from "@phosphor-icons/react";
 
 import { useEffect, useState } from "react";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import Dialog from "@cdp/ui/Dialog";
@@ -28,14 +27,9 @@ const CONVERSATION_TYPE_LABELS: Record<
   RELEASE: { title: "Nouvelle sortie", submit: "Créer une sortie" },
 };
 
-function Redirection({
-  selectedConversationType,
-}: {
-  selectedConversationType: "TOPIC" | "EVENT" | "RELEASE";
-}) {
-  const router = useRouter();
+function Redirection() {
   const [countdown, setCountdown] = useState(5000);
-  const url = `/agenda?create=${selectedConversationType.toLowerCase()}`;
+  const url = process.env.NEXT_PUBLIC_CMS_URL ?? "";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -49,24 +43,24 @@ function Redirection({
 
   useEffect(() => {
     if (countdown > 0) return;
-    router.push(url);
-  }, [countdown, router, url]);
+    window.location.assign(url);
+  }, [countdown, url]);
 
   return (
     <div className="flex flex-col items-center gap-2 p-4 leading-none">
       <p>
-        {`La création d'événement a été déplacée sur la page `}
-        <Link href={url} className="text-purple-300 underline">
-          /agenda
-        </Link>
+        {`La création d'événement a été déplacée sur le `}
+        <a href={url} className="text-purple-300 underline">
+          CMS
+        </a>
         .
       </p>
       <p className="text-sm font-light text-neutral-200">
         vous allez être redirigé automatiquement dans {countdown / 1000}s.
       </p>
-      <Link href={url} className={buttonClassName("w-full")}>
+      <a href={url} className={buttonClassName("w-full")}>
         Y aller maintenant
-      </Link>
+      </a>
     </div>
   );
 }
@@ -84,7 +78,7 @@ function Form({
     selectedConversationType === "EVENT" ||
     selectedConversationType === "RELEASE"
   )
-    return <Redirection selectedConversationType={selectedConversationType} />;
+    return <Redirection />;
 
   return (
     <CreateTopicForm

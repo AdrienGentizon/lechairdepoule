@@ -29,26 +29,46 @@ export default function HomePage() {
   return (
     <Main>
       <PageHeader heading={dictionary.organizations_h1}>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger render={<Button className="ml-auto" />}>
-            <PlusCircleIcon size={18} aria-hidden />
-            Créer une organisation
-          </Dialog.Trigger>
-          <Dialog.Content>
-            <Dialog.Title>Créer une organisation</Dialog.Title>
+        {me.organizations.length > 0 && (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger render={<Button className="ml-auto" />}>
+              <PlusCircleIcon size={18} aria-hidden />
+              {dictionary.organization_create}
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <Dialog.Title>{dictionary.organization_create}</Dialog.Title>
+              <OrganizationForm
+                isPending={isPending}
+                onSubmit={(inputs) => {
+                  createOrganization(inputs, {
+                    onSuccess: () => {
+                      setOpen(false);
+                    },
+                  });
+                }}
+              />
+            </Dialog.Content>
+          </Dialog>
+        )}
+      </PageHeader>
+      {me.organizations.length === 0 && (
+        <div className="flex h-full flex-col items-center justify-center gap-4">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold">
+              {dictionary.organizations_empty_heading}
+            </h2>
+            <p className="max-w-sm text-balance text-center text-neutral-100">
+              {dictionary.organizations_empty}
+            </p>
+          </div>
+          <div className="w-full max-w-sm">
             <OrganizationForm
               isPending={isPending}
-              onSubmit={(inputs) => {
-                createOrganization(inputs, {
-                  onSuccess: () => {
-                    setOpen(false);
-                  },
-                });
-              }}
+              onSubmit={(inputs) => createOrganization(inputs)}
             />
-          </Dialog.Content>
-        </Dialog>
-      </PageHeader>
+          </div>
+        </div>
+      )}
       <ul
         role="list"
         className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4"

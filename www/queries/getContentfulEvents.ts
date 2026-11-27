@@ -5,9 +5,12 @@ import { ContentfulEvent } from "@/lib/types";
 // type ExpectedDate =
 //   `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 
-const DANGEROUS_FALLBACK_CREATED_BY = {
-  id: "n/a",
-  pseudo: "La Patronne",
+const DANGEROUS_FALLBACK = {
+  createdBy: {
+    id: "n/a",
+    pseudo: "La Patronne",
+  },
+  organization: { id: "n/a" },
 };
 
 type RawEvent = {
@@ -50,7 +53,8 @@ function toEvent(raw: RawEvent) {
     price: null,
     venue: null,
     url: null,
-    createdBy: DANGEROUS_FALLBACK_CREATED_BY,
+    organizationId: DANGEROUS_FALLBACK.organization.id,
+    createdBy: DANGEROUS_FALLBACK.createdBy,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   } satisfies ContentfulEvent;

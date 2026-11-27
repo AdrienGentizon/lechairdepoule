@@ -30,6 +30,7 @@ export default async function selectEvents({
         url: string | null;
         createdAt: string;
         updatedAt: string;
+        organizationId: string;
         userId: string;
         userPseudo: string | null;
         userBannedAt: string | null;
@@ -53,6 +54,7 @@ export default async function selectEvents({
       e.url,
       e.created_at::text as "createdAt",
       e.updated_at::text as "updatedAt",
+      e.organization_id::text as "organizationId",
       u.id::text as "userId",
       u.pseudo as "userPseudo",
       u.banned_at::text as "userBannedAt"
