@@ -105,6 +105,9 @@ export default function OrganizationPage({
             {step.name === "EVENT_INPUTS" && (
               <EventForm
                 eventType={step.eventType}
+                defaultVenue={
+                  organization.type === "VENUE" ? organization.name : null
+                }
                 tosHref={TOS_HREF}
                 isPending={isPending}
                 error={error}

@@ -37,6 +37,7 @@ function toNullableString(value: FormDataEntryValue | null) {
 export default function EventForm({
   eventType,
   defaultValue,
+  defaultVenue,
   tosHref,
   isPending,
   error,
@@ -44,6 +45,7 @@ export default function EventForm({
 }: {
   eventType: Event["type"];
   defaultValue?: Event;
+  defaultVenue?: string | null;
   tosHref: string;
   isPending: boolean;
   error?: Error | null;
@@ -187,6 +189,7 @@ export default function EventForm({
                   type="time"
                   defaultValue={defaultValue?.startTime ?? ""}
                   aria-label="Heure de début"
+                  className="w-min"
                   aria-invalid={(errors.startTime ?? []).length > 0}
                   onChange={() => resetError("startTime")}
                 />
@@ -220,6 +223,7 @@ export default function EventForm({
                   type="time"
                   defaultValue={defaultValue?.endTime ?? ""}
                   aria-label="Heure de fin"
+                  className="w-min"
                   aria-invalid={(errors.endTime ?? []).length > 0}
                   onChange={() => resetError("endTime")}
                 />
@@ -246,7 +250,7 @@ export default function EventForm({
               label="Lieu"
               id="venue"
               name="venue"
-              defaultValue={defaultValue?.venue ?? ""}
+              defaultValue={defaultValue?.venue ?? defaultVenue ?? ""}
               errors={errors.venue}
               onResetError={() => resetError("venue")}
             />
