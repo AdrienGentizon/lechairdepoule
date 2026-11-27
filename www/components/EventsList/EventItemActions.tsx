@@ -16,14 +16,7 @@ export default function EventItemActions({ event }: { event: Event }) {
         href={cmsEventUrl}
         className="text-xs text-neutral-200 hover:text-purple-300 hover:underline"
       >
-        modifier
-      </a>
-      <span aria-hidden>·</span>
-      <a
-        href={cmsEventUrl}
-        className="text-xs text-neutral-200 hover:text-purple-300 hover:underline"
-      >
-        supprimer
+        gérer
       </a>
     </div>
   );
