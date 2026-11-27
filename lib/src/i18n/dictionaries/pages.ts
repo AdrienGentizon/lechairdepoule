@@ -23,6 +23,9 @@ const en = {
   event_edit: (title: string) => `Edit ${title}`,
   event_delete: (title: string) => `Delete ${title}`,
   event_published: "Published",
+  event_archived: "Archived",
+  event_publish: (title: string) => `Publish ${title}`,
+  event_archive: (title: string) => `Archive ${title}`,
   event_published_aria: (title: string) => `Published ${title}`,
   event_delete_confirm: (title: string) =>
     `You are about to delete "${title}". Continue?`,
@@ -53,6 +56,9 @@ const fr = {
   event_edit: (title: string) => `Modifier ${title}`,
   event_delete: (title: string) => `Supprimer ${title}`,
   event_published: "Publié",
+  event_archived: "Archivé",
+  event_publish: (title: string) => `Publier ${title}`,
+  event_archive: (title: string) => `Archiver ${title}`,
   event_published_aria: (title: string) => `Publié ${title}`,
   event_delete_confirm: (title: string) =>
     `Vous êtes sur le point de supprimer « ${title} ». Continuer ?`,

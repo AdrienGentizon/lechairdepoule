@@ -59,7 +59,6 @@ export default async function updateEvent(
       AND o.id = ${inputs.organizationId}
       AND o.managed_by = ${inputs.userId}
       AND o.deleted_at IS NULL
-      AND e.deleted_at IS NULL
     RETURNING
       e.id::text,
       e.type,

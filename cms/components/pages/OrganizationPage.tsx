@@ -1,6 +1,11 @@
 "use client";
 
-import { PencilSimpleIcon, PlusCircleIcon } from "@phosphor-icons/react";
+import {
+  EyeClosedIcon,
+  EyeIcon,
+  PencilSimpleIcon,
+  PlusCircleIcon,
+} from "@phosphor-icons/react";
 
 import { useState } from "react";
 
@@ -9,12 +14,12 @@ import Link from "next/link";
 import { LOCALE, getEventTime } from "@cdp/lib/date";
 import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
 import { Event } from "@cdp/lib/types";
+import Badge from "@cdp/ui/Badge";
 import Button from "@cdp/ui/Button";
 import Details from "@cdp/ui/Details";
 import DetailsScrollIntoViewOnOpen from "@cdp/ui/DetailsScrollIntoViewOnOpen";
 import Dialog from "@cdp/ui/Dialog";
 import EventSummary from "@cdp/ui/EventSummary";
-import Toggle from "@cdp/ui/Toggle";
 
 import useMe from "@/components/auth/useMe";
 import EventForm from "@/components/event/EventForm";
@@ -149,7 +154,7 @@ export default function OrganizationPage({
                 className="border-foreground relative isolate border-b py-2 first:border-t"
               >
                 <Details id={event.id} name="events">
-                  <Details.Summary className="group grid grid-cols-[5rem_1fr_auto] items-center gap-2 pr-4">
+                  <Details.Summary className="grid grid-cols-[5rem_1fr_auto] items-center gap-2 pr-4">
                     <EventSummary
                       startDate={event.startDate}
                       startTime={event.startTime}
@@ -173,41 +178,52 @@ export default function OrganizationPage({
                           .join(", "),
                       }}
                     />
-                    <div className="flex items-center gap-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
-                      {event.deletedAt ? (
-                        <span aria-disabled className="opacity-50">
-                          <PencilSimpleIcon size={24} aria-hidden />
+                    <div className="flex flex-col items-end gap-6">
+                      <Badge variant={event.deletedAt ? "warning" : "success"}>
+                        {event.deletedAt
+                          ? dictionary.event_archived
+                          : dictionary.event_published}
+                      </Badge>
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          className="text-neutral-300 transition-colors hover:text-purple-400"
+                          type="button"
+                          title={
+                            event.deletedAt
+                              ? dictionary.event_publish(event.title)
+                              : dictionary.event_archive(event.title)
+                          }
+                          aria-pressed={!event.deletedAt}
+                          disabled={isStatusPending}
+                          onClick={() =>
+                            updateEventStatus({
+                              eventId: event.id,
+                              status: event.deletedAt
+                                ? "PUBLISHED"
+                                : "UNPUBLISHED",
+                            })
+                          }
+                        >
+                          {event.deletedAt ? (
+                            <EyeClosedIcon size={20} aria-hidden />
+                          ) : (
+                            <EyeIcon size={20} aria-hidden />
+                          )}
                           <span className="sr-only">
-                            {dictionary.event_edit(event.title)}
+                            {dictionary.event_published_aria(event.title)}
                           </span>
-                        </span>
-                      ) : (
+                        </button>
                         <Link
                           href={`/organizations/${organizationId}/events/${event.id}`}
+                          className="text-neutral-300 hover:text-purple-400"
+                          title={dictionary.event_edit(event.title)}
                         >
-                          <PencilSimpleIcon size={24} aria-hidden />
+                          <PencilSimpleIcon size={22} aria-hidden />
                           <span className="sr-only">
                             {dictionary.event_edit(event.title)}
                           </span>
                         </Link>
-                      )}
-                      <Toggle
-                        checked={!event.deletedAt}
-                        aria-label={dictionary.event_published_aria(
-                          event.title,
-                        )}
-                        disabled={isStatusPending}
-                        onClick={() =>
-                          updateEventStatus({
-                            eventId: event.id,
-                            status: event.deletedAt
-                              ? "PUBLISHED"
-                              : "UNPUBLISHED",
-                          })
-                        }
-                      >
-                        {dictionary.event_published}
-                      </Toggle>
+                      </div>
                     </div>
                   </Details.Summary>
                   <Details.Content>
