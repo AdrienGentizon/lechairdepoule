@@ -8,7 +8,7 @@ export default function CreateEventButton() {
     >
       <PlusIcon size={24} weight="light" aria-hidden="true" />
       <span className="flex flex-col items-start">
-        <span className="font-semibold">Créer un événement</span>
+        <span className="font-semibold">Créer ou modifier un événement</span>
         <span className="text-muted-foreground text-xs normal-case">
           Concert · Release Party · Événement
         </span>

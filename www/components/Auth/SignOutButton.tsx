@@ -26,6 +26,7 @@ export default function SignOutButton({
   return (
     <>
       <Button
+        variant={"danger"}
         disabled={disabled || isPending}
         onClick={(e) => {
           startTransition(async () => {

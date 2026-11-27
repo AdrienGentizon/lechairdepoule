@@ -1,12 +1,15 @@
 "use client";
 
+import { ArrowRightIcon, DoorOpenIcon } from "@phosphor-icons/react";
+
 import { useState } from "react";
 
 import Link from "next/link";
 import z from "zod";
 
+import Button, { buttonClassName } from "@cdp/ui/Button";
+
 import SignOutButton from "@/components/Auth/SignOutButton";
-import Button from "@/components/Button/Button";
 import Form, {
   FieldError,
   FormField,
@@ -113,16 +116,33 @@ function UserPage({ me }: { me: User }) {
         <UserNotifications />
       </section>
 
+      <section aria-labelledby="cms">
+        <h2 id="cms" className="pb-1 pt-4 text-lg font-semibold">
+          Gérer mes événements
+        </h2>
+        <a
+          href={process.env.NEXT_PUBLIC_CMS_URL}
+          className={buttonClassName({ className: "w-full" })}
+        >
+          Aller à mon espace orga
+          <ArrowRightIcon size={18} aria-hidden />
+        </a>
+      </section>
+
       <section aria-labelledby="cgu">
         <h2 id="cgu" className="pb-1 pt-4 text-lg font-semibold">
           {`Conditions générales d'utilisation`}
         </h2>
-        <Link href={`/forum/cgu`}>
-          <Button className="w-full">Lire les CGU</Button>
+        <Link
+          href={`/forum/cgu`}
+          className="inline-flex items-center gap-1 text-sm hover:text-purple-300"
+        >
+          <span className="underline">Lire les CGU</span>
         </Link>
       </section>
-      <div className="pt-4">
+      <div className="mt-6 border-t border-neutral-600 pt-6">
         <SignOutButton className="w-full uppercase">
+          <DoorOpenIcon size={18} aria-hidden />
           Se déconnecter
         </SignOutButton>
       </div>

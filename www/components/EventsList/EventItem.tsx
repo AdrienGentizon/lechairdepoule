@@ -7,7 +7,6 @@ import PeinePerdue from "@/components/png/PeinePerdue";
 import { Event } from "@/lib/types";
 
 import EventUrl from "../ConversationsList/EventUrl";
-import EventItemActions from "./EventItemActions";
 import ImportToCalendarButton from "./ImportToCalendarButton";
 
 export default function EventItem({
@@ -64,9 +63,6 @@ export default function EventItem({
           <EventUrl event={event} />
         </Details.Content>
       </Details>
-      {["HORS_LES_MURS"].includes(variant) && (
-        <EventItemActions event={event} />
-      )}
     </li>
   );
 }
