@@ -65,7 +65,7 @@ function ProfileLink({
     <Link
       href={`/profile`}
       className={cn(
-        "text-foreground cursor-pointer hover:text-purple-300",
+        "text-foreground flex cursor-pointer hover:text-purple-300",
         className,
       )}
     >

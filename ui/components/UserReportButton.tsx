@@ -26,7 +26,7 @@ export function UserReportTrigger({
     <button
       type="button"
       className={cn(
-        "scale-100 cursor-pointer rounded-full border-transparent transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900 landscape:border-2 landscape:p-1",
+        "scale-100 cursor-pointer rounded-full border-transparent transition-all hover:scale-110 hover:border-purple-400 hover:bg-purple-900 landscape:border-2",
         className,
       )}
       {...props}
