@@ -12,7 +12,6 @@ import Trace from "@cdp/lib/trace";
 import { Event } from "@cdp/lib/types";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
-import deleteEvent from "@/lib/event/deleteEvent";
 import selectOrganizationEvent from "@/lib/event/selectOrganizationEvent";
 import updateEvent from "@/lib/event/updateEvent";
 import revalidateWww from "@/lib/revalidateWww";
@@ -151,42 +150,6 @@ export async function PATCH(
       },
       { status: 200 },
     );
-  } catch (error) {
-    return CustomError.toResponse(error, trace);
-  }
-}
-
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ organizationId: string; eventId: string }> },
-) {
-  const { organizationId, eventId } = await params;
-  const trace = new Trace(req);
-  try {
-    const user = await getAuthenticatedUser();
-    if (!user || user.bannedAt) throw new CustomError("unauthorized", {}, 401);
-    trace.push(getLoggableUser(user));
-
-    const deletedEvent = await deleteEvent({
-      eventId,
-      organizationId,
-      userId: user.id,
-    });
-    if (!deletedEvent) {
-      trace.push({ organizationId, eventId });
-      throw new CustomError("not_found", {}, 404);
-    }
-
-    if (deletedEvent.imageKey) {
-      await deleteObject({ key: deletedEvent.imageKey });
-    }
-
-    const revalidation = await revalidateWww();
-    if (!revalidation.success) trace.pushError("www revalidation failed");
-
-    trace.push({ deletedEvent });
-    trace.log();
-    return new NextResponse(null, { status: 204 });
   } catch (error) {
     return CustomError.toResponse(error, trace);
   }
