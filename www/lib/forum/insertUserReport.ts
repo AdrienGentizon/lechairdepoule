@@ -1,5 +1,6 @@
+import { UserReport } from "@cdp/lib/types";
+
 import sql from "../db";
-import { UserReport } from "../types";
 
 export default async function insertUserReport({
   userId,

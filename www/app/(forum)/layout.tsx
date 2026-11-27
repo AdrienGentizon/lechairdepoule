@@ -2,7 +2,8 @@ import { ReactNode, Suspense } from "react";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import FloatingButtons from "@/components/FloatingButtons/FloatingButtons";
+import FloatingButtons from "@cdp/ui/FloatingButtons";
+
 import AdminButton from "@/components/Header/AdminButton";
 import UserButton from "@/components/Header/UserButton";
 import UpdateUserPseudoDialog from "@/components/UpdateUserPseudoDialog/UpdateUserPseudoDialog";

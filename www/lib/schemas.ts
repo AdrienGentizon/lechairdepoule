@@ -29,12 +29,3 @@ export const BanAppealFormSchema = z.object({
     .min(10, "Message trop court (10 caractères min)")
     .max(1000, "Message trop long (1000 caractères max)"),
 });
-
-export const UserReportFormSchema = z.object({
-  type: z.enum(["BUG", "QUESTION", "FEATURE"]),
-  body: z
-    .string()
-    .min(10, "Message trop court (10 caractères min)")
-    .max(2000, "Message trop long (2000 caractères max)"),
-  pageUrl: z.string().max(2000).nullish(),
-});

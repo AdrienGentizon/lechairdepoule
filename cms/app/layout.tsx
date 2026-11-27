@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { Courier_Prime, Manrope } from "next/font/google";
 
 import dictionaries from "@cdp/lib/i18n/dictionaries/pages";
+import FloatingButtons from "@cdp/ui/FloatingButtons";
 
 import ReactQueryProvider from "@/components/contexts/ReactQueryProvider";
 import LocaleProvider from "@/components/i18n/LocaleProvider";
 import Header from "@/components/layout/Header/Header";
 import Main from "@/components/layout/Main";
+import UserReportButton from "@/components/userReport/UserReportButton";
 import { getLocale, t } from "@/lib/i18n";
 
 import "./globals.css";
@@ -48,6 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               </a>
               <Header />
               {children}
+              <FloatingButtons secondary={<UserReportButton />} />
             </ReactQueryProvider>
           </LocaleProvider>
         </div>

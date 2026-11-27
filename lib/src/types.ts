@@ -59,3 +59,14 @@ export type Event = {
   updatedAt: string;
   deletedAt: string | null;
 };
+
+export type UserReport = {
+  id: string;
+  userId: string;
+  type: "BUG" | "QUESTION" | "FEATURE";
+  body: string;
+  pageUrl: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+};

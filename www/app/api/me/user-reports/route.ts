@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import Trace from "@cdp/lib/trace";
+import { UserReport } from "@cdp/lib/types";
+import { UserReportInputSchema } from "@cdp/lib/validation";
 
 import getAuthenticatedUser from "@/lib/auth/getAuthenticatedUser";
 import getLoggableUser from "@/lib/auth/getLoggableUser";
 import insertUserReport from "@/lib/forum/insertUserReport";
-import { UserReportFormSchema } from "@/lib/schemas";
-import { UserReport } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
   const trace = new Trace(req);
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = await req.json();
-    const parsedInputs = UserReportFormSchema.safeParse(payload);
+    const parsedInputs = UserReportInputSchema.safeParse(payload);
 
     if (!parsedInputs.success) {
       trace.push({ payload });

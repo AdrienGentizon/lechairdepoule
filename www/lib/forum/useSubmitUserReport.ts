@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { UserReport } from "../types";
+import { UserReport } from "@cdp/lib/types";
+import { UserReportInput } from "@cdp/lib/validation";
 
 export default function useSubmitUserReport() {
   const {
@@ -8,14 +9,10 @@ export default function useSubmitUserReport() {
     error,
     isPending,
   } = useMutation({
-    mutationFn: async (values: {
-      type: UserReport["type"];
-      body: string;
-      pageUrl: string;
-    }) => {
+    mutationFn: async (inputs: UserReportInput) => {
       const response = await fetch(`/api/me/user-reports`, {
         method: "POST",
-        body: JSON.stringify(values),
+        body: JSON.stringify(inputs),
       });
 
       if (!response.ok)
